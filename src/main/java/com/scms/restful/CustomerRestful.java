@@ -20,171 +20,53 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
-import com.scms.modules.user.entity.ScmsCommissionRule;
-import com.scms.modules.user.entity.ScmsMerchantsUser;
-import com.scms.modules.user.entity.ScmsUserPoint;
-import com.scms.modules.user.service.ScmsCommissionRuleService;
-import com.scms.modules.user.service.ScmsMerchantsUserService;
-import com.scms.modules.user.service.ScmsUserPointService;
+import com.scms.modules.customer.entity.ScmsCustomerInfo;
+import com.scms.modules.customer.entity.ScmsCustomerLevel;
+import com.scms.modules.customer.entity.ScmsCustomerType;
+import com.scms.modules.customer.service.ScmsCustomerInfoService;
+import com.scms.modules.customer.service.ScmsCustomerLevelService;
+import com.scms.modules.customer.service.ScmsCustomerTypeService;
 
 @RestController
-@RequestMapping(value = "/api/scms/user")
-public class UserRestful {
+@RequestMapping(value = "/api/scms/customer")
+public class CustomerRestful {
     
-    protected static final Logger logger = LogManager.getLogger(UserRestful.class);
-    
-    @Autowired
-    private ScmsMerchantsUserService scmsMerchantsUserService;
+    protected static final Logger logger = LogManager.getLogger(CustomerRestful.class);
     
     @Autowired
-    private ScmsCommissionRuleService scmsCommissionRuleService;
+    private ScmsCustomerTypeService scmsCustomerTypeService;
     
     @Autowired
-    private ScmsUserPointService scmsUserPointService;
+    private ScmsCustomerLevelService scmsCustomerLevelService;
+    
+    @Autowired
+    private ScmsCustomerInfoService scmsCustomerInfoService;
+    
+    @RequestMapping(value="/customerTypeIndex", method=RequestMethod.GET)
+    public JSONObject customerTypeIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
-    @RequestMapping(value="/commissionRuleIndex", method=RequestMethod.GET)
-    public JSONObject commissionRuleIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/customerLevelIndex", method=RequestMethod.GET)
+    public JSONObject customerLevelIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
-    @RequestMapping(value="/userPointIndex", method=RequestMethod.GET)
-    public JSONObject userPointIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/customerInfoIndex", method=RequestMethod.GET)
+    public JSONObject customerInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
 
     /**
      * 获取列表
      * @param request
      * @return
      */
-    @RequestMapping(value="/getUserMerchantsId",method=RequestMethod.GET)
-    public JSONObject getUserMerchantsId(HttpServletRequest request, @RequestParam Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                ScmsMerchantsUser obj = scmsMerchantsUserService.findByUserId(userInfo.getUserId());
-                if(obj != null) json = RestfulRetUtils.getRetSuccess(obj.getMerchantsId());
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-
-    /**
-     * 获取商户员工列表
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/getMerchantsUserList",method=RequestMethod.GET)
-    public JSONObject getMerchantsUserList(HttpServletRequest request, @RequestParam Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = scmsMerchantsUserService.getMerchantsUserList(pageable, params);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-
-    @RequestMapping(value="/bindUser",method=RequestMethod.POST)
-    public JSONObject bindUser(HttpServletRequest request,@RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsMerchantsUserService.bindUser(params, userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","设置店铺管理员失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-
-    @RequestMapping(value="/unBindUser",method=RequestMethod.POST)
-    public JSONObject unBindUser(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsMerchantsUserService.unBindUser(idsList);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","设置店铺管理员失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 设置为店铺管理员
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/setShopAdmin",method=RequestMethod.POST)
-    public JSONObject setShopAdmin(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsMerchantsUserService.setShopAdmin(idsList, "1", userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","设置店铺管理员失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 取消店铺管理员
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/cancelShopAdmin",method=RequestMethod.POST)
-    public JSONObject cancelShopAdmin(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsMerchantsUserService.setShopAdmin(idsList, "0", userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","取消店铺管理员失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-
-    /**
-     * 获取列表
-     * @param request
-     * @return
-     */
-    @RequestMapping(value="/getCommissionRuleList",method=RequestMethod.GET)
-    public JSONObject getCommissionRuleList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCustomerTypeList",method=RequestMethod.GET)
+    public JSONObject getCustomerTypeList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
-                ScmsCommissionRule scmsCommissionRule = (ScmsCommissionRule)BeanUtils.mapToBean(params, ScmsCommissionRule.class);              
-                json = scmsCommissionRuleService.getList(pageable, scmsCommissionRule, params);
+                ScmsCustomerType scmsCustomerType = (ScmsCustomerType)BeanUtils.mapToBean(params, ScmsCustomerType.class);              
+                json = scmsCustomerTypeService.getList(pageable, scmsCustomerType, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -200,14 +82,14 @@ public class UserRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/addCommissionRule",method=RequestMethod.POST)
-    public JSONObject addCommissionRule(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/addCustomerType",method=RequestMethod.POST)
+    public JSONObject addCustomerType(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCommissionRuleService.add(params, userInfo);
+                json = scmsCustomerTypeService.add(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
@@ -222,14 +104,14 @@ public class UserRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/editCommissionRule",method=RequestMethod.POST)
-    public JSONObject editCommissionRule(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/editCustomerType",method=RequestMethod.POST)
+    public JSONObject editCustomerType(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCommissionRuleService.edit(params, userInfo);
+                json = scmsCustomerTypeService.edit(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -244,14 +126,14 @@ public class UserRestful {
      * @param idsList
      * @return
      */
-    @RequestMapping(value="/delCommissionRule",method=RequestMethod.POST)
-    public JSONObject delCommissionRule(HttpServletRequest request,@RequestBody String idsList){
+    @RequestMapping(value="/delCustomerType",method=RequestMethod.POST)
+    public JSONObject delCustomerType(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
         try {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCommissionRuleService.del(idsList, userInfo);
+                json = scmsCustomerTypeService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
@@ -265,16 +147,16 @@ public class UserRestful {
      * @param request
      * @return
      */
-    @RequestMapping(value="/getUserPointList",method=RequestMethod.GET)
-    public JSONObject getUserPointList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCustomerLevelList",method=RequestMethod.GET)
+    public JSONObject getCustomerLevelList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
-                ScmsUserPoint scmsUserPoint = (ScmsUserPoint)BeanUtils.mapToBean(params, ScmsUserPoint.class);              
-                json = scmsUserPointService.getList(pageable, scmsUserPoint, params);
+                ScmsCustomerLevel scmsCustomerLevel = (ScmsCustomerLevel)BeanUtils.mapToBean(params, ScmsCustomerLevel.class);              
+                json = scmsCustomerLevelService.getList(pageable, scmsCustomerLevel, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -290,14 +172,14 @@ public class UserRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/addUserPoint",method=RequestMethod.POST)
-    public JSONObject addUserPoint(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/addCustomerLevel",method=RequestMethod.POST)
+    public JSONObject addCustomerLevel(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsUserPointService.add(params, userInfo);
+                json = scmsCustomerLevelService.add(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
@@ -312,14 +194,14 @@ public class UserRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/editUserPoint",method=RequestMethod.POST)
-    public JSONObject editUserPoint(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/editCustomerLevel",method=RequestMethod.POST)
+    public JSONObject editCustomerLevel(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsUserPointService.edit(params, userInfo);
+                json = scmsCustomerLevelService.edit(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -334,14 +216,104 @@ public class UserRestful {
      * @param idsList
      * @return
      */
-    @RequestMapping(value="/delUserPoint",method=RequestMethod.POST)
-    public JSONObject delUserPoint(HttpServletRequest request,@RequestBody String idsList){
+    @RequestMapping(value="/delCustomerLevel",method=RequestMethod.POST)
+    public JSONObject delCustomerLevel(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
         try {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsUserPointService.del(idsList, userInfo);
+                json = scmsCustomerLevelService.del(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getCustomerInfoList",method=RequestMethod.GET)
+    public JSONObject getCustomerInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsCustomerInfo scmsCustomerInfo = (ScmsCustomerInfo)BeanUtils.mapToBean(params, ScmsCustomerInfo.class);              
+                json = scmsCustomerInfoService.getList(pageable, scmsCustomerInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addCustomerInfo",method=RequestMethod.POST)
+    public JSONObject addCustomerInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCustomerInfoService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editCustomerInfo",method=RequestMethod.POST)
+    public JSONObject editCustomerInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCustomerInfoService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 删除信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delCustomerInfo",method=RequestMethod.POST)
+    public JSONObject delCustomerInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCustomerInfoService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
