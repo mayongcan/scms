@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
@@ -44,7 +45,19 @@ public class ScmsCommissionRuleServiceImpl implements ScmsCommissionRuleService 
 		scmsCommissionRule.setCreateDate(new Date());
 		scmsCommissionRule.setModifyBy(userInfo.getUserId());
 		scmsCommissionRule.setModifyDate(new Date());
-		scmsCommissionRuleRepository.save(scmsCommissionRule);
+		scmsCommissionRule = scmsCommissionRuleRepository.saveAndFlush(scmsCommissionRule);
+        
+        String userIdList = MapUtils.getString(params, "userIdList");
+        if(!StringUtils.isBlank(userIdList)) {
+            String array[] = userIdList.split(",");
+            Long userId = null;
+            for(String str : array) {
+                userId = StringUtils.toLong(str, null);
+                if(userId != null) {
+                    scmsCommissionRuleRepository.saveUserCommission(userId, scmsCommissionRule.getId());
+                }
+            }
+        }
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -60,6 +73,21 @@ public class ScmsCommissionRuleServiceImpl implements ScmsCommissionRuleService 
 		scmsCommissionRuleInDb.setModifyBy(userInfo.getUserId());
 		scmsCommissionRuleInDb.setModifyDate(new Date());
 		scmsCommissionRuleRepository.save(scmsCommissionRuleInDb);
+
+        String userIdList = MapUtils.getString(params, "userIdList");
+        if(!StringUtils.isBlank(userIdList)) {
+            //先删除关联表
+            scmsCommissionRuleRepository.delUserCommissionByCommissionId(scmsCommissionRuleInDb.getId());
+            //保存新的关联信息
+            String array[] = userIdList.split(",");
+            Long userId = null;
+            for(String str : array) {
+                userId = StringUtils.toLong(str, null);
+                if(userId != null) {
+                    scmsCommissionRuleRepository.saveUserCommission(userId, scmsCommissionRuleInDb.getId());
+                }
+            }
+        }
 		return RestfulRetUtils.getRetSuccess();
 	}
 

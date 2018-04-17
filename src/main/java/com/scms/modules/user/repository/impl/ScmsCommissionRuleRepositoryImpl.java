@@ -14,7 +14,10 @@ import com.scms.modules.user.repository.custom.ScmsCommissionRuleRepositoryCusto
 
 public class ScmsCommissionRuleRepositoryImpl extends BaseRepository implements ScmsCommissionRuleRepositoryCustom{
 
-	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.SHOP_ID as \"shopId\", tb.RULE_NAME as \"ruleName\", tb.CLEARING_TYPE as \"clearingType\", tb.CLEARING_PERIOD as \"clearingPeriod\", tb.CLEARING_START as \"clearingStart\", tb.COMMISSION_PERCENT as \"commissionPercent\", tb.MODIFY_BY as \"modifyBy\", tb.MODIFY_DATE as \"modifyDate\", tb.CREATE_BY as \"createBy\", tb.CREATE_DATE as \"createDate\", tb.IS_VALID as \"isValid\" "
+	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.SHOP_ID as \"shopId\", tb.RULE_NAME as \"ruleName\", "
+	        + "tb.CLEARING_TYPE as \"clearingType\", tb.CLEARING_PERIOD as \"clearingPeriod\", tb.CLEARING_START as \"clearingStart\", tb.COMMISSION_PERCENT as \"commissionPercent\", "
+	        + "tb.MODIFY_BY as \"modifyBy\", tb.MODIFY_DATE as \"modifyDate\", tb.CREATE_BY as \"createBy\", tb.CREATE_DATE as \"createDate\", "
+            + "(select group_concat(suc.USER_ID) from scms_user_commission suc where suc.COMMISSION_ID = tb.ID ) as \"userIdList\" "
 			+ "FROM scms_commission_rule tb "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
 

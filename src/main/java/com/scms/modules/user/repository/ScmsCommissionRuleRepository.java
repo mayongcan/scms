@@ -36,5 +36,25 @@ public interface ScmsCommissionRuleRepository extends JpaRepository<ScmsCommissi
 			+ "SET IS_VALID = :isValid "
 			+ "WHERE ID IN (:idList)", nativeQuery = true)
 	public void delEntity(@Param("isValid")String isValid, @Param("idList")List<Long> idList);
-	
+
+    /**
+     * 保存scms_user_commission
+     * @param userId
+     * @param commissionId
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO scms_user_commission (USER_ID, COMMISSION_ID) VALUES (:userId, :commissionId) ", nativeQuery = true)
+    public void saveUserCommission(@Param("userId")Long userId, @Param("commissionId")Long commissionId);
+
+
+    /**
+     * 删除scms_user_commission关联表
+     * @param commissionId
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM scms_user_commission WHERE COMMISSION_ID =:commissionId ", nativeQuery = true)
+    public void delUserCommissionByCommissionId(@Param("commissionId")Long commissionId);
+
 }
