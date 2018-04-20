@@ -26,6 +26,7 @@ import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.goods.service.ScmsGoodsCategoryService;
 import com.scms.modules.goods.entity.ScmsGoodsCategory;
+import com.scms.modules.goods.entity.ScmsGoodsCategoryRecur;
 import com.scms.modules.goods.repository.ScmsGoodsCategoryRepository;
 
 @Service
@@ -54,6 +55,8 @@ public class ScmsGoodsCategoryServiceImpl implements ScmsGoodsCategoryService {
 		if(scmsGoodsCategory.getDispOrder() == null) {
 		    scmsGoodsCategoryRepository.updateDispOrder(scmsGoodsCategory.getId(), scmsGoodsCategory.getId());
 		}
+		//更新递归表
+		addCategoryRecur(scmsGoodsCategory);
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -72,6 +75,8 @@ public class ScmsGoodsCategoryServiceImpl implements ScmsGoodsCategoryService {
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsGoodsCategory, scmsGoodsCategoryInDb);
 		scmsGoodsCategoryRepository.save(scmsGoodsCategoryInDb);
+        //更新递归表
+        addCategoryRecur(scmsGoodsCategoryInDb);
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -183,4 +188,30 @@ public class ScmsGoodsCategoryServiceImpl implements ScmsGoodsCategoryService {
 		String strTree = tree.getTreeJson(tree, root);
 		return RestfulRetUtils.getRetSuccess(JSONArray.parseArray(strTree));
 	}
+
+    private void addCategoryRecur(ScmsGoodsCategory scmsGoodsCategory) {
+        scmsGoodsCategoryRepository.delCategoryRecurByCategoryChildId(scmsGoodsCategory.getId());
+        // 保存当前节点信息
+        ScmsGoodsCategoryRecur scmsGoodsCategoryRecur = null;
+        scmsGoodsCategoryRepository.saveCategoryRecur(scmsGoodsCategory.getId(), scmsGoodsCategory.getId());
+
+        Long parentId = scmsGoodsCategory.getParentId();
+        if (parentId != null) {
+            int deep = 0;
+            ScmsGoodsCategory parentObj = null;
+            while (parentId != null && deep < Constants.DEFAULT_TREE_DEEP) {
+                parentObj = scmsGoodsCategoryRepository.findOne(parentId);
+                if (parentObj != null) {
+                    scmsGoodsCategoryRecur = new ScmsGoodsCategoryRecur();
+                    scmsGoodsCategoryRecur.setCategoryId(parentObj.getId());
+                    scmsGoodsCategoryRecur.setCategoryChildId(scmsGoodsCategory.getId());
+                    parentId = parentObj.getParentId();
+                    scmsGoodsCategoryRepository.saveCategoryRecur(scmsGoodsCategoryRecur.getCategoryId(), scmsGoodsCategoryRecur.getCategoryChildId());
+                } else {
+                    parentId = null;
+                }
+                deep++;
+            }
+        }
+    }
 }

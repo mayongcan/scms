@@ -71,5 +71,52 @@ public interface ScmsGoodsCategoryRepository extends JpaRepository<ScmsGoodsCate
             + "SET DISP_ORDER = :dispOrder "
             + "WHERE ID = :id ", nativeQuery = true)
     public void updateDispOrder(@Param("dispOrder")Long dispOrder, @Param("id")Long id);
+    
+
+
+    /**
+     * 根据ID查找所有子ID
+     * @param categoryId
+     * @return
+     */
+    @Query(value = "SELECT ext.CATEGORY_CHILD_ID "
+            + "FROM scms_goods_category org inner join scms_goods_category_recur ext on org.CATEGORY_ID = ext.CATEGORY_ID "
+            + "WHERE org.CATEGORY_ID = :categoryId", nativeQuery = true)
+    public List<Object> getAllChildIdByCategoryId(@Param("categoryId")Long categoryId);
+
+
+    /**
+     * 删除CategoryRecur
+     * @param categoryChildId
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "DELETE FROM scms_goods_category_recur "
+            + "WHERE CATEGORY_CHILD_ID = :categoryChildId ", nativeQuery = true)
+    public void delCategoryRecurByCategoryChildId(@Param("categoryChildId")Long categoryChildId);
+    
+
+    /**
+     * 删除Category
+     * @param categoryId
+     * @param categoryChildId
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM scms_goods_category_recur "
+            + "WHERE CATEGORY_ID =:categoryId and CATEGORY_CHILD_ID = :categoryChildId ", nativeQuery = true)
+    public void delCategoryRecur(@Param("categoryId")Long categoryId, @Param("categoryChildId")Long categoryChildId);
+    
+    
+    /**
+     * 保存Category
+     * @param categoryId
+     * @param categoryChildId
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO scms_goods_category_recur (CATEGORY_ID, CATEGORY_CHILD_ID) VALUES (:categoryId, :categoryChildId) ", nativeQuery = true)
+    public void saveCategoryRecur(@Param("categoryId")Long categoryId, @Param("categoryChildId")Long categoryChildId);
+    
 	
 }
