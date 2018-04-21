@@ -25,11 +25,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.scms.modules.goods.entity.ScmsGoodsCategory;
+import com.scms.modules.goods.entity.ScmsGoodsExtraDiscount;
 import com.scms.modules.goods.entity.ScmsGoodsExtraPrice;
 import com.scms.modules.goods.entity.ScmsGoodsInfo;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
 import com.scms.modules.goods.entity.ScmsGoodsModifyLog;
 import com.scms.modules.goods.service.ScmsGoodsCategoryService;
+import com.scms.modules.goods.service.ScmsGoodsExtraDiscountService;
 import com.scms.modules.goods.service.ScmsGoodsExtraPriceService;
 import com.scms.modules.goods.service.ScmsGoodsInfoService;
 import com.scms.modules.goods.service.ScmsGoodsInventoryService;
@@ -54,6 +56,9 @@ public class GoodsRestful {
     
     @Autowired
     private ScmsGoodsExtraPriceService scmsGoodsExtraPriceService;
+    
+    @Autowired
+    private ScmsGoodsExtraDiscountService scmsGoodsExtraDiscountService;
     
     @Autowired
     private ScmsGoodsInventoryService scmsGoodsInventoryService;
@@ -277,6 +282,29 @@ public class GoodsRestful {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
                 ScmsGoodsExtraPrice scmsGoodsExtraPrice = (ScmsGoodsExtraPrice)BeanUtils.mapToBean(params, ScmsGoodsExtraPrice.class);              
                 json = scmsGoodsExtraPriceService.getList(pageable, scmsGoodsExtraPrice, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getGoodsExtraDiscountList",method=RequestMethod.GET)
+    public JSONObject getGoodsExtraDiscountList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsGoodsExtraDiscount scmsGoodsExtraDiscount = (ScmsGoodsExtraDiscount)BeanUtils.mapToBean(params, ScmsGoodsExtraDiscount.class);              
+                json = scmsGoodsExtraDiscountService.getList(pageable, scmsGoodsExtraDiscount, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");

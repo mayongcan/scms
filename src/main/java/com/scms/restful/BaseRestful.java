@@ -72,6 +72,12 @@ public class BaseRestful {
     
     @Autowired
     private ScmsFeedbackInfoService scmsFeedbackInfoService;
+    
+    @RequestMapping(value="/homePageIndex", method=RequestMethod.GET)
+    public JSONObject homePageIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/myMerchantsInfoIndex", method=RequestMethod.GET)
+    public JSONObject myMerchantsInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/merchantsInfoIndex", method=RequestMethod.GET)
     public JSONObject merchantsInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}

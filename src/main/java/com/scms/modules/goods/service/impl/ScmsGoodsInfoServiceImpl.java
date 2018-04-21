@@ -23,10 +23,12 @@ import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.goods.service.ScmsGoodsInfoService;
 import com.scms.modules.goods.service.ScmsGoodsModifyLogService;
+import com.scms.modules.goods.entity.ScmsGoodsExtraDiscount;
 import com.scms.modules.goods.entity.ScmsGoodsExtraPrice;
 import com.scms.modules.goods.entity.ScmsGoodsInfo;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
 import com.scms.modules.goods.entity.ScmsGoodsModifyLog;
+import com.scms.modules.goods.repository.ScmsGoodsExtraDiscountRepository;
 import com.scms.modules.goods.repository.ScmsGoodsExtraPriceRepository;
 import com.scms.modules.goods.repository.ScmsGoodsInfoRepository;
 import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
@@ -42,6 +44,9 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
     
     @Autowired
     private ScmsGoodsExtraPriceRepository scmsGoodsExtraPriceRepository;
+    
+    @Autowired
+    private ScmsGoodsExtraDiscountRepository scmsGoodsExtraDiscountRepository;
     
     @Autowired
     private ScmsGoodsModifyLogService scmsGoodsModifyLogService;
@@ -89,6 +94,20 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                 }
             }
         }
+
+        //保存商品折扣信息表
+        String extraDiscountList = MapUtils.getString(params, "extraDiscountList");
+        jsonArray = JSONObject.parseArray(extraDiscountList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            ScmsGoodsExtraDiscount obj = null;
+            for(int i = 0; i < jsonArray.size(); i++) {
+                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsGoodsExtraDiscount.class);
+                if(obj != null) {
+                    obj.setGoodsId(scmsGoodsInfo.getId());
+                    scmsGoodsExtraDiscountRepository.save(obj);
+                }
+            }
+        }
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -121,7 +140,22 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                 }
             }
         }
-        
+
+        //保存商品折扣信息表
+        String extraDiscountList = MapUtils.getString(params, "extraDiscountList");
+        jsonArray = JSONObject.parseArray(extraDiscountList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            //先删除旧的额外价格
+            scmsGoodsExtraDiscountRepository.delByGoodsId(scmsGoodsInfoInDb.getId());
+            ScmsGoodsExtraDiscount obj = null;
+            for(int i = 0; i < jsonArray.size(); i++) {
+                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsGoodsExtraDiscount.class);
+                if(obj != null) {
+                    obj.setGoodsId(scmsGoodsInfoInDb.getId());
+                    scmsGoodsExtraDiscountRepository.save(obj);
+                }
+            }
+        }
         //保存修改记录scmsGoodsModifyLogRepository
         ScmsGoodsModifyLog modifyLog = new ScmsGoodsModifyLog();
         modifyLog.setGoodsId(scmsGoodsInfoInDb.getId());
