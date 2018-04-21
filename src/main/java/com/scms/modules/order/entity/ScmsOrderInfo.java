@@ -106,6 +106,12 @@ public class ScmsOrderInfo implements Serializable {
 	// 客户名称
 	@Column(name = "CUSTOMER_NAME", length = 128)
 	private String customerName;
+    
+    @Column(name = "TRANSPORT_ID", precision = 10, scale = 0)
+    private Long transportId;
+    
+    @Column(name = "TRANSPORT_NAME", length = 128)
+    private String transportName;
 	
 	// 订单销售人
 	@Column(name = "SELLER_BY", precision = 10, scale = 0)
