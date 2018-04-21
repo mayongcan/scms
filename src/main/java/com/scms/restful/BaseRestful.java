@@ -29,6 +29,7 @@ import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.entity.ScmsSizeInfo;
 import com.scms.modules.base.entity.ScmsTagInfo;
 import com.scms.modules.base.entity.ScmsTextureInfo;
+import com.scms.modules.base.entity.ScmsTransportInfo;
 import com.scms.modules.base.entity.ScmsVenderInfo;
 import com.scms.modules.base.service.ScmsColorInfoService;
 import com.scms.modules.base.service.ScmsDailyExpensesService;
@@ -38,6 +39,7 @@ import com.scms.modules.base.service.ScmsShopInfoService;
 import com.scms.modules.base.service.ScmsSizeInfoService;
 import com.scms.modules.base.service.ScmsTagInfoService;
 import com.scms.modules.base.service.ScmsTextureInfoService;
+import com.scms.modules.base.service.ScmsTransportInfoService;
 import com.scms.modules.base.service.ScmsVenderInfoService;
 
 @RestController
@@ -60,6 +62,9 @@ public class BaseRestful {
     
     @Autowired
     private ScmsTextureInfoService scmsTextureInfoService;
+    
+    @Autowired
+    private ScmsTransportInfoService scmsTransportInfoService;
     
     @Autowired
     private ScmsTagInfoService scmsTagInfoService;
@@ -90,6 +95,9 @@ public class BaseRestful {
 
     @RequestMapping(value="/textureInfoIndex", method=RequestMethod.GET)
     public JSONObject textureInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/transportInfoIndex", method=RequestMethod.GET)
+    public JSONObject transportInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/tagInfoIndex", method=RequestMethod.GET)
     public JSONObject tagInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -564,6 +572,95 @@ public class BaseRestful {
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 json = scmsTextureInfoService.del(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getTransportInfoList",method=RequestMethod.GET)
+    public JSONObject getTransportInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsTransportInfo scmsTransportInfo = (ScmsTransportInfo)BeanUtils.mapToBean(params, ScmsTransportInfo.class);              
+                json = scmsTransportInfoService.getList(pageable, scmsTransportInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addTransportInfo",method=RequestMethod.POST)
+    public JSONObject addTransportInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsTransportInfoService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editTransportInfo",method=RequestMethod.POST)
+    public JSONObject editTransportInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsTransportInfoService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 删除信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delTransportInfo",method=RequestMethod.POST)
+    public JSONObject delTransportInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsTransportInfoService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");

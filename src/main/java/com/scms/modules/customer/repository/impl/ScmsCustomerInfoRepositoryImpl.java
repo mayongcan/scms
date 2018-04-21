@@ -5,6 +5,9 @@ package com.scms.modules.customer.repository.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
 import com.gimplatform.core.utils.StringUtils;
@@ -52,6 +55,12 @@ public class ScmsCustomerInfoRepositoryImpl extends BaseRepository implements Sc
 	private SqlParams genListWhere(String sql, ScmsCustomerInfo scmsCustomerInfo, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
+        if (merchantsId != null) {
+            sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(merchantsId);
+        }
 		if (scmsCustomerInfo != null && !StringUtils.isBlank(scmsCustomerInfo.getCustomerName())) {
             sqlParams.querySql.append(getLikeSql("tb.CUSTOMER_NAME", ":customerName"));
 			sqlParams.paramsList.add("customerName");
