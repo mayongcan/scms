@@ -20,8 +20,8 @@ import com.scms.modules.base.repository.custom.ScmsTransportInfoRepositoryCustom
 @Repository
 public interface ScmsTransportInfoRepository extends JpaRepository<ScmsTransportInfo, Long>, JpaSpecificationExecutor<ScmsTransportInfo>, ScmsTransportInfoRepositoryCustom {
 
-    List<ScmsTransportInfo> findByTransportNameAndType(String TransportName, String type);
+    List<ScmsTransportInfo> findByTransportNameAndType(String transportName, String type);
     
-    List<ScmsTransportInfo> findByTransportNameAndTypeAndMerchantsId(String TransportName, String type, Long merchantsId);
+    List<ScmsTransportInfo> findByTransportNameAndTypeAndMerchantsId(String transportName, String type, Long merchantsId);
     
 }

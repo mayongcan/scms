@@ -48,8 +48,11 @@ public class ScmsOrderPay implements Serializable {
 	private Long orderId;
 	
 	// 支付方式
-	@Column(name = "PAY_TYPE", length = 2)
-	private String payType;
+	@Column(name = "PAY_TYPE_ID", precision = 10, scale = 0)
+	private Long payTypeId;
+    
+    @Column(name = "PAY_TYPE_NAME", length = 128)
+    private String payTypeName;
 	
 	// 支付金额
 	@Column(name = "PAY_AMOUNT", precision = 10, scale = 2)

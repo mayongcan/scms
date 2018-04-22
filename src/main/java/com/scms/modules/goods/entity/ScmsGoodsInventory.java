@@ -55,6 +55,9 @@ public class ScmsGoodsInventory implements Serializable {
 	// 商品颜色名称（冗余）
 	@Column(name = "COLOR_NAME", length = 32)
 	private String colorName;
+
+    @Column(name = "INVENTORY_SIZE_ID", precision = 10, scale = 0)
+    private Long inventorySizeId;
 	
 	// 库存商品尺码
 	@Column(name = "INVENTORY_SIZE", length = 32)

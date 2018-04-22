@@ -25,6 +25,7 @@ import com.scms.modules.base.entity.ScmsColorInfo;
 import com.scms.modules.base.entity.ScmsDailyExpenses;
 import com.scms.modules.base.entity.ScmsFeedbackInfo;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
+import com.scms.modules.base.entity.ScmsPayInfo;
 import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.entity.ScmsSizeInfo;
 import com.scms.modules.base.entity.ScmsTagInfo;
@@ -35,6 +36,7 @@ import com.scms.modules.base.service.ScmsColorInfoService;
 import com.scms.modules.base.service.ScmsDailyExpensesService;
 import com.scms.modules.base.service.ScmsFeedbackInfoService;
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
+import com.scms.modules.base.service.ScmsPayInfoService;
 import com.scms.modules.base.service.ScmsShopInfoService;
 import com.scms.modules.base.service.ScmsSizeInfoService;
 import com.scms.modules.base.service.ScmsTagInfoService;
@@ -65,6 +67,9 @@ public class BaseRestful {
     
     @Autowired
     private ScmsTransportInfoService scmsTransportInfoService;
+    
+    @Autowired
+    private ScmsPayInfoService scmsPayInfoService;
     
     @Autowired
     private ScmsTagInfoService scmsTagInfoService;
@@ -98,6 +103,9 @@ public class BaseRestful {
 
     @RequestMapping(value="/transportInfoIndex", method=RequestMethod.GET)
     public JSONObject transportInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/payInfoIndex", method=RequestMethod.GET)
+    public JSONObject payInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/tagInfoIndex", method=RequestMethod.GET)
     public JSONObject tagInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -661,6 +669,95 @@ public class BaseRestful {
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 json = scmsTransportInfoService.del(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getPayInfoList",method=RequestMethod.GET)
+    public JSONObject getPayInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsPayInfo scmsPayInfo = (ScmsPayInfo)BeanUtils.mapToBean(params, ScmsPayInfo.class);              
+                json = scmsPayInfoService.getList(pageable, scmsPayInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addPayInfo",method=RequestMethod.POST)
+    public JSONObject addPayInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPayInfoService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editPayInfo",method=RequestMethod.POST)
+    public JSONObject editPayInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPayInfoService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 删除信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delPayInfo",method=RequestMethod.POST)
+    public JSONObject delPayInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPayInfoService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");

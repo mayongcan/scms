@@ -16,8 +16,8 @@ import com.scms.modules.goods.repository.custom.ScmsGoodsInventoryRepositoryCust
 public class ScmsGoodsInventoryRepositoryImpl extends BaseRepository implements ScmsGoodsInventoryRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.SHOP_ID as \"shopId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.COLOR_ID as \"colorId\", "
-	        + "tb.COLOR_NAME as \"colorName\", tb.INVENTORY_SIZE as \"inventorySize\", tb.TEXTURE_ID as \"textureId\", tb.TEXTURE_NAME as \"textureName\", tb.INVENTORY_NUM as \"inventoryNum\", "
-	        + "tb.INVENTORY_PHOTO as \"inventoryPhoto\", ssi.SHOP_NAME as \"shopName\" "
+	        + "tb.COLOR_NAME as \"colorName\", tb.INVENTORY_SIZE_ID as \"inventorySizeId\", tb.INVENTORY_SIZE as \"inventorySize\", tb.TEXTURE_ID as \"textureId\", tb.TEXTURE_NAME as \"textureName\", "
+	        + "tb.INVENTORY_NUM as \"inventoryNum\", tb.INVENTORY_PHOTO as \"inventoryPhoto\", ssi.SHOP_NAME as \"shopName\" "
 			+ "FROM scms_goods_inventory tb left join scms_shop_info ssi on ssi.ID = tb.SHOP_ID "
 			+ "WHERE 1 = 1 ";
 
