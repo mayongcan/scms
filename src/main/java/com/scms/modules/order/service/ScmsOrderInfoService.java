@@ -32,7 +32,7 @@ public interface ScmsOrderInfoService {
 	 * @param userInfo
 	 * @return
 	 */
-	public JSONObject add(Map<String, Object> params, UserInfo userInfo);
+	public JSONObject addLsdOrder(Map<String, Object> params, UserInfo userInfo);
 	
 	/**
 	 * 编辑

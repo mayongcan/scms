@@ -94,6 +94,9 @@ public class ScmsOrderGoods implements Serializable {
 	// 订单实际单价
 	@Column(name = "GOODS_ORDER_PRICE", precision = 10, scale = 2)
 	private Double goodsOrderPrice;
+
+    @Column(name = "GOODS_DISCOUNT", precision = 10, scale = 0)
+    private Long goodsDiscount;
 	
 	// 单个商品利润
 	@Column(name = "GOODS_ORDER_PROFIT", precision = 10, scale = 2)

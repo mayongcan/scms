@@ -82,6 +82,18 @@ public class ScmsOrderInfo implements Serializable {
 	// 订单总金额
 	@Column(name = "TOTAL_AMOUNT", precision = 10, scale = 2)
 	private Double totalAmount;
+
+    @Column(name = "TOTAL_UN_PAY", precision = 10, scale = 2)
+    private Double totalUnPay;
+
+    @Column(name = "TOTAL_PROFIT", precision = 10, scale = 2)
+    private Double totalProfit;
+
+    @Column(name = "TOTAL_NUM", precision = 10, scale = 0)
+    private Long totalNum;
+
+    @Column(name = "PACKING_NUM", precision = 10, scale = 0)
+    private Long packingNum;
 	
 	// 客户类型
 	@Column(name = "CUSTOMER_TYPE_ID", precision = 10, scale = 0)

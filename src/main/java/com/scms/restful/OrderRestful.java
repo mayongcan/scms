@@ -81,19 +81,19 @@ public class OrderRestful {
     
     
     /**
-     * 新增信息
+     * 新增信息（零售单、批发单、预订单）
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/addOrderInfo",method=RequestMethod.POST)
-    public JSONObject addOrderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/addLsdOrder",method=RequestMethod.POST)
+    public JSONObject addLsdOrder(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderInfoService.add(params, userInfo);
+                json = scmsOrderInfoService.addLsdOrder(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");

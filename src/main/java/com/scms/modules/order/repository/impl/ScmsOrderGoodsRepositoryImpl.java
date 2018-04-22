@@ -17,7 +17,7 @@ public class ScmsOrderGoodsRepositoryImpl extends BaseRepository implements Scms
 	        + "tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_PHOTO as \"goodsPhoto\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
 	        + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
 	        + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
-	        + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
+	        + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
 			+ "FROM scms_order_goods tb "
 			+ "WHERE 1 = 1 ";
 

@@ -71,6 +71,17 @@ public class ScmsCustomerInfoRepositoryImpl extends BaseRepository implements Sc
 			sqlParams.paramsList.add("customerPhone");
 			sqlParams.valueList.add(scmsCustomerInfo.getCustomerPhone());
 		}
+		String customerType = MapUtils.getString(params, "customerType");
+		if(!StringUtils.isBlank(customerType)) {
+	        String customerTypeIsNotIn = MapUtils.getString(params, "customerTypeIsNotIn");
+	        if(!StringUtils.isBlank(customerTypeIsNotIn) && "notIn".equals(customerTypeIsNotIn)) {
+	            sqlParams.querySql.append(" AND tb.TYPE_ID != :customerType ");
+	        }else {
+                sqlParams.querySql.append(" AND tb.TYPE_ID != :customerType ");
+	        }
+            sqlParams.paramsList.add("customerType");
+            sqlParams.valueList.add(customerType);
+		}
         return sqlParams;
 	}
 }
