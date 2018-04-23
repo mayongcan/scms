@@ -25,6 +25,7 @@ import com.gimplatform.core.utils.StringUtils;
 import com.scms.modules.order.service.ScmsOrderInfoService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
+import com.scms.modules.customer.entity.ScmsCustomerInfo;
 import com.scms.modules.customer.repository.ScmsCustomerInfoRepository;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
 import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
@@ -83,34 +84,13 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         String orderGoodsList = MapUtils.getString(params, "orderGoodsList");
         JSONArray jsonArray = JSONObject.parseArray(orderGoodsList);
         if(jsonArray != null && jsonArray.size() > 0) {
-            ScmsOrderGoods obj = null;
-            List<ScmsGoodsInventory> tmpList = null;
             for(int i = 0; i < jsonArray.size(); i++) {
-                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderGoods.class);
+                ScmsOrderGoods obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderGoods.class);
                 if(obj != null) {
                     obj.setOrderId(scmsOrderInfo.getId());
                     scmsOrderGoodsRepository.save(obj);
                     //更新库存
-                    tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(scmsOrderInfo.getShopId(), 
-                            obj.getGoodsId(), obj.getGoodsColorId(), obj.getGoodsSizeId(), obj.getGoodsTextureId());
-                    if(tmpList != null && tmpList.size() > 0) {
-                        scmsGoodsInventoryRepository.updateGoodsInventoryNum(tmpList.get(0).getInventoryNum() - obj.getGoodsOrderNum(), 
-                                scmsOrderInfo.getShopId(), obj.getGoodsId(), obj.getGoodsColorId(), obj.getGoodsSizeId(), obj.getGoodsTextureId());
-                    }else {
-                        //如果库存不存在，则新增库存信息
-                        ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
-                        scmsGoodsInventory.setShopId(scmsOrderInfo.getShopId());
-                        scmsGoodsInventory.setGoodsId(obj.getGoodsId());
-                        scmsGoodsInventory.setGoodsBarcode(obj.getGoodsBarcode());
-                        scmsGoodsInventory.setColorId(obj.getGoodsColorId());
-                        scmsGoodsInventory.setColorName(obj.getGoodsColorName());
-                        scmsGoodsInventory.setTextureId(obj.getGoodsTextureId());
-                        scmsGoodsInventory.setTextureName(obj.getGoodsTextureName());
-                        scmsGoodsInventory.setInventorySizeId(obj.getGoodsSizeId());
-                        scmsGoodsInventory.setInventorySize(obj.getGoodsSizeName());
-                        scmsGoodsInventory.setInventoryNum(-obj.getGoodsOrderNum());
-                        scmsGoodsInventoryRepository.save(scmsGoodsInventory);
-                    }
+                    updateGoodsInventory(scmsOrderInfo.getShopId(), obj, "del");
                 }
             }
         }
@@ -133,7 +113,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         }
         
         //判断是否需要更新客户余额
-        Long customerBalance = MapUtils.getLong(params, "customerBalance", null);
+        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
         if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
             scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
         }
@@ -167,5 +147,77 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 		}
 		return RestfulRetUtils.getRetSuccess();
 	}
+
+    @Override
+    public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status) {
+        String[] ids = idsList.split(",");
+        //判断是否需要移除
+        List<Long> idList = new ArrayList<Long>();
+        for (int i = 0; i < ids.length; i++) {
+            idList.add(StringUtils.toLong(ids[i]));
+        }
+        //批量更新（设置IsValid 为N）
+        if(idList.size() > 0){
+            scmsOrderInfoRepository.updateOrderStatus(status, idList);
+        }
+        //如果变更的订单状态为取消，则需要做相应的数据库变更
+        if("3".equals(status)) {
+            ScmsOrderInfo scmsOrderInfo = null;
+            ScmsCustomerInfo scmsCustomerInfo = null;
+            for(Long id : idList) {
+                scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
+                if(scmsOrderInfo != null) {
+                    //判断订单类型
+                    if("lsd".equals(scmsOrderInfo.getOrderType()) || "pfd".equals(scmsOrderInfo.getOrderType()) || "ysd".equals(scmsOrderInfo.getOrderType())) {
+                        //如果是取消零售单、批发单、预售单，则需要将库存补回去，同时判断客户类型，将已付的金额退回到客户账号
+                        List<ScmsOrderGoods> orderGoodsList = scmsOrderGoodsRepository.findByOrderId(scmsOrderInfo.getId());
+                        for(ScmsOrderGoods orderGoods : orderGoodsList) {
+                            updateGoodsInventory(scmsOrderInfo.getShopId(), orderGoods, "add");
+                        }
+                        //更新客户余额, 客户余额 = 原有余额 + 订单总金额 - 订单未支付金额
+                        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
+                            scmsCustomerInfo = scmsCustomerInfoRepository.findOne(scmsOrderInfo.getCustomerId());
+                            if(scmsCustomerInfo != null)  
+                                scmsCustomerInfoRepository.updateCustomerBalance(scmsCustomerInfo.getCustomerBalance() + scmsOrderInfo.getTotalAmount() - scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                        }
+                    }
+                }
+            }
+        }
+        return RestfulRetUtils.getRetSuccess();
+    }
+    
+    /**
+     * 更新商品库存
+     * @param shopId
+     * @param obj
+     * @param updateType 更新类型:add增加 del减去
+     */
+    private void updateGoodsInventory(Long shopId, ScmsOrderGoods obj, String updateType) {
+        //更新库存
+        List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, 
+                obj.getGoodsId(), obj.getGoodsColorId(), obj.getGoodsSizeId(), obj.getGoodsTextureId());
+        if(tmpList != null && tmpList.size() > 0) {
+            if("del".equals(updateType))
+                scmsGoodsInventoryRepository.updateGoodsInventoryNum(tmpList.get(0).getInventoryNum() - obj.getGoodsOrderNum(), shopId, obj.getGoodsId(), obj.getGoodsColorId(), obj.getGoodsSizeId(), obj.getGoodsTextureId());
+            else if("add".equals(updateType))
+                scmsGoodsInventoryRepository.updateGoodsInventoryNum(tmpList.get(0).getInventoryNum() + obj.getGoodsOrderNum(), shopId, obj.getGoodsId(), obj.getGoodsColorId(), obj.getGoodsSizeId(), obj.getGoodsTextureId());
+        }else {
+            //如果库存不存在，则新增库存信息
+            ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+            scmsGoodsInventory.setShopId(shopId);
+            scmsGoodsInventory.setGoodsId(obj.getGoodsId());
+            scmsGoodsInventory.setGoodsBarcode(obj.getGoodsBarcode());
+            scmsGoodsInventory.setColorId(obj.getGoodsColorId());
+            scmsGoodsInventory.setColorName(obj.getGoodsColorName());
+            scmsGoodsInventory.setTextureId(obj.getGoodsTextureId());
+            scmsGoodsInventory.setTextureName(obj.getGoodsTextureName());
+            scmsGoodsInventory.setInventorySizeId(obj.getGoodsSizeId());
+            scmsGoodsInventory.setInventorySize(obj.getGoodsSizeName());
+            if("del".equals(updateType)) scmsGoodsInventory.setInventoryNum(-obj.getGoodsOrderNum());
+            else if("add".equals(updateType)) scmsGoodsInventory.setInventoryNum(obj.getGoodsOrderNum());
+            scmsGoodsInventoryRepository.save(scmsGoodsInventory);
+        }
+    }
 
 }

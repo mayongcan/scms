@@ -3,6 +3,8 @@
  */
 package com.scms.modules.order.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -19,6 +21,6 @@ import com.scms.modules.order.repository.custom.ScmsOrderGoodsRepositoryCustom;
 @Repository
 public interface ScmsOrderGoodsRepository extends JpaRepository<ScmsOrderGoods, Long>, JpaSpecificationExecutor<ScmsOrderGoods>, ScmsOrderGoodsRepositoryCustom {
 	
-	
+	List<ScmsOrderGoods> findByOrderId(Long orderId);
 	
 }

@@ -52,8 +52,32 @@ public class OrderRestful {
     @Autowired
     private ScmsOrderModifyLogService scmsOrderModifyLogService;
 
-    @RequestMapping(value="/orderInfoIndex", method=RequestMethod.GET)
-    public JSONObject orderInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/orderLsdListIndex", method=RequestMethod.GET)
+    public JSONObject orderLsdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderPfdListIndex", method=RequestMethod.GET)
+    public JSONObject orderPfdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderThdListIndex", method=RequestMethod.GET)
+    public JSONObject orderThdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderJhdListIndex", method=RequestMethod.GET)
+    public JSONObject orderJhdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderDhdListIndex", method=RequestMethod.GET)
+    public JSONObject orderDhdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderFcdListIndex", method=RequestMethod.GET)
+    public JSONObject orderFcdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderYsdListIndex", method=RequestMethod.GET)
+    public JSONObject orderYsdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderPddListIndex", method=RequestMethod.GET)
+    public JSONObject orderPddListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/orderSydListIndex", method=RequestMethod.GET)
+    public JSONObject orderSydListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
     
 
     /**
@@ -119,6 +143,72 @@ public class OrderRestful {
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 锁定订单信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/lockOrderInfo",method=RequestMethod.POST)
+    public JSONObject lockOrderInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.updateOrderStatus(idsList, userInfo, "2");
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 取消订单信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/cancelOrderInfo",method=RequestMethod.POST)
+    public JSONObject cancelOrderInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.updateOrderStatus(idsList, userInfo, "3");
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 完成订单信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/finishOrderInfo",method=RequestMethod.POST)
+    public JSONObject finishOrderInfo(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.updateOrderStatus(idsList, userInfo, "4");
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;

@@ -74,6 +74,9 @@ public class ScmsOrderInfo implements Serializable {
 	// 订单发货状态
 	@Column(name = "ORDER_SEND_STATUS", length = 2)
 	private String orderSendStatus;
+
+    @Column(name = "ORDER_RECEIVE_STATUS", length = 2)
+    private String orderReceiveStatus;
 	
 	// 订单号
 	@Column(name = "ORDER_NUM", length = 64)

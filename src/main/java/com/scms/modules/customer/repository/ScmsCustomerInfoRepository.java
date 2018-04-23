@@ -47,6 +47,6 @@ public interface ScmsCustomerInfoRepository extends JpaRepository<ScmsCustomerIn
     @Query(value = "UPDATE scms_customer_info "
             + "SET CUSTOMER_BALANCE = :customerBalance "
             + "WHERE ID = :id", nativeQuery = true)
-    public void updateCustomerBalance(@Param("customerBalance")Long customerBalance, @Param("id")Long id);
+    public void updateCustomerBalance(@Param("customerBalance")Double customerBalance, @Param("id")Long id);
 	
 }

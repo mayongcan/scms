@@ -50,5 +50,14 @@ public interface ScmsOrderInfoService {
 	 */
 	public JSONObject del(String idsList, UserInfo userInfo);
 	
+	/**
+	 * 更新订单状态
+	 * @param idsList
+	 * @param userInfo
+	 * @param status
+	 * @return
+	 */
+    public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status);
+	
 
 }

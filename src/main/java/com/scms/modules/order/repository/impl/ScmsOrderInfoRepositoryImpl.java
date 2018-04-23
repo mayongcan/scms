@@ -15,7 +15,7 @@ import com.scms.modules.order.repository.custom.ScmsOrderInfoRepositoryCustom;
 public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsOrderInfoRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.MERCHANTS_NAME as \"merchantsName\", tb.SHOP_ID as \"shopId\", tb.SHOP_NAME as \"shopName\", "
-	        + "tb.ORDER_TYPE as \"orderType\", tb.ORDER_STATUS as \"orderStatus\", tb.ORDER_PAY_STATUS as \"orderPayStatus\", tb.ORDER_SEND_STATUS as \"orderSendStatus\", tb.ORDER_NUM as \"orderNum\", "
+	        + "tb.ORDER_TYPE as \"orderType\", tb.ORDER_STATUS as \"orderStatus\", tb.ORDER_PAY_STATUS as \"orderPayStatus\", tb.ORDER_SEND_STATUS as \"orderSendStatus\", tb.ORDER_RECEIVE_STATUS as \"orderReceiveStatus\", tb.ORDER_NUM as \"orderNum\", "
 	        + "tb.TOTAL_AMOUNT as \"totalAmount\", tb.TOTAL_UN_PAY as \"totalUnPay\", tb.TOTAL_PROFIT as \"totalProfit\", tb.TOTAL_NUM as \"totalNum\", tb.PACKING_NUM as \"packingNum\", tb.CUSTOMER_TYPE_ID as \"customerTypeId\",tb.CUSTOMER_TYPE_NAME as \"customerTypeName\", "
 	        + "tb.CUSTOMER_LEVEL_ID as \"customerLevelId\",tb.CUSTOMER_LEVEL_NAME as \"customerLevelName\", tb.CUSTOMER_ID as \"customerId\", tb.CUSTOMER_NAME as \"customerName\", tb.TRANSPORT_ID as \"transportId\", "
 	        + "tb.TRANSPORT_NAME as \"transportName\", tb.SELLER_BY as \"sellerBy\", tb.SELLER_BY_NAME as \"sellerByName\", tb.PERFORMANCE_BY as \"performanceBy\", tb.PERFORMANCE_BY_NAME as \"performanceByName\", "

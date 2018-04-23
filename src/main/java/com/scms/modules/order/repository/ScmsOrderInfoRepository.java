@@ -37,4 +37,12 @@ public interface ScmsOrderInfoRepository extends JpaRepository<ScmsOrderInfo, Lo
 			+ "WHERE ID IN (:idList)", nativeQuery = true)
 	public void delEntity(@Param("isValid")String isValid, @Param("idList")List<Long> idList);
 	
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_order_info "
+            + "SET ORDER_STATUS = :orderStatus "
+            + "WHERE ID IN (:idList)", nativeQuery = true)
+    public void updateOrderStatus(@Param("orderStatus")String orderStatus, @Param("idList")List<Long> idList);
+	
 }
