@@ -24,7 +24,8 @@ import com.scms.modules.base.repository.custom.ScmsShopInfoRepositoryCustom;
 @Repository
 public interface ScmsShopInfoRepository extends JpaRepository<ScmsShopInfo, Long>, JpaSpecificationExecutor<ScmsShopInfo>, ScmsShopInfoRepositoryCustom {
 	
-	
+	List<ScmsShopInfo> findByMerchantsIdAndIsValid(Long merchantsId, String isValid);
+    
 	/**
 	 * 删除信息（将信息的IS_VALID设置为N）
 	 * @param isValid

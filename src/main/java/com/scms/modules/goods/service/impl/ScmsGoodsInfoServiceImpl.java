@@ -23,6 +23,8 @@ import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.goods.service.ScmsGoodsInfoService;
 import com.scms.modules.goods.service.ScmsGoodsModifyLogService;
+import com.scms.modules.base.entity.ScmsShopInfo;
+import com.scms.modules.base.repository.ScmsShopInfoRepository;
 import com.scms.modules.goods.entity.ScmsGoodsExtraDiscount;
 import com.scms.modules.goods.entity.ScmsGoodsExtraPrice;
 import com.scms.modules.goods.entity.ScmsGoodsInfo;
@@ -50,6 +52,9 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
     
     @Autowired
     private ScmsGoodsModifyLogService scmsGoodsModifyLogService;
+    
+    @Autowired
+    private ScmsShopInfoRepository scmsShopInfoRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params) {
@@ -61,6 +66,11 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 	@Override
 	public JSONObject add(Map<String, Object> params, UserInfo userInfo) {
 	    ScmsGoodsInfo scmsGoodsInfo = (ScmsGoodsInfo) BeanUtils.mapToBean(params, ScmsGoodsInfo.class);
+	    //判断商品货号是否已存在
+	    List<ScmsGoodsInfo> list = scmsGoodsInfoRepository.findByMerchantsIdAndGoodsSerialNum(scmsGoodsInfo.getMerchantsId(), scmsGoodsInfo.getGoodsSerialNum());
+	    if(list != null && list.size() > 0) {
+            return RestfulRetUtils.getErrorMsg("51006","商品货号已存在，请重新输入！");
+	    }
 	    scmsGoodsInfo.setUseStatus("1");//设置为启用状态
 		scmsGoodsInfo.setIsValid(Constants.IS_VALID_VALID);
 		scmsGoodsInfo.setCreateBy(userInfo.getUserId());
@@ -156,6 +166,47 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                 }
             }
         }
+        //需要判断有没有修改库存商品的规格
+        String inventoryIsChange = MapUtils.getString(params, "inventoryIsChange");
+        if(!StringUtils.isBlank(inventoryIsChange)) {
+            //将新增的规格库存补零
+            String colorIdList[] = scmsGoodsInfoInDb.getColorIdList().split(",");
+            String colorNameList[] = scmsGoodsInfoInDb.getColorNameList().split(",");
+            String textureIdList[] = scmsGoodsInfoInDb.getTextureIdList().split(",");
+            String textureNameList[] = scmsGoodsInfoInDb.getTextureNameList().split(",");
+            String sizeIdList[] = scmsGoodsInfoInDb.getSizeIdList().split(",");
+            String sizeNameList[] = scmsGoodsInfoInDb.getSizeNameList().split(",");
+            List<ScmsShopInfo> shopList = scmsShopInfoRepository.findByMerchantsIdAndIsValid(scmsGoodsInfoInDb.getMerchantsId(), "Y");
+            for(ScmsShopInfo shop : shopList) {
+                for(int colorIndex = 0; colorIndex < colorIdList.length; colorIndex++) {
+                    for(int textureIndex = 0; textureIndex < textureIdList.length; textureIndex++) {
+                        for(int sizeIndex = 0; sizeIndex < sizeIdList.length; sizeIndex++) {
+                            Long colorId = StringUtils.toLong(colorIdList[colorIndex], null);
+                            Long textureId = StringUtils.toLong(textureIdList[textureIndex], null);
+                            Long sizeId = StringUtils.toLong(sizeIdList[sizeIndex], null);
+                            if(colorId == null || textureId == null || sizeId == null) continue;
+                            //判断库存是否有记录，有则不用插入
+                            List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId, textureId);
+                            if(tmpList == null || tmpList.size() == 0) {
+                                ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+                                scmsGoodsInventory.setShopId(shop.getId());
+                                scmsGoodsInventory.setGoodsId(scmsGoodsInfoInDb.getId());
+                                scmsGoodsInventory.setGoodsBarcode("");
+                                scmsGoodsInventory.setColorId(colorId);
+                                scmsGoodsInventory.setColorName(colorNameList[colorIndex]);
+                                scmsGoodsInventory.setTextureId(textureId);
+                                scmsGoodsInventory.setTextureName(textureNameList[textureIndex]);
+                                scmsGoodsInventory.setInventorySizeId(sizeId);
+                                scmsGoodsInventory.setInventorySize(sizeNameList[sizeIndex]);
+                                scmsGoodsInventory.setInventoryNum(0L);
+                                scmsGoodsInventoryRepository.save(scmsGoodsInventory);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         //保存修改记录scmsGoodsModifyLogRepository
         ScmsGoodsModifyLog modifyLog = new ScmsGoodsModifyLog();
         modifyLog.setGoodsId(scmsGoodsInfoInDb.getId());

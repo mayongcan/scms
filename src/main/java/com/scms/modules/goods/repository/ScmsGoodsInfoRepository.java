@@ -24,6 +24,7 @@ import com.scms.modules.goods.repository.custom.ScmsGoodsInfoRepositoryCustom;
 @Repository
 public interface ScmsGoodsInfoRepository extends JpaRepository<ScmsGoodsInfo, Long>, JpaSpecificationExecutor<ScmsGoodsInfo>, ScmsGoodsInfoRepositoryCustom {
 	
+    List<ScmsGoodsInfo> findByMerchantsIdAndGoodsSerialNum(Long merchantsId, String goodsSerialNum);
 	
 	/**
 	 * 删除信息（将信息的IS_VALID设置为N）
