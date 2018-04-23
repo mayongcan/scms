@@ -25,6 +25,7 @@ import com.gimplatform.core.utils.StringUtils;
 import com.scms.modules.order.service.ScmsOrderInfoService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
+import com.scms.modules.customer.repository.ScmsCustomerInfoRepository;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
 import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
 import com.scms.modules.order.entity.ScmsOrderGoods;
@@ -51,6 +52,9 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
     
     @Autowired
     private ScmsGoodsInventoryRepository scmsGoodsInventoryRepository;
+    
+    @Autowired
+    private ScmsCustomerInfoRepository scmsCustomerInfoRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params) {
@@ -126,6 +130,12 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
                     scmsOrderPayRepository.save(obj);
                 }
             }
+        }
+        
+        //判断是否需要更新客户余额
+        Long customerBalance = MapUtils.getLong(params, "customerBalance", null);
+        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
+            scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
         }
 		return RestfulRetUtils.getRetSuccess();
 	}

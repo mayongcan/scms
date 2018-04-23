@@ -36,5 +36,17 @@ public interface ScmsCustomerInfoRepository extends JpaRepository<ScmsCustomerIn
 			+ "SET IS_VALID = :isValid "
 			+ "WHERE ID IN (:idList)", nativeQuery = true)
 	public void delEntity(@Param("isValid")String isValid, @Param("idList")List<Long> idList);
+
+	/**
+	 * 更新客户余额
+	 * @param customerBalance
+	 * @param id
+	 */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_customer_info "
+            + "SET CUSTOMER_BALANCE = :customerBalance "
+            + "WHERE ID = :id", nativeQuery = true)
+    public void updateCustomerBalance(@Param("customerBalance")Long customerBalance, @Param("id")Long id);
 	
 }
