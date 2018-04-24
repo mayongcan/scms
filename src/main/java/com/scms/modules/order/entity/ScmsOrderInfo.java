@@ -94,9 +94,6 @@ public class ScmsOrderInfo implements Serializable {
 
     @Column(name = "TOTAL_NUM", precision = 10, scale = 0)
     private Long totalNum;
-
-    @Column(name = "PACKING_NUM", precision = 10, scale = 0)
-    private Long packingNum;
 	
 	// 客户类型
 	@Column(name = "CUSTOMER_TYPE_ID", precision = 10, scale = 0)

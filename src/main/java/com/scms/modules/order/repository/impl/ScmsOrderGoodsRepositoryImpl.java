@@ -5,6 +5,9 @@ package com.scms.modules.order.repository.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
 
@@ -14,10 +17,7 @@ import com.scms.modules.order.repository.custom.ScmsOrderGoodsRepositoryCustom;
 public class ScmsOrderGoodsRepositoryImpl extends BaseRepository implements ScmsOrderGoodsRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_NAME as \"goodsName\", "
-	        + "tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_PHOTO as \"goodsPhoto\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
-	        + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
-	        + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
-	        + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
+	        + "tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.GOODS_PHOTO as \"goodsPhoto\", tb.SALE_PRICE as \"salePrice\", tb.PURCHASE_PRICE as \"purchasePrice\",tb.PACKING_NUM as \"packingNum\" "
 			+ "FROM scms_order_goods tb "
 			+ "WHERE 1 = 1 ";
 
@@ -48,6 +48,12 @@ public class ScmsOrderGoodsRepositoryImpl extends BaseRepository implements Scms
 	private SqlParams genListWhere(String sql, ScmsOrderGoods scmsOrderGoods, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        Long orderId = MapUtils.getLong(params, "orderId", null);
+        if(orderId != null) {
+            sqlParams.querySql.append(" AND tb.ORDER_ID = :orderId ");
+            sqlParams.paramsList.add("orderId");
+            sqlParams.valueList.add(orderId);
+        }
         return sqlParams;
 	}
 }

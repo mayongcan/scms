@@ -52,58 +52,19 @@ public class ScmsOrderGoods implements Serializable {
 	@Column(name = "GOODS_SERIAL_NUM", length = 64)
 	private String goodsSerialNum;
 	
-	// 商品条码（冗余）
-	@Column(name = "GOODS_BARCODE", length = 64)
-	private String goodsBarcode;
-	
 	// 商品图片
 	@Column(name = "GOODS_PHOTO", length = 1024)
 	private String goodsPhoto;
 	
-	// 商品颜色ID（冗余）
-	@Column(name = "GOODS_COLOR_ID", precision = 10, scale = 0)
-	private Long goodsColorId;
-	
-	// 商品颜色名称（冗余）
-	@Column(name = "GOODS_COLOR_NAME", length = 32)
-	private String goodsColorName;
-
-    @Column(name = "GOODS_SIZE_ID", precision = 10, scale = 0)
-    private Long goodsSizeId;
-    
-	// 商品商品尺码（冗余）
-	@Column(name = "GOODS_SIZE_NAME", length = 32)
-	private String goodsSizeName;
-	
-	// 商品材质ID（冗余）
-	@Column(name = "GOODS_TEXTURE_ID", precision = 10, scale = 0)
-	private Long goodsTextureId;
-	
-	// 商品材质名称（冗余）
-	@Column(name = "GOODS_TEXTURE_NAME", length = 128)
-	private String goodsTextureName;
-	
 	// 商品销售价单价（冗余）
-	@Column(name = "GOODS_SALE_PRICE", precision = 10, scale = 2)
-	private Double goodsSalePrice;
+	@Column(name = "SALE_PRICE", precision = 10, scale = 2)
+	private Double salePrice;
 	
 	// 商品进货单价（冗余）
-	@Column(name = "GOODS_PURCHASE_PRICE", precision = 10, scale = 2)
-	private Double goodsPurchasePrice;
-	
-	// 订单实际单价
-	@Column(name = "GOODS_ORDER_PRICE", precision = 10, scale = 2)
-	private Double goodsOrderPrice;
+	@Column(name = "PURCHASE_PRICE", precision = 10, scale = 2)
+	private Double purchasePrice;
 
-    @Column(name = "GOODS_DISCOUNT", precision = 10, scale = 0)
-    private Long goodsDiscount;
-	
-	// 单个商品利润
-	@Column(name = "GOODS_ORDER_PROFIT", precision = 10, scale = 2)
-	private Double goodsOrderProfit;
-	
-	// 商品数量(下单数量)
-	@Column(name = "GOODS_ORDER_NUM", precision = 10, scale = 0)
-	private Long goodsOrderNum;
+    @Column(name = "PACKING_NUM", precision = 10, scale = 0)
+    private Long packingNum;
 	
 }
