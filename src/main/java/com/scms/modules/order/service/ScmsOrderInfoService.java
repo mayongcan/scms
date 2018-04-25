@@ -58,6 +58,7 @@ public interface ScmsOrderInfoService {
 	 * @return
 	 */
     public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status);
-	
+
+    public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo);
 
 }

@@ -3,10 +3,13 @@
  */
 package com.scms.modules.order.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
@@ -18,6 +21,7 @@ import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.order.service.ScmsOrderSendLogService;
 import com.scms.modules.order.entity.ScmsOrderSendLog;
+import com.scms.modules.order.repository.ScmsOrderInfoRepository;
 import com.scms.modules.order.repository.ScmsOrderSendLogRepository;
 
 @Service
@@ -25,6 +29,9 @@ public class ScmsOrderSendLogServiceImpl implements ScmsOrderSendLogService {
 	
     @Autowired
     private ScmsOrderSendLogRepository scmsOrderSendLogRepository;
+    
+    @Autowired
+    private ScmsOrderInfoRepository scmsOrderInfoRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsOrderSendLog scmsOrderSendLog, Map<String, Object> params) {
@@ -34,30 +41,18 @@ public class ScmsOrderSendLogServiceImpl implements ScmsOrderSendLogService {
 	}
 
 	@Override
-	public JSONObject add(Map<String, Object> params, UserInfo userInfo) {
+	public JSONObject addOrderSendLog(Map<String, Object> params, UserInfo userInfo) {
 	    ScmsOrderSendLog scmsOrderSendLog = (ScmsOrderSendLog) BeanUtils.mapToBean(params, ScmsOrderSendLog.class);
+	    scmsOrderSendLog.setSendBy(userInfo.getUserId());
+	    scmsOrderSendLog.setSendByName(userInfo.getUserName());
+	    scmsOrderSendLog.setSendDate(new Date());
 		scmsOrderSendLogRepository.save(scmsOrderSendLog);
-		return RestfulRetUtils.getRetSuccess();
-	}
-
-	@Override
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo) {
-        ScmsOrderSendLog scmsOrderSendLog = (ScmsOrderSendLog) BeanUtils.mapToBean(params, ScmsOrderSendLog.class);
-		ScmsOrderSendLog scmsOrderSendLogInDb = scmsOrderSendLogRepository.findOne(scmsOrderSendLog.getId());
-		if(scmsOrderSendLogInDb == null){
-			return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
-		}
-		//合并两个javabean
-		BeanUtils.mergeBean(scmsOrderSendLog, scmsOrderSendLogInDb);
-		scmsOrderSendLogRepository.save(scmsOrderSendLogInDb);
-		return RestfulRetUtils.getRetSuccess();
-	}
-
-	@Override
-	public JSONObject del(String idsList, UserInfo userInfo) {
-		String[] ids = idsList.split(",");
-		for (int i = 0; i < ids.length; i++) {
-			scmsOrderSendLogRepository.delete(StringUtils.toLong(ids[i]));
+		//更新状态
+		String orderSendStatus = MapUtils.getString(params, "orderSendStatus");
+		if(!StringUtils.isBlank(orderSendStatus)) {
+		    List<Long> idList = new ArrayList<Long>();
+		    idList.add(scmsOrderSendLog.getOrderId());
+		    scmsOrderInfoRepository.updateOrderSendStatus(orderSendStatus, idList);
 		}
 		return RestfulRetUtils.getRetSuccess();
 	}

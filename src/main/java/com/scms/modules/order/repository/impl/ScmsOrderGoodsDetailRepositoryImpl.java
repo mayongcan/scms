@@ -16,15 +16,15 @@ import com.scms.modules.order.repository.custom.ScmsOrderGoodsDetailRepositoryCu
 
 public class ScmsOrderGoodsDetailRepositoryImpl extends BaseRepository implements ScmsOrderGoodsDetailRepositoryCustom{
 
-	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
+	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
 	        + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
 	        + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
 	        + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
-			+ "FROM scms_order_goods tb "
+			+ "FROM scms_order_goods_detail tb "
 			+ "WHERE 1 = 1 ";
 
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
-			+ "FROM scms_order_goods tb "
+			+ "FROM scms_order_goods_detail tb "
 			+ "WHERE 1 = 1 ";
 	
 	public List<Map<String, Object>> getList(ScmsOrderGoodsDetail scmsOrderGoodsDetail, Map<String, Object> params, int pageIndex, int pageSize) {

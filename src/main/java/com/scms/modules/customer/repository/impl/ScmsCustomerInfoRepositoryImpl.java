@@ -55,6 +55,12 @@ public class ScmsCustomerInfoRepositoryImpl extends BaseRepository implements Sc
 	private SqlParams genListWhere(String sql, ScmsCustomerInfo scmsCustomerInfo, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        Long id = MapUtils.getLong(params, "id", null);
+        if (id != null) {
+            sqlParams.querySql.append(" AND tb.ID = :id ");
+            sqlParams.paramsList.add("id");
+            sqlParams.valueList.add(id);
+        }
         Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
         if (merchantsId != null) {
             sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");

@@ -21,14 +21,18 @@ import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
 import com.scms.modules.order.entity.ScmsOrderGoods;
+import com.scms.modules.order.entity.ScmsOrderGoodsDetail;
 import com.scms.modules.order.entity.ScmsOrderInfo;
 import com.scms.modules.order.entity.ScmsOrderModifyLog;
 import com.scms.modules.order.entity.ScmsOrderPay;
+import com.scms.modules.order.entity.ScmsOrderReceiveLog;
 import com.scms.modules.order.entity.ScmsOrderSendLog;
+import com.scms.modules.order.service.ScmsOrderGoodsDetailService;
 import com.scms.modules.order.service.ScmsOrderGoodsService;
 import com.scms.modules.order.service.ScmsOrderInfoService;
 import com.scms.modules.order.service.ScmsOrderModifyLogService;
 import com.scms.modules.order.service.ScmsOrderPayService;
+import com.scms.modules.order.service.ScmsOrderReceiveLogService;
 import com.scms.modules.order.service.ScmsOrderSendLogService;
 
 @RestController
@@ -44,10 +48,16 @@ public class OrderRestful {
     private ScmsOrderGoodsService scmsOrderGoodsService;
     
     @Autowired
+    private ScmsOrderGoodsDetailService scmsOrderGoodsDetailService;
+    
+    @Autowired
     private ScmsOrderPayService scmsOrderPayService;
     
     @Autowired
     private ScmsOrderSendLogService scmsOrderSendLogService;
+    
+    @Autowired
+    private ScmsOrderReceiveLogService scmsOrderReceiveLogService;
     
     @Autowired
     private ScmsOrderModifyLogService scmsOrderModifyLogService;
@@ -110,8 +120,8 @@ public class OrderRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/addLsdOrder",method=RequestMethod.POST)
-    public JSONObject addLsdOrder(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/addOrderInfo",method=RequestMethod.POST)
+    public JSONObject addOrderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
@@ -235,6 +245,22 @@ public class OrderRestful {
         }
         return json;
     }
+    
+    @RequestMapping(value="/editOrderPay",method=RequestMethod.POST)
+    public JSONObject editOrderPay(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.editOrderPay(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 
     /**
      * 获取列表
@@ -258,69 +284,25 @@ public class OrderRestful {
         }
         return json;
     }
-    
-    
+
     /**
-     * 新增信息
+     * 获取列表
      * @param request
-     * @param params
      * @return
      */
-    @RequestMapping(value="/addOrderGoods",method=RequestMethod.POST)
-    public JSONObject addOrderGoods(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/getOrderGoodsDetailList",method=RequestMethod.GET)
+    public JSONObject getOrderGoodsDetailList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderGoodsService.add(params, userInfo);
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsOrderGoodsDetail scmsOrderGoodsDetail = (ScmsOrderGoodsDetail)BeanUtils.mapToBean(params, ScmsOrderGoodsDetail.class);              
+                json = scmsOrderGoodsDetailService.getList(pageable, scmsOrderGoodsDetail, params);
             }
         }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 编辑信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/editOrderGoods",method=RequestMethod.POST)
-    public JSONObject editOrderGoods(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderGoodsService.edit(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 删除信息
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/delOrderGoods",method=RequestMethod.POST)
-    public JSONObject delOrderGoods(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderGoodsService.del(idsList, userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
             logger.error(e.getMessage(), e);
         }
         return json;
@@ -344,73 +326,6 @@ public class OrderRestful {
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    
-    /**
-     * 新增信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/addOrderPay",method=RequestMethod.POST)
-    public JSONObject addOrderPay(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderPayService.add(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 编辑信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/editOrderPay",method=RequestMethod.POST)
-    public JSONObject editOrderPay(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderPayService.edit(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 删除信息
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/delOrderPay",method=RequestMethod.POST)
-    public JSONObject delOrderPay(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderPayService.del(idsList, userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;
@@ -439,9 +354,8 @@ public class OrderRestful {
         return json;
     }
     
-    
     /**
-     * 新增信息
+     * 添加发货记录，同时修改订单的发货状态
      * @param request
      * @param params
      * @return
@@ -453,29 +367,7 @@ public class OrderRestful {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderSendLogService.add(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 编辑信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/editOrderSendLog",method=RequestMethod.POST)
-    public JSONObject editOrderSendLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderSendLogService.edit(params, userInfo);
+                json = scmsOrderSendLogService.addOrderSendLog(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -485,22 +377,45 @@ public class OrderRestful {
     }
     
     /**
-     * 删除信息
+     * 获取列表
      * @param request
-     * @param idsList
      * @return
      */
-    @RequestMapping(value="/delOrderSendLog",method=RequestMethod.POST)
-    public JSONObject delOrderSendLog(HttpServletRequest request,@RequestBody String idsList){
+    @RequestMapping(value="/getReceiveLogList",method=RequestMethod.GET)
+    public JSONObject getReceiveLogList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
-        try {
+        try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderSendLogService.del(idsList, userInfo);
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsOrderReceiveLog scmsOrderReceiveLog = (ScmsOrderReceiveLog)BeanUtils.mapToBean(params, ScmsOrderReceiveLog.class);              
+                json = scmsOrderReceiveLogService.getList(pageable, scmsOrderReceiveLog, params);
             }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 添加收货记录，同时修改订单的收货状态
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addOrderReceiveLog",method=RequestMethod.POST)
+    public JSONObject addOrderReceiveLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderReceiveLogService.addOrderReceiveLog(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;
@@ -529,70 +444,4 @@ public class OrderRestful {
         return json;
     }
     
-    
-    /**
-     * 新增信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/addOrderModifyLog",method=RequestMethod.POST)
-    public JSONObject addOrderModifyLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderModifyLogService.add(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 编辑信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/editOrderModifyLog",method=RequestMethod.POST)
-    public JSONObject editOrderModifyLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderModifyLogService.edit(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 删除信息
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/delOrderModifyLog",method=RequestMethod.POST)
-    public JSONObject delOrderModifyLog(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsOrderModifyLogService.del(idsList, userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
 }

@@ -24,7 +24,7 @@ public class ScmsOrderSendLogRepositoryImpl extends BaseRepository implements Sc
 		//生成查询条件
 		SqlParams sqlParams = genListWhere(SQL_GET_LIST, scmsOrderSendLog, params);
 		//添加分页和排序
-		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
+		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID ASC ", " \"id\" ASC ");
 		return getResultList(sqlParams);
 	}
 
@@ -43,6 +43,11 @@ public class ScmsOrderSendLogRepositoryImpl extends BaseRepository implements Sc
 	private SqlParams genListWhere(String sql, ScmsOrderSendLog scmsOrderSendLog, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        if (scmsOrderSendLog != null && scmsOrderSendLog.getOrderId() != null) {
+            sqlParams.querySql.append(" AND tb.ORDER_ID = :orderId ");
+            sqlParams.paramsList.add("orderId");
+            sqlParams.valueList.add(scmsOrderSendLog.getOrderId());
+        }
         return sqlParams;
 	}
 }

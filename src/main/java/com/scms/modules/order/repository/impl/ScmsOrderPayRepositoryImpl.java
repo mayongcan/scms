@@ -5,6 +5,9 @@ package com.scms.modules.order.repository.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
 import com.scms.modules.order.entity.ScmsOrderPay;
@@ -25,7 +28,7 @@ public class ScmsOrderPayRepositoryImpl extends BaseRepository implements ScmsOr
 		//生成查询条件
 		SqlParams sqlParams = genListWhere(SQL_GET_LIST, scmsOrderPay, params);
 		//添加分页和排序
-		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
+		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID ASC ", " \"id\" ASC ");
 		return getResultList(sqlParams);
 	}
 
@@ -44,6 +47,12 @@ public class ScmsOrderPayRepositoryImpl extends BaseRepository implements ScmsOr
 	private SqlParams genListWhere(String sql, ScmsOrderPay scmsOrderPay, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        Long orderId = MapUtils.getLong(params, "orderId", null);
+        if(orderId != null) {
+            sqlParams.querySql.append(" AND tb.ORDER_ID = :orderId ");
+            sqlParams.paramsList.add("orderId");
+            sqlParams.valueList.add(orderId);
+        }
         return sqlParams;
 	}
 }

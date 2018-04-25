@@ -35,8 +35,12 @@ public class ScmsOrderGoodsDetail implements Serializable {
 	@TableGenerator(name = "ScmsOrderGoodsDetailIdGenerator", table = "sys_tb_generator", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VALUE", pkColumnValue = "SCMS_ORDER_GOODS_DETAIL_PK", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 10, scale = 0)
 	private Long id;
+    
+    // 订单ID
+    @Column(name = "ORDER_ID", precision = 10, scale = 0)
+    private Long orderId;
 	
-	// 订单ID
+	// 订单商品ID
 	@Column(name = "DETAIL_ID", precision = 10, scale = 0)
 	private Long detailId;
 	
