@@ -32,7 +32,7 @@ public interface ScmsOrderInfoService {
 	 * @param userInfo
 	 * @return
 	 */
-	public JSONObject addLsdOrder(Map<String, Object> params, UserInfo userInfo);
+	public JSONObject addOrderInfo(Map<String, Object> params, UserInfo userInfo);
 	
 	/**
 	 * 编辑
@@ -40,7 +40,7 @@ public interface ScmsOrderInfoService {
 	 * @param userInfo
 	 * @return
 	 */
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo);
+	public JSONObject editOrderInfo(Map<String, Object> params, UserInfo userInfo);
 	
 	/**
 	 * 删除
@@ -59,6 +59,29 @@ public interface ScmsOrderInfoService {
 	 */
     public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status);
 
-    public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo);
-
+    /**
+     * 获取进货单列表
+     * @param page
+     * @param scmsOrderInfo
+     * @param params
+     * @return
+     */
+    public JSONObject getOrderJhdList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
+    
+    /**
+     * 新增进货单
+     * @param params
+     * @param userInfo
+     * @return
+     */
+    public JSONObject addOrderJhd(Map<String, Object> params, UserInfo userInfo);
+    
+    /**
+     * 编辑进货单
+     * @param params
+     * @param userInfo
+     * @return
+     */
+    public JSONObject editOrderJhd(Map<String, Object> params, UserInfo userInfo);
+    
 }

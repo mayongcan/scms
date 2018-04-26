@@ -68,6 +68,11 @@ public class ScmsSupplierInfoRepositoryImpl extends BaseRepository implements Sc
             sqlParams.paramsList.add("supplierAdmin");
             sqlParams.valueList.add(scmsSupplierInfo.getSupplierAdmin());
         }
+        if (scmsSupplierInfo != null && !StringUtils.isBlank(scmsSupplierInfo.getSupplierAddr())) {
+            sqlParams.querySql.append(getLikeSql("tb.SUPPLIER_ADDR", ":supplierAddr"));
+            sqlParams.paramsList.add("supplierAddr");
+            sqlParams.valueList.add(scmsSupplierInfo.getSupplierAddr());
+        }
         if (scmsSupplierInfo != null && !StringUtils.isBlank(scmsSupplierInfo.getSupplierPhone())) {
             sqlParams.querySql.append(getLikeSql("tb.SUPPLIER_PHONE", ":supplierPhone"));
             sqlParams.paramsList.add("supplierPhone");

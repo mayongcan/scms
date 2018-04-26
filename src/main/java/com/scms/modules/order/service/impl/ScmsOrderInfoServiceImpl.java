@@ -26,7 +26,9 @@ import com.scms.modules.order.service.ScmsOrderInfoService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
 import com.scms.modules.customer.entity.ScmsCustomerInfo;
+import com.scms.modules.customer.entity.ScmsSupplierInfo;
 import com.scms.modules.customer.repository.ScmsCustomerInfoRepository;
+import com.scms.modules.customer.repository.ScmsSupplierInfoRepository;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
 import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
 import com.scms.modules.order.entity.ScmsOrderGoods;
@@ -67,6 +69,9 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
     @Autowired
     private ScmsCustomerInfoRepository scmsCustomerInfoRepository;
 
+    @Autowired
+    private ScmsSupplierInfoRepository scmsSupplierInfoRepository;
+
 	@Override
 	public JSONObject getList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params) {
 		List<Map<String, Object>> list = scmsOrderInfoRepository.getList(scmsOrderInfo, params, page.getPageNumber(), page.getPageSize());
@@ -75,7 +80,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 	}
 
 	@Override
-	public JSONObject addLsdOrder(Map<String, Object> params, UserInfo userInfo) {
+	public JSONObject addOrderInfo(Map<String, Object> params, UserInfo userInfo) {
 	    ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
 	    //设置商户名称
 	    ScmsMerchantsInfo scmsMerchantsInfo = scmsMerchantsInfoRepository.findOne(scmsOrderInfo.getMerchantsId());
@@ -84,6 +89,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 	    scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
 	    scmsOrderInfo.setOrderStatus("1");         //订单状态：未修改
 	    scmsOrderInfo.setOrderSendStatus("1");     //发货状态：未发货
+        scmsOrderInfo.setOrderReceiveStatus("1");       //收货状态：未收货
 		scmsOrderInfo.setIsValid(Constants.IS_VALID_VALID);
 		scmsOrderInfo.setCreateBy(userInfo.getUserId());
 		scmsOrderInfo.setCreateByName(userInfo.getUserName());
@@ -94,60 +100,23 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         String orderGoodsList = MapUtils.getString(params, "orderGoodsList");
         JSONArray jsonArray = JSONObject.parseArray(orderGoodsList);
         if(jsonArray != null && jsonArray.size() > 0) {
-            for(int i = 0; i < jsonArray.size(); i++) {
-                JSONObject json = jsonArray.getJSONObject(i);
-                //先保存ScmsOrderGoods
-                ScmsOrderGoods scmsOrderGoods = JSONObject.toJavaObject(json, ScmsOrderGoods.class);
-                if(scmsOrderGoods != null) {
-                    scmsOrderGoods.setOrderId(scmsOrderInfo.getId());
-                    scmsOrderGoods = scmsOrderGoodsRepository.save(scmsOrderGoods);
-                    
-                    //保存详细信息表ScmsOrderGoodsDetail
-                    JSONArray orderGoodsDetailListJsonArray = json.getJSONArray("goodsDataList");
-                    if(orderGoodsDetailListJsonArray != null && orderGoodsDetailListJsonArray.size() > 0) {
-                        for(int j = 0; j < orderGoodsDetailListJsonArray.size(); j++) {
-                            //先保存ScmsOrderGoodsDetail
-                            ScmsOrderGoodsDetail scmsOrderGoodsDetail = JSONObject.toJavaObject(orderGoodsDetailListJsonArray.getJSONObject(j), ScmsOrderGoodsDetail.class);
-                            if(scmsOrderGoodsDetail != null) {
-                                scmsOrderGoodsDetail.setOrderId(scmsOrderInfo.getId());
-                                scmsOrderGoodsDetail.setDetailId(scmsOrderGoods.getId());
-                                scmsOrderGoodsDetailRepository.save(scmsOrderGoodsDetail);
-                                //更新库存
-                                updateGoodsInventory(scmsOrderInfo.getShopId(), scmsOrderGoods.getGoodsId(), scmsOrderGoodsDetail, "del");
-                            }
-                        }
-                    }
-                }
-            }
+            saveOrderGoodsAndDetail(jsonArray, scmsOrderInfo, true);
         }
 
         //保存订单支付信息
         String orderPayList = MapUtils.getString(params, "orderPayList");
         jsonArray = JSONObject.parseArray(orderPayList);
         if(jsonArray != null && jsonArray.size() > 0) {
-            ScmsOrderPay obj = null;
-            for(int i = 0; i < jsonArray.size(); i++) {
-                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderPay.class);
-                if(obj != null) {
-                    obj.setOrderId(scmsOrderInfo.getId());
-                    obj.setPayDate(new Date());
-                    obj.setOperateUserId(userInfo.getUserId());
-                    obj.setOperateUserName(userInfo.getUserName());
-                    scmsOrderPayRepository.save(obj);
-                }
-            }
+            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
         }
+        //更新余额
+        updateCustomerBalance(params, scmsOrderInfo);
         
-        //判断是否需要更新客户余额
-        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
-        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
-            scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
-        }
 		return RestfulRetUtils.getRetSuccess();
 	}
 
 	@Override
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo) {
+	public JSONObject editOrderInfo(Map<String, Object> params, UserInfo userInfo) {
         ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
 		ScmsOrderInfo scmsOrderInfoInDb = scmsOrderInfoRepository.findOne(scmsOrderInfo.getId());
 		if(scmsOrderInfoInDb == null){
@@ -172,31 +141,8 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
             //删除旧数据
             scmsOrderGoodsRepository.delByOrderId(scmsOrderInfo.getId());
             scmsOrderGoodsDetailRepository.delByOrderId(scmsOrderInfo.getId());
-            for(int i = 0; i < jsonArray.size(); i++) {
-                JSONObject json = jsonArray.getJSONObject(i);
-                //先保存ScmsOrderGoods
-                ScmsOrderGoods scmsOrderGoods = JSONObject.toJavaObject(json, ScmsOrderGoods.class);
-                if(scmsOrderGoods != null) {
-                    scmsOrderGoods.setOrderId(scmsOrderInfo.getId());
-                    scmsOrderGoods = scmsOrderGoodsRepository.save(scmsOrderGoods);
-                    
-                    //保存详细信息表ScmsOrderGoodsDetail
-                    JSONArray orderGoodsDetailListJsonArray = json.getJSONArray("goodsDataList");
-                    if(orderGoodsDetailListJsonArray != null && orderGoodsDetailListJsonArray.size() > 0) {
-                        for(int j = 0; j < orderGoodsDetailListJsonArray.size(); j++) {
-                            //先保存ScmsOrderGoodsDetail
-                            ScmsOrderGoodsDetail scmsOrderGoodsDetail = JSONObject.toJavaObject(orderGoodsDetailListJsonArray.getJSONObject(j), ScmsOrderGoodsDetail.class);
-                            if(scmsOrderGoodsDetail != null) {
-                                scmsOrderGoodsDetail.setOrderId(scmsOrderInfo.getId());
-                                scmsOrderGoodsDetail.setDetailId(scmsOrderGoods.getId());
-                                scmsOrderGoodsDetailRepository.save(scmsOrderGoodsDetail);
-                                //更新库存
-                                updateGoodsInventory(scmsOrderInfo.getShopId(), scmsOrderGoods.getGoodsId(), scmsOrderGoodsDetail, "del");
-                            }
-                        }
-                    }
-                }
-            }
+            //保存
+            saveOrderGoodsAndDetail(jsonArray, scmsOrderInfo, true);
         }
 
         //保存订单支付信息
@@ -205,33 +151,15 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         if(jsonArray != null && jsonArray.size() > 0) {
             //删除旧数据
             scmsOrderPayRepository.delByOrderId(scmsOrderInfo.getId());
-            ScmsOrderPay obj = null;
-            for(int i = 0; i < jsonArray.size(); i++) {
-                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderPay.class);
-                if(obj != null) {
-                    obj.setOrderId(scmsOrderInfo.getId());
-                    obj.setPayDate(new Date());
-                    obj.setOperateUserId(userInfo.getUserId());
-                    obj.setOperateUserName(userInfo.getUserName());
-                    scmsOrderPayRepository.save(obj);
-                }
-            }
+            //保存
+            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
         }
-        
-        //判断是否需要更新客户余额
-        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
-        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
-            scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
-        }
+        //更新余额
+        updateCustomerBalance(params, scmsOrderInfo);
         
         //增加订单修改记录
-        ScmsOrderModifyLog scmsOrderModifyLog = new ScmsOrderModifyLog();
-        scmsOrderModifyLog.setOrderId(scmsOrderInfo.getId());
-        scmsOrderModifyLog.setModifyBy(userInfo.getUserId());
-        scmsOrderModifyLog.setModifyByName(userInfo.getUserName());
-        scmsOrderModifyLog.setModifyDate(new Date());
-        scmsOrderModifyLog.setModifyMemo(MapUtils.getString(params, "modifyMemo"));
-        scmsOrderModifyLogRepository.save(scmsOrderModifyLog);
+        saveModifyLog(params, scmsOrderInfo, userInfo);
+        
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -251,7 +179,12 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 	}
 
     @Override
-    public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status) {
+    public JSONObject updateOrderStatus(String jsonParams, UserInfo userInfo, String status) {
+        JSONObject json = JSONObject.parseObject(jsonParams);
+        String idsList = json.getString("idsList");
+        String orderType = json.getString("orderType");
+        if(StringUtils.isBlank(idsList)) return RestfulRetUtils.getErrorParams();
+        
         String[] ids = idsList.split(",");
         //判断是否需要移除
         List<Long> idList = new ArrayList<Long>();
@@ -262,28 +195,51 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         if(idList.size() > 0){
             scmsOrderInfoRepository.updateOrderStatus(status, idList);
         }
+        ScmsOrderInfo scmsOrderInfo = null;
+        ScmsCustomerInfo scmsCustomerInfo = null;
+        ScmsSupplierInfo scmsSupplierInfo = null;
         //如果变更的订单状态为取消，则需要做相应的数据库变更
         if("3".equals(status)) {
-            ScmsOrderInfo scmsOrderInfo = null;
-            ScmsCustomerInfo scmsCustomerInfo = null;
-            for(Long id : idList) {
-                scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
-                if(scmsOrderInfo != null) {
-                    //判断订单类型
-                    if("lsd".equals(scmsOrderInfo.getOrderType()) || "pfd".equals(scmsOrderInfo.getOrderType()) || "ysd".equals(scmsOrderInfo.getOrderType())) {
-                        //如果是取消零售单、批发单、预售单，则需要将库存补回去，同时判断客户类型，将已付的金额退回到客户账号
-                        List<ScmsOrderGoods> orderGoodsList = scmsOrderGoodsRepository.findByOrderId(scmsOrderInfo.getId());
-                        for(ScmsOrderGoods orderGoods : orderGoodsList) {
-                            List<ScmsOrderGoodsDetail> orderGoodsDetalList = scmsOrderGoodsDetailRepository.findByDetailId(orderGoods.getId());
-                            for(ScmsOrderGoodsDetail scmsOrderGoodsDetail : orderGoodsDetalList) {
-                                updateGoodsInventory(scmsOrderInfo.getShopId(), orderGoods.getGoodsId(), scmsOrderGoodsDetail, "add");
-                            }
+            //判断订单类型  如果是取消零售单、批发单、预售单，则需要将库存补回去，同时判断客户类型，将已付的金额退回到客户账号
+            if("lsd".equals(orderType) || "pfd".equals(orderType) || "ysd".equals(orderType)) {
+                for(Long id : idList) {
+                    scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
+                    List<ScmsOrderGoods> orderGoodsList = scmsOrderGoodsRepository.findByOrderId(id);
+                    for(ScmsOrderGoods orderGoods : orderGoodsList) {
+                        List<ScmsOrderGoodsDetail> orderGoodsDetalList = scmsOrderGoodsDetailRepository.findByDetailId(orderGoods.getId());
+                        for(ScmsOrderGoodsDetail scmsOrderGoodsDetail : orderGoodsDetalList) {
+                            updateGoodsInventory(scmsOrderInfo.getShopId(), orderGoods.getGoodsId(), scmsOrderGoodsDetail, "add");
                         }
-                        //更新客户余额, 客户余额 = 原有余额 + 订单总金额 - 订单未支付金额
-                        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
-                            scmsCustomerInfo = scmsCustomerInfoRepository.findOne(scmsOrderInfo.getCustomerId());
-                            if(scmsCustomerInfo != null)  
-                                scmsCustomerInfoRepository.updateCustomerBalance(scmsCustomerInfo.getCustomerBalance() + scmsOrderInfo.getTotalAmount() - scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                    }
+                    //更新客户余额, 客户余额 = 原有余额 + 订单总金额 - 订单未支付金额
+                    if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
+                        scmsCustomerInfo = scmsCustomerInfoRepository.findOne(scmsOrderInfo.getCustomerId());
+                        if(scmsCustomerInfo != null)  
+                            scmsCustomerInfoRepository.updateCustomerBalance(scmsCustomerInfo.getCustomerBalance() + scmsOrderInfo.getTotalAmount() - scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                    }
+                }
+            }else if("jhd".equals(orderType)) {
+                //需要返还供货商余额
+                for(Long id : idList) {
+                    scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
+                    //更新客户余额, 客户余额 = 原有余额 + 订单总金额 - 订单未支付金额
+                    if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
+                        scmsSupplierInfo = scmsSupplierInfoRepository.findOne(scmsOrderInfo.getCustomerId());
+                        if(scmsSupplierInfo != null)  
+                            scmsSupplierInfoRepository.updateSupplierBalance(scmsSupplierInfo.getSupplierBalance() + scmsOrderInfo.getTotalAmount() - scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                    }
+                }
+            }
+        }else if("4".equals(status)) {
+            //如果订单类型为进货单，则订单结束后，进货单里面的东西需要入库
+            if("jhd".equals(orderType)) {
+                for(Long id : idList) {
+                    scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
+                    List<ScmsOrderGoods> orderGoodsList = scmsOrderGoodsRepository.findByOrderId(id);
+                    for(ScmsOrderGoods orderGoods : orderGoodsList) {
+                        List<ScmsOrderGoodsDetail> orderGoodsDetalList = scmsOrderGoodsDetailRepository.findByDetailId(orderGoods.getId());
+                        for(ScmsOrderGoodsDetail scmsOrderGoodsDetail : orderGoodsDetalList) {
+                            updateGoodsInventory(scmsOrderInfo.getShopId(), orderGoods.getGoodsId(), scmsOrderGoodsDetail, "add");
                         }
                     }
                 }
@@ -293,7 +249,51 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
     }
 
     @Override
-    public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo) {
+    public JSONObject getOrderJhdList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsOrderInfoRepository.getOrderJhdList(scmsOrderInfo, params, page.getPageNumber(), page.getPageSize());
+        int count = scmsOrderInfoRepository.getOrderJhdListCount(scmsOrderInfo, params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, count);  
+    }
+
+    @Override
+    public JSONObject addOrderJhd(Map<String, Object> params, UserInfo userInfo) {
+        ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
+        //设置商户名称
+        ScmsMerchantsInfo scmsMerchantsInfo = scmsMerchantsInfoRepository.findOne(scmsOrderInfo.getMerchantsId());
+        scmsOrderInfo.setMerchantsName(scmsMerchantsInfo.getMerchantsName());
+        //设置订单编号，格式：订单类型+年月日时分秒毫秒
+        scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
+        scmsOrderInfo.setOrderStatus("1");              //订单状态：未修改
+        scmsOrderInfo.setOrderSendStatus("1");          //发货状态：未发货
+        scmsOrderInfo.setOrderReceiveStatus("1");       //收货状态：未收货
+        scmsOrderInfo.setIsValid(Constants.IS_VALID_VALID);
+        scmsOrderInfo.setCreateBy(userInfo.getUserId());
+        scmsOrderInfo.setCreateByName(userInfo.getUserName());
+        scmsOrderInfo.setCreateDate(new Date());
+        scmsOrderInfo = scmsOrderInfoRepository.saveAndFlush(scmsOrderInfo);
+
+        //保存订单商品关联信息
+        String orderGoodsList = MapUtils.getString(params, "orderGoodsList");
+        JSONArray jsonArray = JSONObject.parseArray(orderGoodsList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            //不要更新库存
+            saveOrderGoodsAndDetail(jsonArray, scmsOrderInfo, false);
+        }
+
+        //保存订单支付信息
+        String orderPayList = MapUtils.getString(params, "orderPayList");
+        jsonArray = JSONObject.parseArray(orderPayList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
+        }
+        //更新供货商余额
+        updateSupplierBalance(params, scmsOrderInfo);
+        
+        return RestfulRetUtils.getRetSuccess();
+    }
+
+    @Override
+    public JSONObject editOrderJhd(Map<String, Object> params, UserInfo userInfo) {
         ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
         ScmsOrderInfo scmsOrderInfoInDb = scmsOrderInfoRepository.findOne(scmsOrderInfo.getId());
         if(scmsOrderInfoInDb == null){
@@ -303,31 +303,66 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         BeanUtils.mergeBean(scmsOrderInfo, scmsOrderInfoInDb);
         scmsOrderInfoRepository.save(scmsOrderInfoInDb);
 
+        //保存订单商品关联信息
+        String orderGoodsList = MapUtils.getString(params, "orderGoodsList");
+        JSONArray jsonArray = JSONObject.parseArray(orderGoodsList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            //删除旧数据
+            scmsOrderGoodsRepository.delByOrderId(scmsOrderInfo.getId());
+            scmsOrderGoodsDetailRepository.delByOrderId(scmsOrderInfo.getId());
+            //保存
+            saveOrderGoodsAndDetail(jsonArray, scmsOrderInfo, false);
+        }
+
         //保存订单支付信息
         String orderPayList = MapUtils.getString(params, "orderPayList");
-        JSONArray jsonArray = JSONObject.parseArray(orderPayList);
+        jsonArray = JSONObject.parseArray(orderPayList);
         if(jsonArray != null && jsonArray.size() > 0) {
             //删除旧数据
             scmsOrderPayRepository.delByOrderId(scmsOrderInfo.getId());
-            ScmsOrderPay obj = null;
-            for(int i = 0; i < jsonArray.size(); i++) {
-                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderPay.class);
-                if(obj != null) {
-                    obj.setOrderId(scmsOrderInfo.getId());
-                    obj.setPayDate(new Date());
-                    obj.setOperateUserId(userInfo.getUserId());
-                    obj.setOperateUserName(userInfo.getUserName());
-                    scmsOrderPayRepository.save(obj);
+            //保存
+            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
+        }
+        //更新供货商余额
+        updateSupplierBalance(params, scmsOrderInfo);
+        
+        //增加订单修改记录
+        saveModifyLog(params, scmsOrderInfo, userInfo);
+        
+        return RestfulRetUtils.getRetSuccess();
+    }
+    
+    /**
+     * 保存订单商品和详情，并更新库存
+     * @param jsonArray
+     * @param scmsOrderInfo
+     */
+    private void saveOrderGoodsAndDetail(JSONArray jsonArray, ScmsOrderInfo scmsOrderInfo, boolean isUpdateInventory) {
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JSONObject json = jsonArray.getJSONObject(i);
+            //先保存ScmsOrderGoods
+            ScmsOrderGoods scmsOrderGoods = JSONObject.toJavaObject(json, ScmsOrderGoods.class);
+            if(scmsOrderGoods != null) {
+                scmsOrderGoods.setOrderId(scmsOrderInfo.getId());
+                scmsOrderGoods = scmsOrderGoodsRepository.save(scmsOrderGoods);
+                //保存详细信息表ScmsOrderGoodsDetail
+                JSONArray orderGoodsDetailListJsonArray = json.getJSONArray("goodsDataList");
+                if(orderGoodsDetailListJsonArray != null && orderGoodsDetailListJsonArray.size() > 0) {
+                    for(int j = 0; j < orderGoodsDetailListJsonArray.size(); j++) {
+                        //先保存ScmsOrderGoodsDetail
+                        ScmsOrderGoodsDetail scmsOrderGoodsDetail = JSONObject.toJavaObject(orderGoodsDetailListJsonArray.getJSONObject(j), ScmsOrderGoodsDetail.class);
+                        if(scmsOrderGoodsDetail != null) {
+                            scmsOrderGoodsDetail.setOrderId(scmsOrderInfo.getId());
+                            scmsOrderGoodsDetail.setDetailId(scmsOrderGoods.getId());
+                            scmsOrderGoodsDetailRepository.save(scmsOrderGoodsDetail);
+                            //判断是否更新库存
+                            if(isUpdateInventory)
+                                updateGoodsInventory(scmsOrderInfo.getShopId(), scmsOrderGoods.getGoodsId(), scmsOrderGoodsDetail, "del");
+                        }
+                    }
                 }
             }
         }
-        
-        //判断是否需要更新客户余额
-        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
-        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
-            scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
-        }
-        return RestfulRetUtils.getRetSuccess();
     }
     
     /**
@@ -364,5 +399,65 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
             scmsGoodsInventoryRepository.save(scmsGoodsInventory);
         }
     }
+    
+    /**
+     * 保存订单支付列表
+     * @param jsonArray
+     * @param scmsOrderInfo
+     * @param userInfo
+     */
+    private void saveOrderPayList(JSONArray jsonArray, ScmsOrderInfo scmsOrderInfo, UserInfo userInfo) {
+        ScmsOrderPay obj = null;
+        for(int i = 0; i < jsonArray.size(); i++) {
+            obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderPay.class);
+            if(obj != null) {
+                obj.setOrderId(scmsOrderInfo.getId());
+                obj.setPayDate(new Date());
+                obj.setOperateUserId(userInfo.getUserId());
+                obj.setOperateUserName(userInfo.getUserName());
+                scmsOrderPayRepository.save(obj);
+            }
+        }
+    }
 
+    /**
+     * 判断是否更新客户余额
+     * @param params
+     * @param scmsOrderInfo
+     */
+    private void updateCustomerBalance(Map<String, Object> params, ScmsOrderInfo scmsOrderInfo) {
+        //判断是否需要更新客户余额
+        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
+        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
+            scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
+        }
+    }
+
+    /**
+     * 判断是否更新供货商余额
+     * @param params
+     * @param scmsOrderInfo
+     */
+    private void updateSupplierBalance(Map<String, Object> params, ScmsOrderInfo scmsOrderInfo) {
+        //判断是否需要更新客户余额
+        Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
+        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
+            scmsSupplierInfoRepository.updateSupplierBalance(customerBalance, scmsOrderInfo.getCustomerId());
+        }
+    }
+    
+    /**
+     * 保存订单修改记录
+     * @param scmsOrderInfo
+     * @param userInfo
+     */
+    private void saveModifyLog(Map<String, Object> params, ScmsOrderInfo scmsOrderInfo, UserInfo userInfo) {
+        ScmsOrderModifyLog scmsOrderModifyLog = new ScmsOrderModifyLog();
+        scmsOrderModifyLog.setOrderId(scmsOrderInfo.getId());
+        scmsOrderModifyLog.setModifyBy(userInfo.getUserId());
+        scmsOrderModifyLog.setModifyByName(userInfo.getUserName());
+        scmsOrderModifyLog.setModifyDate(new Date());
+        scmsOrderModifyLog.setModifyMemo(MapUtils.getString(params, "modifyMemo"));
+        scmsOrderModifyLogRepository.save(scmsOrderModifyLog);
+    }
 }

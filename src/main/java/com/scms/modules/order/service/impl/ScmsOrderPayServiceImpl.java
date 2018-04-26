@@ -3,13 +3,16 @@
  */
 package com.scms.modules.order.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
@@ -17,7 +20,11 @@ import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.order.service.ScmsOrderPayService;
+import com.scms.modules.customer.repository.ScmsCustomerInfoRepository;
+import com.scms.modules.customer.repository.ScmsSupplierInfoRepository;
+import com.scms.modules.order.entity.ScmsOrderInfo;
 import com.scms.modules.order.entity.ScmsOrderPay;
+import com.scms.modules.order.repository.ScmsOrderInfoRepository;
 import com.scms.modules.order.repository.ScmsOrderPayRepository;
 
 @Service
@@ -25,6 +32,15 @@ public class ScmsOrderPayServiceImpl implements ScmsOrderPayService {
 	
     @Autowired
     private ScmsOrderPayRepository scmsOrderPayRepository;
+    
+    @Autowired
+    private ScmsOrderInfoRepository scmsOrderInfoRepository;
+    
+    @Autowired
+    private ScmsCustomerInfoRepository scmsCustomerInfoRepository;
+
+    @Autowired
+    private ScmsSupplierInfoRepository scmsSupplierInfoRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsOrderPay scmsOrderPay, Map<String, Object> params) {
@@ -61,5 +77,50 @@ public class ScmsOrderPayServiceImpl implements ScmsOrderPayService {
 		}
 		return RestfulRetUtils.getRetSuccess();
 	}
+
+    @Override
+    public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo) {
+        ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
+        ScmsOrderInfo scmsOrderInfoInDb = scmsOrderInfoRepository.findOne(scmsOrderInfo.getId());
+        if(scmsOrderInfoInDb == null){
+            return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
+        }
+        //合并两个javabean
+        BeanUtils.mergeBean(scmsOrderInfo, scmsOrderInfoInDb);
+        scmsOrderInfoRepository.save(scmsOrderInfoInDb);
+
+        //保存订单支付信息
+        String orderPayList = MapUtils.getString(params, "orderPayList");
+        JSONArray jsonArray = JSONObject.parseArray(orderPayList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            //删除旧数据
+            scmsOrderPayRepository.delByOrderId(scmsOrderInfo.getId());
+            ScmsOrderPay obj = null;
+            for(int i = 0; i < jsonArray.size(); i++) {
+                obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsOrderPay.class);
+                if(obj != null) {
+                    obj.setOrderId(scmsOrderInfo.getId());
+                    obj.setPayDate(new Date());
+                    obj.setOperateUserId(userInfo.getUserId());
+                    obj.setOperateUserName(userInfo.getUserName());
+                    scmsOrderPayRepository.save(obj);
+                }
+            }
+        }
+        
+        //判断是否需要更新客户余额
+        if("lsd".equals(scmsOrderInfoInDb.getOrderType()) || "pfd".equals(scmsOrderInfoInDb.getOrderType()) || "ysd".equals(scmsOrderInfoInDb.getOrderType()) ) {
+            Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
+            if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
+                scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
+            }
+        }else if("jhd".equals(scmsOrderInfoInDb.getOrderType())){
+            Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
+            if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
+                scmsSupplierInfoRepository.updateSupplierBalance(customerBalance, scmsOrderInfo.getCustomerId());
+            }
+        }
+        return RestfulRetUtils.getRetSuccess();
+    }
 
 }

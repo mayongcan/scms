@@ -127,7 +127,7 @@ public class OrderRestful {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderInfoService.addLsdOrder(params, userInfo);
+                json = scmsOrderInfoService.addOrderInfo(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
@@ -149,7 +149,7 @@ public class OrderRestful {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderInfoService.edit(params, userInfo);
+                json = scmsOrderInfoService.editOrderInfo(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -245,15 +245,67 @@ public class OrderRestful {
         }
         return json;
     }
-    
-    @RequestMapping(value="/editOrderPay",method=RequestMethod.POST)
-    public JSONObject editOrderPay(HttpServletRequest request, @RequestBody Map<String, Object> params){
+
+    /**
+     * 获取进货单列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getOrderJhdList",method=RequestMethod.GET)
+    public JSONObject getOrderJhdList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsOrderInfoService.editOrderPay(params, userInfo);
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo)BeanUtils.mapToBean(params, ScmsOrderInfo.class);              
+                json = scmsOrderInfoService.getOrderJhdList(pageable, scmsOrderInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增进货单
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addOrderJhd",method=RequestMethod.POST)
+    public JSONObject addOrderJhd(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.addOrderJhd(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑进货单
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editOrderJhd",method=RequestMethod.POST)
+    public JSONObject editOrderJhd(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.editOrderJhd(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -326,6 +378,28 @@ public class OrderRestful {
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 修改订单支付信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editOrderPay",method=RequestMethod.POST)
+    public JSONObject editOrderPay(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderPayService.editOrderPay(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;

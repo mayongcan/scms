@@ -34,4 +34,22 @@ public interface ScmsOrderInfoRepositoryCustom {
 	 * @return
 	 */
 	public int getListCount(ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
+
+	/**
+	 * 获取进货单列表
+	 * @param scmsOrderInfo
+	 * @param params
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
+    public List<Map<String, Object>> getOrderJhdList(ScmsOrderInfo scmsOrderInfo, Map<String, Object> params, int pageIndex, int pageSize);
+    
+    /**
+     * 获取进货单列表总数
+     * @param scmsOrderInfo
+     * @param params
+     * @return
+     */
+    public int getOrderJhdListCount(ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
 }

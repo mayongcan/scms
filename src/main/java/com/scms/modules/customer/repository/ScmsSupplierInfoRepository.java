@@ -36,5 +36,16 @@ public interface ScmsSupplierInfoRepository extends JpaRepository<ScmsSupplierIn
 			+ "SET IS_VALID = :isValid "
 			+ "WHERE ID IN (:idList)", nativeQuery = true)
 	public void delEntity(@Param("isValid")String isValid, @Param("idList")List<Long> idList);
-	
+
+    /**
+     * 更新客户余额
+     * @param customerBalance
+     * @param id
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_supplier_info "
+            + "SET SUPPLIER_BALANCE = :supplierBalance "
+            + "WHERE ID = :id", nativeQuery = true)
+    public void updateSupplierBalance(@Param("supplierBalance")Double supplierBalance, @Param("id")Long id);
 }

@@ -49,6 +49,14 @@ public interface ScmsOrderPayService {
 	 * @return
 	 */
 	public JSONObject del(String idsList, UserInfo userInfo);
-	
+
+
+    /**
+     * 编辑订单支付信息
+     * @param params
+     * @param userInfo
+     * @return
+     */
+    public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo);
 
 }
