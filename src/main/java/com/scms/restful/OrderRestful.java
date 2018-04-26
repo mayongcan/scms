@@ -20,6 +20,9 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
+import com.scms.modules.order.entity.ScmsInventoryTransfer;
+import com.scms.modules.order.entity.ScmsInventoryTransferGoods;
+import com.scms.modules.order.entity.ScmsInventoryTransferGoodsDetail;
 import com.scms.modules.order.entity.ScmsOrderGoods;
 import com.scms.modules.order.entity.ScmsOrderGoodsDetail;
 import com.scms.modules.order.entity.ScmsOrderInfo;
@@ -27,6 +30,9 @@ import com.scms.modules.order.entity.ScmsOrderModifyLog;
 import com.scms.modules.order.entity.ScmsOrderPay;
 import com.scms.modules.order.entity.ScmsOrderReceiveLog;
 import com.scms.modules.order.entity.ScmsOrderSendLog;
+import com.scms.modules.order.service.ScmsInventoryTransferGoodsDetailService;
+import com.scms.modules.order.service.ScmsInventoryTransferGoodsService;
+import com.scms.modules.order.service.ScmsInventoryTransferService;
 import com.scms.modules.order.service.ScmsOrderGoodsDetailService;
 import com.scms.modules.order.service.ScmsOrderGoodsService;
 import com.scms.modules.order.service.ScmsOrderInfoService;
@@ -61,6 +67,15 @@ public class OrderRestful {
     
     @Autowired
     private ScmsOrderModifyLogService scmsOrderModifyLogService;
+    
+    @Autowired
+    private ScmsInventoryTransferService scmsInventoryTransferService;
+    
+    @Autowired
+    private ScmsInventoryTransferGoodsService scmsInventoryTransferGoodsService;
+    
+    @Autowired
+    private ScmsInventoryTransferGoodsDetailService scmsInventoryTransferGoodsDetailService;
 
     @RequestMapping(value="/orderLsdListIndex", method=RequestMethod.GET)
     public JSONObject orderLsdListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -510,6 +525,119 @@ public class OrderRestful {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
                 ScmsOrderModifyLog scmsOrderModifyLog = (ScmsOrderModifyLog)BeanUtils.mapToBean(params, ScmsOrderModifyLog.class);              
                 json = scmsOrderModifyLogService.getList(pageable, scmsOrderModifyLog, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getOrderDhdList",method=RequestMethod.GET)
+    public JSONObject getOrderDhdList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsInventoryTransfer scmsInventoryTransfer = (ScmsInventoryTransfer)BeanUtils.mapToBean(params, ScmsInventoryTransfer.class);              
+                json = scmsInventoryTransferService.getList(pageable, scmsInventoryTransfer, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 新增调货单
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addInventoryTransfer",method=RequestMethod.POST)
+    public JSONObject addInventoryTransfer(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsInventoryTransferService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 撤销调货单
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/repealInventoryTransfer",method=RequestMethod.POST)
+    public JSONObject repealInventoryTransfer(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsInventoryTransferService.repeal(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getInventoryTransferGoodsList",method=RequestMethod.GET)
+    public JSONObject getInventoryTransferGoodsList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsInventoryTransferGoods scmsInventoryTransferGoods = (ScmsInventoryTransferGoods)BeanUtils.mapToBean(params, ScmsInventoryTransferGoods.class);              
+                json = scmsInventoryTransferGoodsService.getList(pageable, scmsInventoryTransferGoods, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getInventoryTransferGoodsDetailList",method=RequestMethod.GET)
+    public JSONObject getInventoryTransferGoodsDetailList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsInventoryTransferGoodsDetail scmsInventoryTransferGoodsDetail = (ScmsInventoryTransferGoodsDetail)BeanUtils.mapToBean(params, ScmsInventoryTransferGoodsDetail.class);              
+                json = scmsInventoryTransferGoodsDetailService.getList(pageable, scmsInventoryTransferGoodsDetail, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");

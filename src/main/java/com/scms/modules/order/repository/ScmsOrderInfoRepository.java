@@ -24,7 +24,6 @@ import com.scms.modules.order.repository.custom.ScmsOrderInfoRepositoryCustom;
 @Repository
 public interface ScmsOrderInfoRepository extends JpaRepository<ScmsOrderInfo, Long>, JpaSpecificationExecutor<ScmsOrderInfo>, ScmsOrderInfoRepositoryCustom {
 	
-	
 	/**
 	 * 删除信息（将信息的IS_VALID设置为N）
 	 * @param isValid
