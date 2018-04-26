@@ -3,6 +3,8 @@
  */
 package com.scms.modules.order.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,7 +25,8 @@ import com.scms.modules.order.repository.custom.ScmsOrderPayRepositoryCustom;
 @Repository
 public interface ScmsOrderPayRepository extends JpaRepository<ScmsOrderPay, Long>, JpaSpecificationExecutor<ScmsOrderPay>, ScmsOrderPayRepositoryCustom {
 	
-
+    List<ScmsOrderPay> findByOrderIdAndPayTypeId(Long orderId, Long payTypeId);
+    
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "DELETE FROM scms_order_pay "

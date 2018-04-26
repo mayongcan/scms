@@ -60,7 +60,7 @@ public interface ScmsOrderInfoService {
     public JSONObject updateOrderStatus(String idsList, UserInfo userInfo, String status);
 
     /**
-     * 获取进货单列表
+     * 获取进货单、返厂单列表
      * @param page
      * @param scmsOrderInfo
      * @param params
@@ -69,7 +69,7 @@ public interface ScmsOrderInfoService {
     public JSONObject getOrderJhdList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
     
     /**
-     * 新增进货单
+     * 新增进货单、返厂单
      * @param params
      * @param userInfo
      * @return
@@ -77,7 +77,7 @@ public interface ScmsOrderInfoService {
     public JSONObject addOrderJhd(Map<String, Object> params, UserInfo userInfo);
     
     /**
-     * 编辑进货单
+     * 编辑进货单、返厂单
      * @param params
      * @param userInfo
      * @return

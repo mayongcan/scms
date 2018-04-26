@@ -247,7 +247,7 @@ public class OrderRestful {
     }
 
     /**
-     * 获取进货单列表
+     * 获取进货单、返厂单列表
      * @param request
      * @return
      */
@@ -271,7 +271,7 @@ public class OrderRestful {
     
     
     /**
-     * 新增进货单
+     * 新增进货单、返厂单
      * @param request
      * @param params
      * @return
@@ -293,7 +293,7 @@ public class OrderRestful {
     }
     
     /**
-     * 编辑进货单
+     * 编辑进货单、返厂单
      * @param request
      * @param params
      * @return

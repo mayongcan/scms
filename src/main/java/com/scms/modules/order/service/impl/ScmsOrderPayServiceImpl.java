@@ -114,7 +114,7 @@ public class ScmsOrderPayServiceImpl implements ScmsOrderPayService {
             if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
                 scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
             }
-        }else if("jhd".equals(scmsOrderInfoInDb.getOrderType())){
+        }else if("jhd".equals(scmsOrderInfoInDb.getOrderType()) || "fcd".equals(scmsOrderInfoInDb.getOrderType())){
             Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
             if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
                 scmsSupplierInfoRepository.updateSupplierBalance(customerBalance, scmsOrderInfo.getCustomerId());
