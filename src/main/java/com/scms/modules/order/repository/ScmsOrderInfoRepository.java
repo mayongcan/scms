@@ -55,6 +55,18 @@ public interface ScmsOrderInfoRepository extends JpaRepository<ScmsOrderInfo, Lo
             + "SET ORDER_SEND_STATUS = :orderSendStatus "
             + "WHERE ID IN (:idList)", nativeQuery = true)
     public void updateOrderSendStatus(@Param("orderSendStatus")String orderSendStatus, @Param("idList")List<Long> idList);
+
+    /**
+     * 更新发货状态
+     * @param orderSendStatus
+     * @param idList
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_order_info "
+            + "SET ORDER_SEND_STATUS = :orderSendStatus "
+            + "WHERE ID = :id ", nativeQuery = true)
+    public void updateOrderSendStatus(@Param("orderSendStatus")String orderSendStatus, @Param("id")Long id);
     
     /**
      * 更新收货状态
@@ -67,6 +79,18 @@ public interface ScmsOrderInfoRepository extends JpaRepository<ScmsOrderInfo, Lo
             + "SET ORDER_RECEIVE_STATUS = :orderReceiveStatus "
             + "WHERE ID IN (:idList)", nativeQuery = true)
     public void updateOrderReceiveStatus(@Param("orderReceiveStatus")String orderReceiveStatus, @Param("idList")List<Long> idList);
+    
+    /**
+     * 更新收货状态
+     * @param orderSendStatus
+     * @param idList
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_order_info "
+            + "SET ORDER_RECEIVE_STATUS = :orderReceiveStatus "
+            + "WHERE ID = :id ", nativeQuery = true)
+    public void updateOrderReceiveStatus(@Param("orderReceiveStatus")String orderReceiveStatus, @Param("id")Long id);
     
 	
 }

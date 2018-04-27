@@ -483,6 +483,8 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
                         if(scmsOrderGoodsDetail != null) {
                             scmsOrderGoodsDetail.setOrderId(scmsOrderInfo.getId());
                             scmsOrderGoodsDetail.setDetailId(scmsOrderGoods.getId());
+                            scmsOrderGoodsDetail.setSendStatus("0");
+                            scmsOrderGoodsDetail.setReceiveStatus("0");
                             scmsOrderGoodsDetailRepository.save(scmsOrderGoodsDetail);
                             //判断是否更新库存
                             if(isUpdateInventory)

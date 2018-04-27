@@ -93,5 +93,10 @@ public class ScmsOrderGoodsDetail implements Serializable {
 	// 商品数量(下单数量)
 	@Column(name = "GOODS_ORDER_NUM", precision = 10, scale = 0)
 	private Long goodsOrderNum;
-	
+
+    @Column(name = "SEND_STATUS", length = 2)
+    private String sendStatus;
+
+    @Column(name = "RECEIVE_STATUS", length = 2)
+    private String receiveStatus;
 }

@@ -36,6 +36,8 @@ public class ScmsOrderGoodsDetailServiceImpl implements ScmsOrderGoodsDetailServ
 	@Override
 	public JSONObject add(Map<String, Object> params, UserInfo userInfo) {
 	    ScmsOrderGoodsDetail scmsOrderGoodsDetail = (ScmsOrderGoodsDetail) BeanUtils.mapToBean(params, ScmsOrderGoodsDetail.class);
+	    scmsOrderGoodsDetail.setSendStatus("0");
+	    scmsOrderGoodsDetail.setReceiveStatus("0");
 	    scmsOrderGoodsDetailRepository.save(scmsOrderGoodsDetail);
 		return RestfulRetUtils.getRetSuccess();
 	}

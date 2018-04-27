@@ -20,7 +20,9 @@ import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.order.service.ScmsOrderSendLogService;
+import com.scms.modules.order.entity.ScmsOrderGoodsDetail;
 import com.scms.modules.order.entity.ScmsOrderSendLog;
+import com.scms.modules.order.repository.ScmsOrderGoodsDetailRepository;
 import com.scms.modules.order.repository.ScmsOrderInfoRepository;
 import com.scms.modules.order.repository.ScmsOrderSendLogRepository;
 
@@ -32,6 +34,9 @@ public class ScmsOrderSendLogServiceImpl implements ScmsOrderSendLogService {
     
     @Autowired
     private ScmsOrderInfoRepository scmsOrderInfoRepository;
+    
+    @Autowired
+    private ScmsOrderGoodsDetailRepository scmsOrderGoodsDetailRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsOrderSendLog scmsOrderSendLog, Map<String, Object> params) {
@@ -47,14 +52,35 @@ public class ScmsOrderSendLogServiceImpl implements ScmsOrderSendLogService {
 	    scmsOrderSendLog.setSendByName(userInfo.getUserName());
 	    scmsOrderSendLog.setSendDate(new Date());
 		scmsOrderSendLogRepository.save(scmsOrderSendLog);
-		//更新状态
-		String orderSendStatus = MapUtils.getString(params, "orderSendStatus");
-		if(!StringUtils.isBlank(orderSendStatus)) {
-		    List<Long> idList = new ArrayList<Long>();
-		    idList.add(scmsOrderSendLog.getOrderId());
-		    scmsOrderInfoRepository.updateOrderSendStatus(orderSendStatus, idList);
-		}
-		return RestfulRetUtils.getRetSuccess();
+		//更新单个商品的发货状态
+		String idList = MapUtils.getString(params, "idList");
+		String[] ids = idList.split(",");
+        List<Long> idArray = new ArrayList<Long>();
+        for (int i = 0; i < ids.length; i++) {
+            idArray.add(StringUtils.toLong(ids[i]));
+        }
+        if(idArray.size() > 0){
+            scmsOrderGoodsDetailRepository.updateSendStatus("1", idArray);
+        }
+		
+		//判断是否需要更新订单的发货状态
+        String retStatus = "1";
+        List<ScmsOrderGoodsDetail> tmpList = scmsOrderGoodsDetailRepository.findByOrderIdAndSendStatus(scmsOrderSendLog.getOrderId(), "0");
+        if(tmpList.size() == 0) {
+            //全部发货
+            retStatus = "3";
+        }else {
+            tmpList = scmsOrderGoodsDetailRepository.findByOrderIdAndSendStatus(scmsOrderSendLog.getOrderId(), "1");
+            if(tmpList.size() == 0) {
+                //未发货
+                retStatus = "1";
+            }else {
+                //部分发货
+                retStatus = "2";
+            }
+        }
+        scmsOrderInfoRepository.updateOrderSendStatus(retStatus, scmsOrderSendLog.getOrderId());
+		return RestfulRetUtils.getRetSuccess(retStatus);
 	}
 
 }
