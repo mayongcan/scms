@@ -87,6 +87,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 	    scmsOrderInfo.setMerchantsName(scmsMerchantsInfo.getMerchantsName());
 	    //设置订单编号，格式：订单类型+年月日时分秒毫秒
 	    scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
+	    scmsOrderInfo.setOrderCustomerType("1");
 	    scmsOrderInfo.setOrderStatus("1");         //订单状态：未修改
 	    scmsOrderInfo.setOrderSendStatus("1");     //发货状态：未发货
         scmsOrderInfo.setOrderReceiveStatus("1");       //收货状态：未收货
@@ -251,12 +252,29 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
                             updateGoodsInventory(scmsOrderInfo.getShopId(), orderGoods.getGoodsId(), scmsOrderGoodsDetail, "add");
                         }
                     }
-                    scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
                     //更新客户余额, 客户余额 = 原有余额 + 订单总金额 - 订单未支付金额
                     if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
                         scmsSupplierInfo = scmsSupplierInfoRepository.findOne(scmsOrderInfo.getCustomerId());
                         if(scmsSupplierInfo != null)  
                             scmsSupplierInfoRepository.updateSupplierBalance(scmsSupplierInfo.getSupplierBalance() + scmsOrderInfo.getTotalAmount() - scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                    }
+                }
+            }else if("syd".equals(orderType)) {
+                //取消收银单，返回金额到账号。注：如果是合并支付，则金额保存一份到TotalUnPay上
+                for(Long id : idList) {
+                    scmsOrderInfo = scmsOrderInfoRepository.findOne(id);
+                    if("1".equals(scmsOrderInfo.getOrderCustomerType())) {
+                        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
+                            scmsCustomerInfo = scmsCustomerInfoRepository.findOne(scmsOrderInfo.getCustomerId());
+                            if(scmsCustomerInfo != null)  
+                                scmsCustomerInfoRepository.updateCustomerBalance(scmsCustomerInfo.getCustomerBalance() + scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                        }
+                    }else if("2".equals(scmsOrderInfo.getOrderCustomerType())) {
+                        if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L)) {
+                            scmsSupplierInfo = scmsSupplierInfoRepository.findOne(scmsOrderInfo.getCustomerId());
+                            if(scmsSupplierInfo != null)  
+                                scmsSupplierInfoRepository.updateSupplierBalance(scmsSupplierInfo.getSupplierBalance() + scmsOrderInfo.getTotalUnPay(), scmsOrderInfo.getCustomerId());
+                        }
                     }
                 }
             }
@@ -315,6 +333,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         scmsOrderInfo.setMerchantsName(scmsMerchantsInfo.getMerchantsName());
         //设置订单编号，格式：订单类型+年月日时分秒毫秒
         scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
+        scmsOrderInfo.setOrderCustomerType("2");
         scmsOrderInfo.setOrderStatus("1");              //订单状态：未修改
         scmsOrderInfo.setOrderSendStatus("1");          //发货状态：未发货
         scmsOrderInfo.setOrderReceiveStatus("1");       //收货状态：未收货
@@ -397,6 +416,47 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         
         //增加订单修改记录
         saveModifyLog(params, scmsOrderInfo, userInfo);
+        
+        return RestfulRetUtils.getRetSuccess();
+    }
+
+    @Override
+    public JSONObject getOrderSydList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsOrderInfoRepository.getList(scmsOrderInfo, params, page.getPageNumber(), page.getPageSize());
+        int count = scmsOrderInfoRepository.getListCount(scmsOrderInfo, params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, count);  
+    }
+
+    @Override
+    public JSONObject addOrderSyd(Map<String, Object> params, UserInfo userInfo) {
+        ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
+        //设置商户名称
+        ScmsMerchantsInfo scmsMerchantsInfo = scmsMerchantsInfoRepository.findOne(scmsOrderInfo.getMerchantsId());
+        scmsOrderInfo.setMerchantsName(scmsMerchantsInfo.getMerchantsName());
+        //设置订单编号，格式：订单类型+年月日时分秒毫秒
+        scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
+        scmsOrderInfo.setOrderStatus("4");              //订单状态：已完成
+        scmsOrderInfo.setOrderSendStatus("1");          //发货状态：未发货
+        scmsOrderInfo.setOrderReceiveStatus("1");       //收货状态：未收货
+        scmsOrderInfo.setIsValid(Constants.IS_VALID_VALID);
+        scmsOrderInfo.setCreateBy(userInfo.getUserId());
+        scmsOrderInfo.setCreateByName(userInfo.getUserName());
+        scmsOrderInfo.setCreateDate(new Date());
+        scmsOrderInfo = scmsOrderInfoRepository.saveAndFlush(scmsOrderInfo);
+
+        //保存订单支付信息
+        String orderPayList = MapUtils.getString(params, "orderPayList");
+        JSONArray jsonArray = JSONObject.parseArray(orderPayList);
+        if(jsonArray != null && jsonArray.size() > 0) {
+            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
+        }
+        if(scmsOrderInfo.getOrderCustomerType().equals("1")) {
+            //更新客户余额
+            updateCustomerBalance(params, scmsOrderInfo);
+        }else {
+            //更新供货商余额
+            updateSupplierBalance(params, scmsOrderInfo);
+        }
         
         return RestfulRetUtils.getRetSuccess();
     }

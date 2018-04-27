@@ -751,4 +751,49 @@ public class OrderRestful {
         }
         return json;
     }
+
+    /**
+     * 获取收银单列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getOrderSydList",method=RequestMethod.GET)
+    public JSONObject getOrderSydList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo)BeanUtils.mapToBean(params, ScmsOrderInfo.class);              
+                json = scmsOrderInfoService.getOrderSydList(pageable, scmsOrderInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 新增收银单
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addOrderSyd",method=RequestMethod.POST)
+    public JSONObject addOrderSyd(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsOrderInfoService.addOrderSyd(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 }

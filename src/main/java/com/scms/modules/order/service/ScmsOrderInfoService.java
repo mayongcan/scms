@@ -83,5 +83,22 @@ public interface ScmsOrderInfoService {
      * @return
      */
     public JSONObject editOrderJhd(Map<String, Object> params, UserInfo userInfo);
+
+    /**
+     * 获取收银单列表
+     * @param page
+     * @param scmsOrderInfo
+     * @param params
+     * @return
+     */
+    public JSONObject getOrderSydList(Pageable page, ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
+    
+    /**
+     * 新增收银单
+     * @param params
+     * @param userInfo
+     * @return
+     */
+    public JSONObject addOrderSyd(Map<String, Object> params, UserInfo userInfo);
     
 }
