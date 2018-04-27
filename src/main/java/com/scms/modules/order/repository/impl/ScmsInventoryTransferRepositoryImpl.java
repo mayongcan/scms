@@ -17,7 +17,7 @@ public class ScmsInventoryTransferRepositoryImpl extends BaseRepository implemen
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.MERCHANTS_NAME as \"merchantsName\", tb.SRC_SHOP_ID as \"srcShopId\", "
 	        + "tb.SRC_SHOP_NAME as \"srcShopName\", tb.DEST_SHOP_ID as \"destShopId\", tb.DEST_SHOP_NAME as \"destShopName\", tb.ORDER_NUM as \"orderNum\", tb.ORDER_STATUS as \"orderStatus\", "
 	        + "tb.TOTAL_NUM as \"totalNum\", tb.MEMO as \"memo\", tb.CREATE_BY as \"createBy\", tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", "
-	        + "(select count(1) from scms_order_goods tmpsog where tmpsog.ORDER_ID = tb.ID) as \"totalGoodsRows\" "
+	        + "(select count(1) from scms_inventory_transfer_goods tmpsog where tmpsog.ORDER_ID = tb.ID) as \"totalGoodsRows\" "
 			+ "FROM scms_inventory_transfer tb "
 			+ "WHERE tb.IS_VALID = 'Y'";
 
