@@ -51,5 +51,7 @@ public class ScmsMerchantsUser implements Serializable {
     // 是否店铺管理员
     @Column(name = "IS_ADMIN", length = 2)
     private String isAdmin;
-	
+
+    @Column(name = "IS_BLOCK", length = 2)
+    private String isBlock;
 }

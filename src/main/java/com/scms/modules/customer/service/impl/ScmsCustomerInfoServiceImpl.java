@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.common.Constants;
 import com.gimplatform.core.entity.UserInfo;
+import com.gimplatform.core.service.DistrictService;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
@@ -29,6 +30,9 @@ public class ScmsCustomerInfoServiceImpl implements ScmsCustomerInfoService {
     @Autowired
     private ScmsCustomerInfoRepository scmsCustomerInfoRepository;
 
+    @Autowired
+    private DistrictService districtService;
+
 	@Override
 	public JSONObject getList(Pageable page, ScmsCustomerInfo scmsCustomerInfo, Map<String, Object> params) {
 		List<Map<String, Object>> list = scmsCustomerInfoRepository.getList(scmsCustomerInfo, params, page.getPageNumber(), page.getPageSize());
@@ -42,6 +46,10 @@ public class ScmsCustomerInfoServiceImpl implements ScmsCustomerInfoService {
 		scmsCustomerInfo.setIsValid(Constants.IS_VALID_VALID);
 		scmsCustomerInfo.setCreateBy(userInfo.getUserId());
 		scmsCustomerInfo.setCreateDate(new Date());
+        //判断是否需要获取areaCode（app传输过来的就需要获取areaCode）
+        if(StringUtils.isBlank(scmsCustomerInfo.getAreaCode()) && !StringUtils.isBlank(scmsCustomerInfo.getAreaName())) {
+            scmsCustomerInfo.setAreaCode(districtService.getAreaCode(scmsCustomerInfo.getAreaName()));
+        }
 		scmsCustomerInfoRepository.save(scmsCustomerInfo);
 		return RestfulRetUtils.getRetSuccess();
 	}
@@ -53,6 +61,10 @@ public class ScmsCustomerInfoServiceImpl implements ScmsCustomerInfoService {
 		if(scmsCustomerInfoInDb == null){
 			return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
 		}
+        //判断是否需要获取areaCode（app传输过来的就需要获取areaCode）
+        if(StringUtils.isBlank(scmsCustomerInfo.getAreaCode()) && !StringUtils.isBlank(scmsCustomerInfo.getAreaName())) {
+            scmsCustomerInfo.setAreaCode(districtService.getAreaCode(scmsCustomerInfo.getAreaName()));
+        }
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsCustomerInfo, scmsCustomerInfoInDb);
 		scmsCustomerInfoRepository.save(scmsCustomerInfoInDb);

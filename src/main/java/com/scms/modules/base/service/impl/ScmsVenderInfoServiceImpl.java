@@ -63,6 +63,8 @@ public class ScmsVenderInfoServiceImpl implements ScmsVenderInfoService {
         }
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsVenderInfo, scmsVenderInfoInDb);
+		//更新图片
+		scmsVenderInfoInDb.setVenderPhoto(scmsVenderInfo.getVenderPhoto());
 		scmsVenderInfoRepository.save(scmsVenderInfoInDb);
 		return RestfulRetUtils.getRetSuccess();
 	}

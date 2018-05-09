@@ -42,6 +42,12 @@ public class UserRestful {
     @Autowired
     private ScmsUserPointService scmsUserPointService;
 
+    @RequestMapping(value="/userListIndex", method=RequestMethod.GET)
+    public JSONObject userListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/userPrivilegeIndex", method=RequestMethod.GET)
+    public JSONObject userPrivilegeIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
     @RequestMapping(value="/commissionRuleIndex", method=RequestMethod.GET)
     public JSONObject commissionRuleIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 

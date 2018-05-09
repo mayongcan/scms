@@ -21,8 +21,8 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
+import com.scms.modules.base.entity.ScmsCarouselImage;
 import com.scms.modules.base.entity.ScmsColorInfo;
-import com.scms.modules.base.entity.ScmsDailyExpenses;
 import com.scms.modules.base.entity.ScmsFeedbackInfo;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.entity.ScmsPayInfo;
@@ -32,8 +32,8 @@ import com.scms.modules.base.entity.ScmsTagInfo;
 import com.scms.modules.base.entity.ScmsTextureInfo;
 import com.scms.modules.base.entity.ScmsTransportInfo;
 import com.scms.modules.base.entity.ScmsVenderInfo;
+import com.scms.modules.base.service.ScmsCarouselImageService;
 import com.scms.modules.base.service.ScmsColorInfoService;
-import com.scms.modules.base.service.ScmsDailyExpensesService;
 import com.scms.modules.base.service.ScmsFeedbackInfoService;
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
 import com.scms.modules.base.service.ScmsPayInfoService;
@@ -78,7 +78,7 @@ public class BaseRestful {
     private ScmsVenderInfoService scmsVenderInfoService;
     
     @Autowired
-    private ScmsDailyExpensesService scmsDailyExpensesService;
+    private ScmsCarouselImageService scmsCarouselImageService;
     
     @Autowired
     private ScmsFeedbackInfoService scmsFeedbackInfoService;
@@ -109,15 +109,21 @@ public class BaseRestful {
 
     @RequestMapping(value="/tagInfoIndex", method=RequestMethod.GET)
     public JSONObject tagInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
-
+    
     @RequestMapping(value="/venderInfoIndex", method=RequestMethod.GET)
     public JSONObject venderInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    
+    @RequestMapping(value="/printIndex", method=RequestMethod.GET)
+    public JSONObject printIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/dailyExpensensIndex", method=RequestMethod.GET)
     public JSONObject dailyExpensensIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/feedbackInfoIndex", method=RequestMethod.GET)
     public JSONObject feedbackInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/carouselImageIndex", method=RequestMethod.GET)
+    public JSONObject carouselImageIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     /**
      * 获取列表
@@ -950,96 +956,6 @@ public class BaseRestful {
      * @param request
      * @return
      */
-    @RequestMapping(value="/getDailyExpensesList",method=RequestMethod.GET)
-    public JSONObject getDailyExpensesList(HttpServletRequest request, @RequestParam Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
-                ScmsDailyExpenses scmsDailyExpenses = (ScmsDailyExpenses)BeanUtils.mapToBean(params, ScmsDailyExpenses.class);              
-                json = scmsDailyExpensesService.getList(pageable, scmsDailyExpenses, params);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    
-    /**
-     * 新增信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/addDailyExpenses",method=RequestMethod.POST)
-    public JSONObject addDailyExpenses(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsDailyExpensesService.add(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 编辑信息
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/editDailyExpenses",method=RequestMethod.POST)
-    public JSONObject editDailyExpenses(HttpServletRequest request, @RequestBody Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsDailyExpensesService.edit(params, userInfo);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 删除信息
-     * @param request
-     * @param idsList
-     * @return
-     */
-    @RequestMapping(value="/delDailyExpenses",method=RequestMethod.POST)
-    public JSONObject delDailyExpenses(HttpServletRequest request,@RequestBody String idsList){
-        JSONObject json = new JSONObject();
-        try {
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                json = scmsDailyExpensesService.del(idsList, userInfo);
-            }
-        } catch (Exception e) {
-            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 获取列表
-     * @param request
-     * @return
-     */
     @RequestMapping(value="/getFeedbackInfoList",method=RequestMethod.GET)
     public JSONObject getFeedbackInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -1120,6 +1036,118 @@ public class BaseRestful {
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getCarouselImageList",method=RequestMethod.GET)
+    public JSONObject getCarouselImageList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsCarouselImage scmsCarouselImage = (ScmsCarouselImage)BeanUtils.mapToBean(params, ScmsCarouselImage.class);              
+                json = scmsCarouselImageService.getList(pageable, scmsCarouselImage, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addCarouselImage",method=RequestMethod.POST)
+    public JSONObject addCarouselImage(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCarouselImageService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editCarouselImage",method=RequestMethod.POST)
+    public JSONObject editCarouselImage(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCarouselImageService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 删除信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delCarouselImage",method=RequestMethod.POST)
+    public JSONObject delCarouselImage(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCarouselImageService.del(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 保存排序结果
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/saveOrderCarouselImage",method=RequestMethod.POST)
+    public JSONObject saveOrderCarouselImage(HttpServletRequest request, @RequestBody String params){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsCarouselImageService.saveOrderCarouselImage(params);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","保存排序结果失败");
             logger.error(e.getMessage(), e);
         }
         return json;

@@ -29,11 +29,13 @@ import com.scms.modules.goods.entity.ScmsGoodsExtraDiscount;
 import com.scms.modules.goods.entity.ScmsGoodsExtraPrice;
 import com.scms.modules.goods.entity.ScmsGoodsInfo;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
+import com.scms.modules.goods.entity.ScmsGoodsInventoryFlow;
 import com.scms.modules.goods.entity.ScmsGoodsModifyLog;
 import com.scms.modules.goods.service.ScmsGoodsCategoryService;
 import com.scms.modules.goods.service.ScmsGoodsExtraDiscountService;
 import com.scms.modules.goods.service.ScmsGoodsExtraPriceService;
 import com.scms.modules.goods.service.ScmsGoodsInfoService;
+import com.scms.modules.goods.service.ScmsGoodsInventoryFlowService;
 import com.scms.modules.goods.service.ScmsGoodsInventoryService;
 import com.scms.modules.goods.service.ScmsGoodsModifyLogService;
 
@@ -65,6 +67,9 @@ public class GoodsRestful {
     
     @Autowired
     private ScmsGoodsModifyLogService scmsGoodsModifyLogService;
+    
+    @Autowired
+    private ScmsGoodsInventoryFlowService scmsGoodsInventoryFlowService;
     
 	@RequestMapping(value="/goodsCategoryIndex", method=RequestMethod.GET)
 	public JSONObject goodsCategoryIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -351,6 +356,29 @@ public class GoodsRestful {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
                 ScmsGoodsModifyLog scmsGoodsModifyLog = (ScmsGoodsModifyLog)BeanUtils.mapToBean(params, ScmsGoodsModifyLog.class);              
                 json = scmsGoodsModifyLogService.getList(pageable, scmsGoodsModifyLog, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取商品库存流水列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getGoodsInventoryFlowList",method=RequestMethod.GET)
+    public JSONObject getGoodsInventoryFlowList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsGoodsInventoryFlow scmsGoodsInventoryFlow = (ScmsGoodsInventoryFlow)BeanUtils.mapToBean(params, ScmsGoodsInventoryFlow.class);              
+                json = scmsGoodsInventoryFlowService.getList(pageable, scmsGoodsInventoryFlow, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");

@@ -16,7 +16,7 @@ import com.scms.modules.base.repository.custom.ScmsDailyExpensesRepositoryCustom
 
 public class ScmsDailyExpensesRepositoryImpl extends BaseRepository implements ScmsDailyExpensesRepositoryCustom{
 
-	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.EXPENSES_NAME as \"expensesName\", tb.EXPENSES_NUM as \"expensesNum\", tb.CREATE_BY as \"createBy\", "
+	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.EXPENSES_NAME as \"expensesName\", tb.EXPENSES_NUM as \"expensesNum\", tb.CREATE_BY as \"createBy\", "
 	        + "tb.CREATE_DATE as \"createDate\", tb.IS_VALID as \"isValid\", user.USER_NAME as \"createByName\" "
 			+ "FROM scms_daily_expenses tb left join sys_user_info user on user.USER_ID = tb.CREATE_BY "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
@@ -51,6 +51,11 @@ public class ScmsDailyExpensesRepositoryImpl extends BaseRepository implements S
 		String expensesName = MapUtils.getString(params, "expensesName");
         String beginTime = MapUtils.getString(params, "beginTime");
         String endTime = MapUtils.getString(params, "endTime");
+        if (scmsDailyExpenses != null && scmsDailyExpenses.getMerchantsId() != null) {
+            sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(scmsDailyExpenses.getMerchantsId());
+        }
 		if(!StringUtils.isBlank(expensesName)) {
 		    sqlParams.querySql.append(getLikeSql("tb.EXPENSES_NAME", ":expensesName"));
             sqlParams.paramsList.add("expensesName");

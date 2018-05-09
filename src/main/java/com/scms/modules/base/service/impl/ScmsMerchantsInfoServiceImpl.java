@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.common.Constants;
 import com.gimplatform.core.entity.UserInfo;
+import com.gimplatform.core.service.DistrictService;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
@@ -28,6 +29,9 @@ public class ScmsMerchantsInfoServiceImpl implements ScmsMerchantsInfoService {
 	
     @Autowired
     private ScmsMerchantsInfoRepository scmsMerchantsInfoRepository;
+
+    @Autowired
+    private DistrictService districtService;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsMerchantsInfo scmsMerchantsInfo, Map<String, Object> params) {
@@ -59,11 +63,15 @@ public class ScmsMerchantsInfoServiceImpl implements ScmsMerchantsInfoService {
 			return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
 		}
 		//判断新的绑定用户是否已更改，如果更改了，是否已绑定其他商户
-		if(!scmsMerchantsInfo.getUserId().equals(scmsMerchantsInfoInDb.getUserId())) {
+		if(scmsMerchantsInfo.getUserId() != null && !scmsMerchantsInfo.getUserId().equals(scmsMerchantsInfoInDb.getUserId())) {
 		    List<ScmsMerchantsInfo> hasList = scmsMerchantsInfoRepository.findByUserIdAndIsValid(scmsMerchantsInfo.getUserId(), "Y");
 	        if(hasList != null && hasList.size() > 0) {
 	            return RestfulRetUtils.getErrorMsg("51006", "当前选择的用户已绑定其他商户，请重新选择！");
 	        }
+		}
+		//判断是否需要获取areaCode（app传输过来的就需要获取areaCode）
+		if(StringUtils.isBlank(scmsMerchantsInfo.getAreaCode()) && !StringUtils.isBlank(scmsMerchantsInfo.getAreaName())) {
+		    scmsMerchantsInfo.setAreaCode(districtService.getAreaCode(scmsMerchantsInfo.getAreaName()));
 		}
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsMerchantsInfo, scmsMerchantsInfoInDb);

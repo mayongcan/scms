@@ -27,7 +27,7 @@ public class ScmsShopInfoRepositoryImpl extends BaseRepository implements ScmsSh
 		//生成查询条件
 		SqlParams sqlParams = genListWhere(SQL_GET_LIST, scmsShopInfo, params);
 		//添加分页和排序
-		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
+		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID ASC ", " \"id\" ASC ");
 		return getResultList(sqlParams);
 	}
 

@@ -20,7 +20,7 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
                     + "DATE_FORMAT(tb.create_date,'%Y-%m-%d') as \"createDate\", tb.ADDRESS as \"address\", DATE_FORMAT(ul.valid_begin_date,'%Y-%m-%d') as \"beginDate\", DATE_FORMAT(ul.valid_end_date,'%Y-%m-%d') as \"endDate\", "
                     + "ul.lock_begin_date as \"lockBeginDate\", ul.lock_end_date as \"lockEndDate\", ul.lock_reason as \"lockReason\", DATE_FORMAT(ul.last_logon_date,'%Y-%m-%d') as \"lastLogonDate\", "
                     + "ul.last_logon_ip as \"lastLogonIP\", ul.access_ipaddress as \"ipAddress\", ul.online_status as \"onLineStatus\", "
-                    + "si.SHOP_NAME as \"shopName\", mu.IS_ADMIN as \"isAdmin\", mu.ID as \"merchantsUserId\" "
+                    + "si.SHOP_NAME as \"shopName\", mu.IS_ADMIN as \"isAdmin\", mu.IS_BLOCK as \"isBlock\", mu.ID as \"merchantsUserId\" "
             + "FROM sys_user_info tb left join scms_merchants_user mu on mu.USER_ID = tb.USER_ID "
                     + "left join scms_shop_info si on si.ID = mu.SHOP_ID "
                     + "left join sys_user_logon ul on tb.user_id = ul.user_id "
@@ -102,6 +102,12 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
             sqlParams.querySql.append(" AND tb.USER_ID in(select distinct(USER_ID) from sys_user_role where ROLE_ID in(:roleList)) ");
             sqlParams.paramsList.add("roleList");
             sqlParams.valueList.add(roleList);
+        }
+        String isBlock = MapUtils.getString(params, "isBlock");
+        if(!StringUtils.isBlank(isBlock)) {
+            sqlParams.querySql.append(" AND mu.IS_BLOCK = :isBlock ");
+            sqlParams.paramsList.add("isBlock");
+            sqlParams.valueList.add(isBlock);
         }
         return sqlParams;
 	}
