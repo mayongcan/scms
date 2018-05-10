@@ -55,6 +55,9 @@ public class ScmsCarouselImage implements Serializable {
 	@Column(name = "IMAGE_PATH", length = 1024)
 	private String imagePath;
 
+    @Column(name = "ACTION_URL", length = 512)
+    private String actionUrl;
+
     @Column(name = "DISP_ORDER", precision = 10, scale = 0)
     private Long dispOrder;
 	

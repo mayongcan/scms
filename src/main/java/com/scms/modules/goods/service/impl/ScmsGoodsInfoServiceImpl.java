@@ -85,6 +85,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		    for(int i = 0; i < jsonArray.size(); i++) {
 		        obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsGoodsInventory.class);
 		        if(obj != null) {
+		            obj.setMerchantsId(scmsGoodsInfo.getMerchantsId());
 		            obj.setGoodsId(scmsGoodsInfo.getId());
 		            scmsGoodsInventoryService.saveInventory(obj);
 		        }
@@ -189,6 +190,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                             List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryService.findInventory(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId, textureId);
                             if(tmpList == null || tmpList.size() == 0) {
                                 ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+                                scmsGoodsInventory.setMerchantsId(scmsGoodsInfo.getMerchantsId());
                                 scmsGoodsInventory.setShopId(shop.getId());
                                 scmsGoodsInventory.setGoodsId(scmsGoodsInfoInDb.getId());
                                 scmsGoodsInventory.setGoodsBarcode("");

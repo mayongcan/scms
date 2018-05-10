@@ -26,6 +26,13 @@ import com.scms.modules.user.repository.custom.ScmsMerchantsUserRepositoryCustom
 public interface ScmsMerchantsUserRepository extends JpaRepository<ScmsMerchantsUser, Long>, JpaSpecificationExecutor<ScmsMerchantsUser>, ScmsMerchantsUserRepositoryCustom {
 	
 	List<ScmsMerchantsUser> findByUserId(Long userId);
+    
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_merchants_user "
+            + "SET PRIVILEGE_CONTENT = :privilegeContent "
+            + "WHERE ID = :id ", nativeQuery = true)
+    public void updatePrivilegeContent(@Param("privilegeContent")String privilegeContent, @Param("id")Long id);
 	
 	@Transactional
     @Modifying(clearAutomatically = true)

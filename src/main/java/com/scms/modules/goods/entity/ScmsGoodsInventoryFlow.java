@@ -42,6 +42,10 @@ public class ScmsGoodsInventoryFlow implements Serializable {
 	@TableGenerator(name = "ScmsGoodsInventoryFlowIdGenerator", table = "sys_tb_generator", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VALUE", pkColumnValue = "SCMS_GOODS_INVENTORY_FLOW_PK", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 10, scale = 0)
 	private Long id;
+    
+    // 商户ID
+    @Column(name = "MERCHANTS_ID", precision = 10, scale = 0)
+    private Long merchantsId;
 	
 	// 所属店铺ID
 	@Column(name = "SHOP_ID", precision = 10, scale = 0)

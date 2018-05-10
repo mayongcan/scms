@@ -285,7 +285,28 @@ public class UserRestful {
         return json;
     }
     
-
+    /**
+     * 保存用户权限
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/savePrivilege",method=RequestMethod.POST)
+    public JSONObject savePrivilege(HttpServletRequest request,@RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.savePrivilege(params, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","设置店铺管理员失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
     /**
      * 获取列表
      * @param request

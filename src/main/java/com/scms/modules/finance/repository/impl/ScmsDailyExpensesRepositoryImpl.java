@@ -1,7 +1,7 @@
 /*
  * Copyright(c) 2018 gimplatform(通用信息管理平台) All rights reserved.
  */
-package com.scms.modules.base.repository.impl;
+package com.scms.modules.finance.repository.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -11,8 +11,8 @@ import org.apache.commons.collections4.MapUtils;
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
 import com.gimplatform.core.utils.StringUtils;
-import com.scms.modules.base.entity.ScmsDailyExpenses;
-import com.scms.modules.base.repository.custom.ScmsDailyExpensesRepositoryCustom;
+import com.scms.modules.finance.entity.ScmsDailyExpenses;
+import com.scms.modules.finance.repository.custom.ScmsDailyExpensesRepositoryCustom;
 
 public class ScmsDailyExpensesRepositoryImpl extends BaseRepository implements ScmsDailyExpensesRepositoryCustom{
 

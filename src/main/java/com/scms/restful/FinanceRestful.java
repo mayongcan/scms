@@ -20,8 +20,10 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
-import com.scms.modules.base.entity.ScmsDailyExpenses;
-import com.scms.modules.base.service.ScmsDailyExpensesService;
+import com.scms.modules.finance.entity.ScmsDailyExpenses;
+import com.scms.modules.finance.entity.ScmsFinanceFlow;
+import com.scms.modules.finance.service.ScmsDailyExpensesService;
+import com.scms.modules.finance.service.ScmsFinanceFlowService;
 
 @RestController
 @RequestMapping(value = "/api/scms/finance")
@@ -31,6 +33,9 @@ public class FinanceRestful {
     
     @Autowired
     private ScmsDailyExpensesService scmsDailyExpensesService;
+    
+    @Autowired
+    private ScmsFinanceFlowService scmsFinanceFlowService;
 
     
     /**
@@ -122,4 +127,28 @@ public class FinanceRestful {
         }
         return json;
     }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getFinanceFlowList",method=RequestMethod.GET)
+    public JSONObject getFinanceFlowList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsFinanceFlow scmsFinanceFlow = (ScmsFinanceFlow)BeanUtils.mapToBean(params, ScmsFinanceFlow.class);              
+                json = scmsFinanceFlowService.getList(pageable, scmsFinanceFlow, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
 }

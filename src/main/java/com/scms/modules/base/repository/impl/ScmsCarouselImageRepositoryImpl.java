@@ -13,7 +13,7 @@ import com.scms.modules.base.repository.custom.ScmsCarouselImageRepositoryCustom
 public class ScmsCarouselImageRepositoryImpl extends BaseRepository implements ScmsCarouselImageRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.IMAGE_NAME as \"imageName\", tb.IMAGE_PATH as \"imagePath\", "
-	        + "tb.DISP_ORDER as \"dispOrder\", tb.CREATE_BY as \"createBy\", tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\" "
+	        + "tb.ACTION_URL as \"actionUrl\", tb.DISP_ORDER as \"dispOrder\", tb.CREATE_BY as \"createBy\", tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\" "
 			+ "FROM scms_carousel_image tb "
 			+ "WHERE 1 = 1 ";
 

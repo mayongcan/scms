@@ -16,7 +16,7 @@ import com.scms.modules.goods.repository.custom.ScmsGoodsInventoryFlowRepository
 
 public class ScmsGoodsInventoryFlowRepositoryImpl extends BaseRepository implements ScmsGoodsInventoryFlowRepositoryCustom{
 
-	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.SHOP_ID as \"shopId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
+	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.SHOP_ID as \"shopId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
 	        + "tb.COLOR_ID as \"colorId\", tb.COLOR_NAME as \"colorName\", tb.TEXTURE_ID as \"textureId\", tb.TEXTURE_NAME as \"textureName\", tb.SIZE_ID as \"sizeId\", "
 	        + "tb.SIZE_NAME as \"sizeName\", tb.OLD_NUM as \"oldNum\", tb.NEW_NUM as \"newNum\", tb.OPERATE_NAME as \"operateName\", tb.ORDER_NUM as \"orderNum\", "
 	        + "tb.ORDER_TYPE as \"orderType\", tb.CREATE_DATE as \"createDate\" "
@@ -50,6 +50,11 @@ public class ScmsGoodsInventoryFlowRepositoryImpl extends BaseRepository impleme
 	private SqlParams genListWhere(String sql, ScmsGoodsInventoryFlow scmsGoodsInventoryFlow, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
+        if (scmsGoodsInventoryFlow != null && scmsGoodsInventoryFlow.getMerchantsId() != null) {
+            sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(scmsGoodsInventoryFlow.getMerchantsId());
+        }
 		if (scmsGoodsInventoryFlow != null && scmsGoodsInventoryFlow.getShopId() != null) {
 			sqlParams.querySql.append(" AND tb.SHOP_ID = :shopId ");
 			sqlParams.paramsList.add("shopId");

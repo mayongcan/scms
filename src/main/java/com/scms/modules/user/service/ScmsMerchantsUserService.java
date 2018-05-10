@@ -35,5 +35,7 @@ public interface ScmsMerchantsUserService {
     public JSONObject editUser(Map<String, Object> params, UserInfo userInfo);
     
     public JSONObject delUser(String idsList, UserInfo userInfo);
+    
+    public JSONObject savePrivilege(Map<String, Object> params, UserInfo userInfo);
 
 }

@@ -75,5 +75,5 @@ public interface ScmsGoodsInventoryService {
 	 * @param scmsOrderGoodsDetail
 	 * @param updateType
 	 */
-	public void updateOrderInventory(String orderNum, String orderType, String operatePrefix, Long shopId, Long goodsId, ScmsOrderGoodsDetail scmsOrderGoodsDetail, String updateType);
+	public void updateOrderInventory(String orderNum, String orderType, String operatePrefix, Long merchantsId, Long shopId, Long goodsId, ScmsOrderGoodsDetail scmsOrderGoodsDetail, String updateType);
 }

@@ -1,12 +1,13 @@
 /*
  * Copyright(c) 2018 gimplatform(通用信息管理平台) All rights reserved.
  */
-package com.scms.modules.base.repository.custom;
+package com.scms.modules.finance.repository.custom;
 
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.repository.NoRepositoryBean;
-import com.scms.modules.base.entity.ScmsDailyExpenses;
+
+import com.scms.modules.finance.entity.ScmsDailyExpenses;
 
 /**
  * 自定义实体资源类接口

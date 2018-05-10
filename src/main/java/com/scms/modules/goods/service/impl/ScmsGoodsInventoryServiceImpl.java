@@ -80,7 +80,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
     }
 
     @Override
-    public void updateOrderInventory(String orderNum, String orderType, String operatePrefix, Long shopId, Long goodsId, ScmsOrderGoodsDetail scmsOrderGoodsDetail, String updateType) {
+    public void updateOrderInventory(String orderNum, String orderType, String operatePrefix, Long merchantsId, Long shopId, Long goodsId, ScmsOrderGoodsDetail scmsOrderGoodsDetail, String updateType) {
         //更新库存
         List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, 
                 goodsId, scmsOrderGoodsDetail.getGoodsColorId(), scmsOrderGoodsDetail.getGoodsSizeId(), scmsOrderGoodsDetail.getGoodsTextureId());
@@ -113,6 +113,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
         }else {
             //如果库存不存在，则新增库存信息
             ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+            scmsGoodsInventory.setMerchantsId(merchantsId);
             scmsGoodsInventory.setShopId(shopId);
             scmsGoodsInventory.setGoodsId(goodsId);
             scmsGoodsInventory.setGoodsBarcode(scmsOrderGoodsDetail.getGoodsBarcode());
@@ -158,6 +159,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
         }
         //更新库存流水
         ScmsGoodsInventoryFlow scmsGoodsInventoryFlow = new ScmsGoodsInventoryFlow();
+        scmsGoodsInventoryFlow.setMerchantsId(scmsGoodsInventory.getMerchantsId());
         scmsGoodsInventoryFlow.setShopId(scmsGoodsInventory.getShopId());
         scmsGoodsInventoryFlow.setGoodsId(scmsGoodsInventory.getGoodsId());
         scmsGoodsInventoryFlow.setGoodsBarcode(scmsGoodsInventory.getGoodsBarcode());

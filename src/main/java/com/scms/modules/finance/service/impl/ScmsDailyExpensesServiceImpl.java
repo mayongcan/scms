@@ -1,7 +1,7 @@
 /*
  * Copyright(c) 2018 gimplatform(通用信息管理平台) All rights reserved.
  */
-package com.scms.modules.base.service.impl;
+package com.scms.modules.finance.service.impl;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -18,10 +18,9 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
-
-import com.scms.modules.base.service.ScmsDailyExpensesService;
-import com.scms.modules.base.entity.ScmsDailyExpenses;
-import com.scms.modules.base.repository.ScmsDailyExpensesRepository;
+import com.scms.modules.finance.entity.ScmsDailyExpenses;
+import com.scms.modules.finance.repository.ScmsDailyExpensesRepository;
+import com.scms.modules.finance.service.ScmsDailyExpensesService;
 
 @Service
 public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {

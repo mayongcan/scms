@@ -1,7 +1,7 @@
 /*
  * Copyright(c) 2018 gimplatform(通用信息管理平台) All rights reserved.
  */
-package com.scms.modules.base.entity;
+package com.scms.modules.finance.entity;
 
 import java.io.Serializable;
 import java.util.Date;

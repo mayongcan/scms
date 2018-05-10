@@ -4,11 +4,15 @@
 package com.scms.modules.user.entity;
 
 import java.io.Serializable;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import lombok.AllArgsConstructor;
@@ -54,4 +58,10 @@ public class ScmsMerchantsUser implements Serializable {
 
     @Column(name = "IS_BLOCK", length = 2)
     private String isBlock;
+
+    // 权限内容
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "PRIVILEGE_CONTENT")
+    private String privilegeContent;
 }

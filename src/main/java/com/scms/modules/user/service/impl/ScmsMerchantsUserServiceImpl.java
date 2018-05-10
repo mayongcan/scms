@@ -167,4 +167,12 @@ public class ScmsMerchantsUserServiceImpl implements ScmsMerchantsUserService {
         return RestfulRetUtils.getRetSuccess();
     }
 
+    @Override
+    public JSONObject savePrivilege(Map<String, Object> params, UserInfo userInfo) {
+        String privilegeContent = MapUtils.getString(params, "privilegeContent");
+        Long id = MapUtils.getLong(params, "id");
+        scmsMerchantsUserRepository.updatePrivilegeContent(privilegeContent, id);
+        return RestfulRetUtils.getRetSuccess();
+    }
+
 }

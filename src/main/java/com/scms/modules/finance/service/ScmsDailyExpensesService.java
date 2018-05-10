@@ -1,15 +1,14 @@
 /*
  * Copyright(c) 2018 gimplatform(通用信息管理平台) All rights reserved.
  */
-package com.scms.modules.base.service;
+package com.scms.modules.finance.service;
 
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.entity.UserInfo;
-
-import com.scms.modules.base.entity.ScmsDailyExpenses;
+import com.scms.modules.finance.entity.ScmsDailyExpenses;
 
 /**
  * 服务类接口

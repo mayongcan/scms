@@ -125,6 +125,7 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
                                     }else {
                                         //如果库存不存在，则新增库存信息
                                         ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+                                        scmsGoodsInventory.setMerchantsId(scmsInventoryTransfer.getMerchantsId());
                                         scmsGoodsInventory.setShopId(scmsInventoryTransfer.getDestShopId());
                                         scmsGoodsInventory.setGoodsId(scmsInventoryTransferGoods.getGoodsId());
                                         scmsGoodsInventory.setGoodsBarcode(scmsInventoryTransferGoodsDetail.getGoodsBarcode());
