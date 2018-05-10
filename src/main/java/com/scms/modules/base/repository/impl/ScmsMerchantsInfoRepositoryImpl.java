@@ -52,6 +52,11 @@ public class ScmsMerchantsInfoRepositoryImpl extends BaseRepository implements S
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
 		String userName = MapUtils.getString(params, "userName");
+        if (scmsMerchantsInfo != null && scmsMerchantsInfo.getId() != null) {
+            sqlParams.querySql.append(" AND tb.ID = :id ");
+            sqlParams.paramsList.add("id");
+            sqlParams.valueList.add(scmsMerchantsInfo.getId());
+        }
 		if (scmsMerchantsInfo != null && scmsMerchantsInfo.getUserId() != null) {
 			sqlParams.querySql.append(" AND tb.USER_ID = :userId ");
 			sqlParams.paramsList.add("userId");

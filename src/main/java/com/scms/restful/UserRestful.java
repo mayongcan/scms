@@ -174,6 +174,116 @@ public class UserRestful {
         }
         return json;
     }
+
+    /**
+     * 设置为启用
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/unblockUser",method=RequestMethod.POST)
+    public JSONObject unblockUser(HttpServletRequest request, @RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.setUserBlock(idsList, "0", userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","启用用户失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 设置为停用
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/blockUser",method=RequestMethod.POST)
+    public JSONObject blockUser(HttpServletRequest request, @RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.setUserBlock(idsList, "1", userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","停用用户失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 新增用户
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addUser",method=RequestMethod.POST)
+    public JSONObject addUser(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.addUser(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑用户
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editUser",method=RequestMethod.POST)
+    public JSONObject editUser(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.editUser(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 删除用户
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delUser",method=RequestMethod.POST)
+    public JSONObject delUser(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsMerchantsUserService.delUser(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","设置店铺管理员失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
     
 
     /**

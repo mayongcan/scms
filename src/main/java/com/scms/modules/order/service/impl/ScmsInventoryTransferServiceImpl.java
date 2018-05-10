@@ -25,7 +25,7 @@ import com.scms.modules.order.service.ScmsInventoryTransferService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
 import com.scms.modules.goods.entity.ScmsGoodsInventory;
-import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
+import com.scms.modules.goods.service.ScmsGoodsInventoryService;
 import com.scms.modules.order.entity.ScmsInventoryTransfer;
 import com.scms.modules.order.entity.ScmsInventoryTransferGoods;
 import com.scms.modules.order.entity.ScmsInventoryTransferGoodsDetail;
@@ -49,7 +49,7 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
     private ScmsInventoryTransferGoodsDetailRepository scmsInventoryTransferGoodsDetailRepository;
     
     @Autowired
-    private ScmsGoodsInventoryRepository scmsGoodsInventoryRepository;
+    private ScmsGoodsInventoryService scmsGoodsInventoryService;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsInventoryTransfer scmsInventoryTransfer, Map<String, Object> params) {
@@ -96,18 +96,32 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
                                 scmsInventoryTransferGoodsDetailRepository.save(scmsInventoryTransferGoodsDetail);
                                 
                                 //更新库存，首先获取源库存和目标库存
-                                List<ScmsGoodsInventory> srcGoodsInventoryList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(scmsInventoryTransfer.getSrcShopId(), 
+                                List<ScmsGoodsInventory> srcGoodsInventoryList = scmsGoodsInventoryService.findInventory(scmsInventoryTransfer.getSrcShopId(), 
                                         scmsInventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                                 //减去源库存的对应商品数
                                 if(srcGoodsInventoryList != null && srcGoodsInventoryList.size() > 0) {
-                                    scmsGoodsInventoryRepository.updateGoodsInventoryNum(srcGoodsInventoryList.get(0).getInventoryNum() - scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), scmsInventoryTransfer.getSrcShopId(), 
-                                            scmsInventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
+                                    scmsGoodsInventoryService.updateGoodsInventoryNum(scmsInventoryTransfer.getOrderNum(), 
+                                            "dhd", 
+                                            "创建",
+                                            srcGoodsInventoryList.get(0).getInventoryNum() - scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), 
+                                            scmsInventoryTransfer.getSrcShopId(), 
+                                            scmsInventoryTransferGoods.getGoodsId(), 
+                                            scmsInventoryTransferGoodsDetail.getGoodsColorId(), 
+                                            scmsInventoryTransferGoodsDetail.getGoodsSizeId(), 
+                                            scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                                     //增加目标库存的商品数
-                                    List<ScmsGoodsInventory> destGoodsInventoryList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(scmsInventoryTransfer.getDestShopId(), 
+                                    List<ScmsGoodsInventory> destGoodsInventoryList = scmsGoodsInventoryService.findInventory(scmsInventoryTransfer.getDestShopId(), 
                                             scmsInventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                                     if(destGoodsInventoryList != null && destGoodsInventoryList.size() > 0) {
-                                        scmsGoodsInventoryRepository.updateGoodsInventoryNum(destGoodsInventoryList.get(0).getInventoryNum() + scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), scmsInventoryTransfer.getDestShopId(), 
-                                                scmsInventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
+                                        scmsGoodsInventoryService.updateGoodsInventoryNum(scmsInventoryTransfer.getOrderNum(), 
+                                                "dhd", 
+                                                "创建",
+                                                destGoodsInventoryList.get(0).getInventoryNum() + scmsInventoryTransferGoodsDetail.getGoodsOrderNum(),
+                                                scmsInventoryTransfer.getDestShopId(), 
+                                                scmsInventoryTransferGoods.getGoodsId(), 
+                                                scmsInventoryTransferGoodsDetail.getGoodsColorId(), 
+                                                scmsInventoryTransferGoodsDetail.getGoodsSizeId(), 
+                                                scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                                     }else {
                                         //如果库存不存在，则新增库存信息
                                         ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
@@ -121,7 +135,7 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
                                         scmsGoodsInventory.setInventorySizeId(scmsInventoryTransferGoodsDetail.getGoodsSizeId());
                                         scmsGoodsInventory.setInventorySize(scmsInventoryTransferGoodsDetail.getGoodsSizeName());
                                         scmsGoodsInventory.setInventoryNum(scmsInventoryTransferGoodsDetail.getGoodsOrderNum());
-                                        scmsGoodsInventoryRepository.save(scmsGoodsInventory);
+                                        scmsGoodsInventoryService.saveInventory(scmsGoodsInventory, scmsInventoryTransfer.getOrderNum(), "dhd", "创建");
                                     }
                                 }
                             }
@@ -134,6 +148,9 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
 		return RestfulRetUtils.getRetSuccess();
 	}
 
+	/**
+	 * 取消
+	 */
 	@Override
 	public JSONObject repeal(String idsList, UserInfo userInfo) {
 		String[] ids = idsList.split(",");
@@ -152,18 +169,32 @@ public class ScmsInventoryTransferServiceImpl implements ScmsInventoryTransferSe
 	                List<ScmsInventoryTransferGoodsDetail> inventoryTransferGoodsDetalList = scmsInventoryTransferGoodsDetailRepository.findByDetailId(inventoryTransferGoods.getId());
 	                for(ScmsInventoryTransferGoodsDetail scmsInventoryTransferGoodsDetail : inventoryTransferGoodsDetalList) {
 	                    //首先加上源库存的值，然后减去目标库存的值
-                        List<ScmsGoodsInventory> srcGoodsInventoryList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(scmsInventoryTransfer.getSrcShopId(), 
+                        List<ScmsGoodsInventory> srcGoodsInventoryList = scmsGoodsInventoryService.findInventory(scmsInventoryTransfer.getSrcShopId(), 
                                 inventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                         //减去源库存的对应商品数
                         if(srcGoodsInventoryList != null && srcGoodsInventoryList.size() > 0) {
-                            scmsGoodsInventoryRepository.updateGoodsInventoryNum(srcGoodsInventoryList.get(0).getInventoryNum() + scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), scmsInventoryTransfer.getSrcShopId(), 
-                                    inventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
+                            scmsGoodsInventoryService.updateGoodsInventoryNum(scmsInventoryTransfer.getOrderNum(), 
+                                    "dhd", 
+                                    "取消", 
+                                    srcGoodsInventoryList.get(0).getInventoryNum() + scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), 
+                                    scmsInventoryTransfer.getSrcShopId(), 
+                                    inventoryTransferGoods.getGoodsId(), 
+                                    scmsInventoryTransferGoodsDetail.getGoodsColorId(), 
+                                    scmsInventoryTransferGoodsDetail.getGoodsSizeId(), 
+                                    scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                             //增加目标库存的商品数
-                            List<ScmsGoodsInventory> destGoodsInventoryList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(scmsInventoryTransfer.getDestShopId(), 
+                            List<ScmsGoodsInventory> destGoodsInventoryList = scmsGoodsInventoryService.findInventory(scmsInventoryTransfer.getDestShopId(), 
                                     inventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                             if(destGoodsInventoryList != null && destGoodsInventoryList.size() > 0) {
-                                scmsGoodsInventoryRepository.updateGoodsInventoryNum(destGoodsInventoryList.get(0).getInventoryNum() - scmsInventoryTransferGoodsDetail.getGoodsOrderNum(), scmsInventoryTransfer.getDestShopId(), 
-                                        inventoryTransferGoods.getGoodsId(), scmsInventoryTransferGoodsDetail.getGoodsColorId(), scmsInventoryTransferGoodsDetail.getGoodsSizeId(), scmsInventoryTransferGoodsDetail.getGoodsTextureId());
+                                scmsGoodsInventoryService.updateGoodsInventoryNum(scmsInventoryTransfer.getOrderNum(), 
+                                        "dhd", 
+                                        "取消", 
+                                        destGoodsInventoryList.get(0).getInventoryNum() - scmsInventoryTransferGoodsDetail.getGoodsOrderNum(),
+                                        scmsInventoryTransfer.getDestShopId(), 
+                                        inventoryTransferGoods.getGoodsId(), 
+                                        scmsInventoryTransferGoodsDetail.getGoodsColorId(), 
+                                        scmsInventoryTransferGoodsDetail.getGoodsSizeId(), 
+                                        scmsInventoryTransferGoodsDetail.getGoodsTextureId());
                             }
                         }
 	                }

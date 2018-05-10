@@ -22,7 +22,7 @@ import com.gimplatform.core.utils.RestfulRetUtils;
 import com.scms.modules.order.service.ScmsInventoryCheckService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
-import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
+import com.scms.modules.goods.service.ScmsGoodsInventoryService;
 import com.scms.modules.order.entity.ScmsInventoryCheck;
 import com.scms.modules.order.entity.ScmsInventoryCheckGoods;
 import com.scms.modules.order.entity.ScmsInventoryCheckGoodsDetail;
@@ -30,6 +30,11 @@ import com.scms.modules.order.repository.ScmsInventoryCheckGoodsDetailRepository
 import com.scms.modules.order.repository.ScmsInventoryCheckGoodsRepository;
 import com.scms.modules.order.repository.ScmsInventoryCheckRepository;
 
+/**
+ * 库存盘点
+ * @author zzd
+ *
+ */
 @Service
 public class ScmsInventoryCheckServiceImpl implements ScmsInventoryCheckService {
 	
@@ -46,7 +51,7 @@ public class ScmsInventoryCheckServiceImpl implements ScmsInventoryCheckService 
     private ScmsInventoryCheckGoodsDetailRepository scmsInventoryCheckGoodsDetailRepository;
     
     @Autowired
-    private ScmsGoodsInventoryRepository scmsGoodsInventoryRepository;
+    private ScmsGoodsInventoryService scmsGoodsInventoryService;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsInventoryCheck scmsInventoryCheck, Map<String, Object> params) {
@@ -92,8 +97,15 @@ public class ScmsInventoryCheckServiceImpl implements ScmsInventoryCheckService 
                                 scmsInventoryCheckGoodsDetailRepository.save(scmsInventoryCheckGoodsDetail);
                                 
                                 //更新库存，直接更新为盘点后的库存
-                                scmsGoodsInventoryRepository.updateGoodsInventoryNum(scmsInventoryCheckGoodsDetail.getGoodsAfterNum(), scmsInventoryCheck.getShopId(), 
-                                        scmsInventoryCheckGoods.getGoodsId(), scmsInventoryCheckGoodsDetail.getGoodsColorId(), scmsInventoryCheckGoodsDetail.getGoodsSizeId(), scmsInventoryCheckGoodsDetail.getGoodsTextureId());                                
+                                scmsGoodsInventoryService.updateGoodsInventoryNum(scmsInventoryCheck.getOrderNum(), 
+                                        "pdd", 
+                                        "创建", 
+                                        scmsInventoryCheckGoodsDetail.getGoodsAfterNum(), 
+                                        scmsInventoryCheck.getShopId(), 
+                                        scmsInventoryCheckGoods.getGoodsId(), 
+                                        scmsInventoryCheckGoodsDetail.getGoodsColorId(), 
+                                        scmsInventoryCheckGoodsDetail.getGoodsSizeId(), 
+                                        scmsInventoryCheckGoodsDetail.getGoodsTextureId());                            
                             }
                         }
                     }

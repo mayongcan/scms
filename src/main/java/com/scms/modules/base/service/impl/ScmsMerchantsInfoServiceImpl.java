@@ -22,13 +22,18 @@ import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
+import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.repository.ScmsMerchantsInfoRepository;
+import com.scms.modules.base.repository.ScmsShopInfoRepository;
 
 @Service
 public class ScmsMerchantsInfoServiceImpl implements ScmsMerchantsInfoService {
 	
     @Autowired
     private ScmsMerchantsInfoRepository scmsMerchantsInfoRepository;
+    
+    @Autowired
+    private ScmsShopInfoRepository scmsShopInfoRepository;
 
     @Autowired
     private DistrictService districtService;
@@ -51,7 +56,16 @@ public class ScmsMerchantsInfoServiceImpl implements ScmsMerchantsInfoService {
 		scmsMerchantsInfo.setIsValid(Constants.IS_VALID_VALID);
 		scmsMerchantsInfo.setCreateBy(userInfo.getUserId());
 		scmsMerchantsInfo.setCreateDate(new Date());
-		scmsMerchantsInfoRepository.save(scmsMerchantsInfo);
+		scmsMerchantsInfo = scmsMerchantsInfoRepository.saveAndFlush(scmsMerchantsInfo);
+		
+		//新增商户成功后，创建一个默认店铺
+        ScmsShopInfo scmsShopInfo = new ScmsShopInfo();
+        scmsShopInfo.setMerchantsId(scmsMerchantsInfo.getId());
+        scmsShopInfo.setShopName("默认店铺");
+        scmsShopInfo.setIsValid(Constants.IS_VALID_VALID);
+        scmsShopInfo.setCreateBy(userInfo.getUserId());
+        scmsShopInfo.setCreateDate(new Date());
+        scmsShopInfoRepository.save(scmsShopInfo);
 		return RestfulRetUtils.getRetSuccess();
 	}
 

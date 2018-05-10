@@ -27,5 +27,13 @@ public interface ScmsMerchantsUserService {
     public JSONObject unBindUser(String idsList);
     
     public JSONObject setShopAdmin(String idsList, String isAdmin, UserInfo userInfo);
+    
+    public JSONObject setUserBlock(String idsList, String isBlock, UserInfo userInfo);
+    
+    public JSONObject addUser(Map<String, Object> params, UserInfo userInfo);
+    
+    public JSONObject editUser(Map<String, Object> params, UserInfo userInfo);
+    
+    public JSONObject delUser(String idsList, UserInfo userInfo);
 
 }

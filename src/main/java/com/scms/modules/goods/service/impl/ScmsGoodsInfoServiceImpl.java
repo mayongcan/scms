@@ -22,6 +22,7 @@ import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
 
 import com.scms.modules.goods.service.ScmsGoodsInfoService;
+import com.scms.modules.goods.service.ScmsGoodsInventoryService;
 import com.scms.modules.goods.service.ScmsGoodsModifyLogService;
 import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.repository.ScmsShopInfoRepository;
@@ -33,16 +34,12 @@ import com.scms.modules.goods.entity.ScmsGoodsModifyLog;
 import com.scms.modules.goods.repository.ScmsGoodsExtraDiscountRepository;
 import com.scms.modules.goods.repository.ScmsGoodsExtraPriceRepository;
 import com.scms.modules.goods.repository.ScmsGoodsInfoRepository;
-import com.scms.modules.goods.repository.ScmsGoodsInventoryRepository;
 
 @Service
 public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 	
     @Autowired
     private ScmsGoodsInfoRepository scmsGoodsInfoRepository;
-    
-    @Autowired
-    private ScmsGoodsInventoryRepository scmsGoodsInventoryRepository;
     
     @Autowired
     private ScmsGoodsExtraPriceRepository scmsGoodsExtraPriceRepository;
@@ -55,6 +52,9 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
     
     @Autowired
     private ScmsShopInfoRepository scmsShopInfoRepository;
+    
+    @Autowired
+    private ScmsGoodsInventoryService scmsGoodsInventoryService;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params) {
@@ -86,7 +86,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		        obj = JSONObject.toJavaObject(jsonArray.getJSONObject(i), ScmsGoodsInventory.class);
 		        if(obj != null) {
 		            obj.setGoodsId(scmsGoodsInfo.getId());
-		            scmsGoodsInventoryRepository.save(obj);
+		            scmsGoodsInventoryService.saveInventory(obj);
 		        }
 		    }
 		}
@@ -186,7 +186,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                             Long sizeId = StringUtils.toLong(sizeIdList[sizeIndex], null);
                             if(colorId == null || textureId == null || sizeId == null) continue;
                             //判断库存是否有记录，有则不用插入
-                            List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId, textureId);
+                            List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryService.findInventory(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId, textureId);
                             if(tmpList == null || tmpList.size() == 0) {
                                 ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
                                 scmsGoodsInventory.setShopId(shop.getId());
@@ -199,7 +199,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
                                 scmsGoodsInventory.setInventorySizeId(sizeId);
                                 scmsGoodsInventory.setInventorySize(sizeNameList[sizeIndex]);
                                 scmsGoodsInventory.setInventoryNum(0L);
-                                scmsGoodsInventoryRepository.save(scmsGoodsInventory);
+                                scmsGoodsInventoryService.saveInventory(scmsGoodsInventory);
                             }
                         }
                     }

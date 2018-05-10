@@ -57,6 +57,7 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
 		sqlParams.querySql.append(sql);
         Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
         Long shopId = MapUtils.getLong(params, "shopId", null);
+        Long userId = MapUtils.getLong(params, "userId", null);
         String dataType = MapUtils.getString(params, "dataType");
         String tenantsId = MapUtils.getString(params, "tenantsId");
         String userName = MapUtils.getString(params, "userName");
@@ -71,6 +72,11 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
             sqlParams.querySql.append(" AND mu.SHOP_ID = :shopId ");
             sqlParams.paramsList.add("shopId");
             sqlParams.valueList.add(shopId);
+        }
+        if (userId != null) {
+            sqlParams.querySql.append(" AND tb.USER_ID = :userId ");
+            sqlParams.paramsList.add("userId");
+            sqlParams.valueList.add(userId);
         }
         if("notIn".equals(dataType)) {
             sqlParams.querySql.append(" AND tb.USER_ID not in(select distinct(USER_ID) from scms_merchants_user) ");

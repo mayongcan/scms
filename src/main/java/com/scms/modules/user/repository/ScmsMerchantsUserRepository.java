@@ -33,4 +33,21 @@ public interface ScmsMerchantsUserRepository extends JpaRepository<ScmsMerchants
             + "SET IS_ADMIN = :isAdmin "
             + "WHERE ID IN (:idList)", nativeQuery = true)
     public void setShopAdmin(@Param("isAdmin")String isAdmin, @Param("idList")List<Long> idList);
+    
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE scms_merchants_user "
+            + "SET IS_BLOCK = :isBlock "
+            + "WHERE ID IN (:idList)", nativeQuery = true)
+    public void setUserBlock(@Param("isBlock")String isBlock, @Param("idList")List<Long> idList);
+
+    /**
+     * 删除
+     * @param userId
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "DELETE FROM scms_merchants_user "
+            + "WHERE USER_ID = :userId ", nativeQuery = true)
+    public void delByUserId(@Param("userId")Long userId);
 }

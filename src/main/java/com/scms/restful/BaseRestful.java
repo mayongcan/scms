@@ -92,6 +92,9 @@ public class BaseRestful {
     @RequestMapping(value="/merchantsInfoIndex", method=RequestMethod.GET)
     public JSONObject merchantsInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
+    @RequestMapping(value="/shopInfoIndex", method=RequestMethod.GET)
+    public JSONObject shopInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
     @RequestMapping(value="/colorInfoIndex", method=RequestMethod.GET)
     public JSONObject colorInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 

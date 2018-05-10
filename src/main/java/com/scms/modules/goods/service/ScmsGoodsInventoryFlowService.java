@@ -4,11 +4,8 @@
 package com.scms.modules.goods.service;
 
 import java.util.Map;
-
 import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
-import com.gimplatform.core.entity.UserInfo;
-
 import com.scms.modules.goods.entity.ScmsGoodsInventoryFlow;
 
 /**
@@ -30,25 +27,6 @@ public interface ScmsGoodsInventoryFlowService {
 	 * 新增
 	 * @param params
 	 * @param userInfo
-	 * @return
 	 */
-	public JSONObject add(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 编辑
-	 * @param params
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 删除
-	 * @param idsList
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject del(String idsList, UserInfo userInfo);
-	
-
+    public void add(ScmsGoodsInventoryFlow scmsGoodsInventoryFlow);
 }
