@@ -46,14 +46,24 @@ public class ScmsDailyExpenses implements Serializable {
     // 商户自定义时的归属ID
     @Column(name = "MERCHANTS_ID", precision = 10, scale = 0)
     private Long merchantsId;
+
+    @Column(name = "SHOP_ID", precision = 10, scale = 0)
+    private Long shopId;
 	
 	// 费用名称
 	@Column(name = "EXPENSES_NAME", nullable = false, length = 128)
 	private String expensesName;
+
+	//费用类型1收入 2支出
+    @Column(name = "INCOME_TYPE", length = 10)
+    private String incomeType;
 	
 	// 支出费用
 	@Column(name = "EXPENSES_NUM", precision = 10, scale = 2)
 	private Double expensesNum;
+
+    @Column(name = "MEMO", length = 512)
+    private String memo;
 	
 	// 创建人
 	@Column(name = "CREATE_BY", precision = 10, scale = 0)

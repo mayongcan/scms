@@ -19,12 +19,14 @@ public class ScmsGoodsInventoryFlowRepositoryImpl extends BaseRepository impleme
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.SHOP_ID as \"shopId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
 	        + "tb.COLOR_ID as \"colorId\", tb.COLOR_NAME as \"colorName\", tb.TEXTURE_ID as \"textureId\", tb.TEXTURE_NAME as \"textureName\", tb.SIZE_ID as \"sizeId\", "
 	        + "tb.SIZE_NAME as \"sizeName\", tb.OLD_NUM as \"oldNum\", tb.NEW_NUM as \"newNum\", tb.OPERATE_NAME as \"operateName\", tb.ORDER_NUM as \"orderNum\", "
-	        + "tb.ORDER_TYPE as \"orderType\", tb.CREATE_DATE as \"createDate\" "
-			+ "FROM scms_goods_inventory_flow tb "
+	        + "tb.ORDER_TYPE as \"orderType\", tb.CREATE_DATE as \"createDate\", si.SHOP_NAME as \"shopName\", gi.GOODS_NAME as \"goodsName\", gi.GOODS_SERIAL_NUM as \"goodsSerialNum\" "
+			+ "FROM scms_goods_inventory_flow tb left join scms_shop_info si on si.ID = tb.SHOP_ID "
+			+ "left join scms_goods_info gi on gi.ID = tb.GOODS_ID "
 			+ "WHERE 1 = 1 ";
 
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
-			+ "FROM scms_goods_inventory_flow tb "
+	        + "FROM scms_goods_inventory_flow tb left join scms_shop_info si on si.ID = tb.SHOP_ID "
+            + "left join scms_goods_info gi on gi.ID = tb.GOODS_ID "
 			+ "WHERE 1 = 1 ";
 	
 	public List<Map<String, Object>> getList(ScmsGoodsInventoryFlow scmsGoodsInventoryFlow, Map<String, Object> params, int pageIndex, int pageSize) {
@@ -87,6 +89,18 @@ public class ScmsGoodsInventoryFlowRepositoryImpl extends BaseRepository impleme
 			sqlParams.valueList.add(MapUtils.getString(params, "createDateBegin"));
 			sqlParams.valueList.add(MapUtils.getString(params, "createDateEnd"));
 		}
+		String goodsName = MapUtils.getString(params, "goodsName");
+		String goodsSerialNum = MapUtils.getString(params, "goodsSerialNum");
+		if(!StringUtils.isBlank(goodsName)) {
+		    sqlParams.querySql.append(getLikeSql("gi.GOODS_NAME", ":goodsName"));
+            sqlParams.paramsList.add("goodsName");
+            sqlParams.valueList.add(goodsName);
+		}
+        if(!StringUtils.isBlank(goodsSerialNum)) {
+            sqlParams.querySql.append(getLikeSql("gi.GOODS_SERIAL_NUM", ":goodsSerialNum"));
+            sqlParams.paramsList.add("goodsSerialNum");
+            sqlParams.valueList.add(goodsSerialNum);
+        }
         return sqlParams;
 	}
 }

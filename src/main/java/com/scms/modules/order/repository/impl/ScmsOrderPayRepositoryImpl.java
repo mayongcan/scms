@@ -16,7 +16,8 @@ import com.scms.modules.order.repository.custom.ScmsOrderPayRepositoryCustom;
 public class ScmsOrderPayRepositoryImpl extends BaseRepository implements ScmsOrderPayRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.PAY_TYPE_ID as \"payTypeId\", tb.PAY_TYPE_NAME as \"payTypeName\", "
-	        + "tb.PAY_AMOUNT as \"payAmount\", tb.PAY_MEMO as \"payMemo\", tb.PAY_DATE as \"payDate\", tb.OPERATE_USER_ID as \"operateUserId\", tb.OPERATE_USER_NAME as \"operateUserName\" "
+	        + "tb.INCOME_TYPE as \"incomeType\", tb.PAY_AMOUNT as \"payAmount\", tb.PAY_MEMO as \"payMemo\", tb.PAY_DATE as \"payDate\", tb.OPERATE_USER_ID as \"operateUserId\", "
+	        + "tb.OPERATE_USER_NAME as \"operateUserName\" "
 			+ "FROM scms_order_pay tb "
 			+ "WHERE 1 = 1 ";
 

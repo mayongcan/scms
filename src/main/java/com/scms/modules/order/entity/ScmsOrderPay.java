@@ -53,6 +53,10 @@ public class ScmsOrderPay implements Serializable {
     
     @Column(name = "PAY_TYPE_NAME", length = 128)
     private String payTypeName;
+
+    //费用类型1收入 2支出
+    @Column(name = "INCOME_TYPE", length = 10)
+    private String incomeType;
 	
 	// 支付金额
 	@Column(name = "PAY_AMOUNT", precision = 10, scale = 2)

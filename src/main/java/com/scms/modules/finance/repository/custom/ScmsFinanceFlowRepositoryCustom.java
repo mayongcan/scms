@@ -34,4 +34,11 @@ public interface ScmsFinanceFlowRepositoryCustom {
 	 * @return
 	 */
 	public int getListCount(ScmsFinanceFlow scmsFinanceFlow, Map<String, Object> params);
+	
+	/**
+	 * 获取统计结果
+	 * @param params
+	 * @return
+	 */
+    public List<Map<String, Object>> getStatisticsList(Map<String, Object> params);
 }

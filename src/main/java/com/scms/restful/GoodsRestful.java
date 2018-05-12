@@ -76,6 +76,18 @@ public class GoodsRestful {
     
     @RequestMapping(value="/goodsInfoIndex", method=RequestMethod.GET)
     public JSONObject goodsInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    
+    @RequestMapping(value="/hotGoodsIndex", method=RequestMethod.GET)
+    public JSONObject hotGoodsIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    
+    @RequestMapping(value="/inventoryListIndex", method=RequestMethod.GET)
+    public JSONObject inventoryListIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    
+    @RequestMapping(value="/inventoryFlosIndex", method=RequestMethod.GET)
+    public JSONObject inventoryFlosIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    
+    @RequestMapping(value="/inventoryNoticeIndex", method=RequestMethod.GET)
+    public JSONObject inventoryNoticeIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
 	/**
 	 * 获取列表
@@ -333,6 +345,28 @@ public class GoodsRestful {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
                 ScmsGoodsInventory scmsGoodsInventory = (ScmsGoodsInventory)BeanUtils.mapToBean(params, ScmsGoodsInventory.class);              
                 json = scmsGoodsInventoryService.getList(pageable, scmsGoodsInventory, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取单个商品的库存统计(包括店铺数量，店铺库存总数，总成本)
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getStatisticsGoodsInventory",method=RequestMethod.GET)
+    public JSONObject getStatisticsGoodsInventory(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {           
+                json = scmsGoodsInventoryService.getStatisticsGoodsInventory(params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");

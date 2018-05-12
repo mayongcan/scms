@@ -26,6 +26,13 @@ public interface ScmsGoodsInventoryService {
 	public JSONObject getList(Pageable page, ScmsGoodsInventory scmsGoodsInventory, Map<String, Object> params);
 	
 	/**
+	 * 获取单个商品的库存统计
+	 * @param params
+	 * @return
+	 */
+    public JSONObject getStatisticsGoodsInventory(Map<String, Object> params);
+	
+	/**
 	 * 查找库存
 	 * @param shopId
 	 * @param goodsId

@@ -19,7 +19,9 @@ import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.StringUtils;
 import com.scms.modules.finance.entity.ScmsDailyExpenses;
+import com.scms.modules.finance.entity.ScmsFinanceFlow;
 import com.scms.modules.finance.repository.ScmsDailyExpensesRepository;
+import com.scms.modules.finance.repository.ScmsFinanceFlowRepository;
 import com.scms.modules.finance.service.ScmsDailyExpensesService;
 
 @Service
@@ -27,6 +29,9 @@ public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {
 	
     @Autowired
     private ScmsDailyExpensesRepository scmsDailyExpensesRepository;
+
+    @Autowired
+    private ScmsFinanceFlowRepository scmsFinanceFlowRepository;
 
 	@Override
 	public JSONObject getList(Pageable page, ScmsDailyExpenses scmsDailyExpenses, Map<String, Object> params) {
@@ -41,7 +46,10 @@ public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {
 		scmsDailyExpenses.setIsValid(Constants.IS_VALID_VALID);
 		scmsDailyExpenses.setCreateBy(userInfo.getUserId());
 		scmsDailyExpenses.setCreateDate(new Date());
-		scmsDailyExpensesRepository.save(scmsDailyExpenses);
+		scmsDailyExpenses = scmsDailyExpensesRepository.saveAndFlush(scmsDailyExpenses);
+        
+		//保存财务流水记录
+		saveFinanceFlow(scmsDailyExpenses, userInfo); 
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -52,9 +60,17 @@ public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {
 		if(scmsDailyExpensesInDb == null){
 			return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
 		}
+		boolean isEditNum = false;
+		if(!scmsDailyExpenses.getExpensesNum().equals(scmsDailyExpensesInDb.getExpensesNum())) isEditNum = true;
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsDailyExpenses, scmsDailyExpensesInDb);
 		scmsDailyExpensesRepository.save(scmsDailyExpensesInDb);
+		
+		//现将就记录设为不可用，再保存新纪录(判断金额有没有变更)
+		if(isEditNum) {
+	        scmsFinanceFlowRepository.updateIsValidByExpensesId(Constants.IS_VALID_INVALID, "修改日常支出", scmsDailyExpenses.getId());
+	        saveFinanceFlow(scmsDailyExpenses, userInfo);
+		}
 		return RestfulRetUtils.getRetSuccess();
 	}
 
@@ -69,8 +85,27 @@ public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {
 		//批量更新（设置IsValid 为N）
 		if(idList.size() > 0){
 			scmsDailyExpensesRepository.delEntity(Constants.IS_VALID_INVALID, idList);
+			scmsFinanceFlowRepository.updateIsValidByExpensesId(Constants.IS_VALID_INVALID, "删除日常支出", idList);
 		}
 		return RestfulRetUtils.getRetSuccess();
+	}
+	
+	private void saveFinanceFlow(ScmsDailyExpenses scmsDailyExpenses, UserInfo userInfo) {
+        //保存财务流水信息
+        ScmsFinanceFlow scmsFinanceFlow = new ScmsFinanceFlow();
+        scmsFinanceFlow.setMerchantsId(scmsDailyExpenses.getMerchantsId());
+        scmsFinanceFlow.setShopId(scmsDailyExpenses.getShopId());
+        scmsFinanceFlow.setFlowType("日常支出");
+        scmsFinanceFlow.setExpensesId(scmsDailyExpenses.getId());
+        scmsFinanceFlow.setIncomeType(scmsDailyExpenses.getIncomeType());
+        scmsFinanceFlow.setPayAmount(scmsDailyExpenses.getExpensesNum());
+        scmsFinanceFlow.setPayMemo(scmsDailyExpenses.getMemo());
+        scmsFinanceFlow.setCreateBy(userInfo.getUserId());
+        scmsFinanceFlow.setCreateByName(userInfo.getUserName());
+        scmsFinanceFlow.setCreateDate(new Date());
+        scmsFinanceFlow.setValidReason("");
+        scmsFinanceFlow.setIsValid(Constants.IS_VALID_VALID);
+        scmsFinanceFlowRepository.save(scmsFinanceFlow);
 	}
 
 }

@@ -3,12 +3,10 @@
  */
 package com.scms.modules.finance.service;
 
+import java.util.List;
 import java.util.Map;
-
 import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
-import com.gimplatform.core.entity.UserInfo;
-
 import com.scms.modules.finance.entity.ScmsFinanceFlow;
 
 /**
@@ -27,28 +25,17 @@ public interface ScmsFinanceFlowService {
 	public JSONObject getList(Pageable page, ScmsFinanceFlow scmsFinanceFlow, Map<String, Object> params);
 	
 	/**
-	 * 新增
+	 * 获取统计信息
 	 * @param params
-	 * @param userInfo
 	 * @return
 	 */
-	public JSONObject add(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 编辑
-	 * @param params
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 删除
-	 * @param idsList
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject del(String idsList, UserInfo userInfo);
-	
+    public JSONObject getStatisticsList(Map<String, Object> params);
 
+	/**
+	 * 更新流水账单额状态
+	 * @param isValid
+	 * @param validReason
+	 * @param OrderNum
+	 */
+	public void updateIsValidByOrderId(String isValid, String validReason, List<Long> idList);
 }

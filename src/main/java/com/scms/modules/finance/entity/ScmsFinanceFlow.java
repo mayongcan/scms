@@ -58,6 +58,9 @@ public class ScmsFinanceFlow implements Serializable {
 	// 关联日常支出ID
 	@Column(name = "EXPENSES_ID", precision = 10, scale = 0)
 	private Long expensesId;
+
+    @Column(name = "ORDER_ID", precision = 10, scale = 0)
+    private Long orderId;
 	
 	// 订单号
 	@Column(name = "ORDER_NUM", length = 64)
@@ -74,6 +77,10 @@ public class ScmsFinanceFlow implements Serializable {
 	// 支付方式名称
 	@Column(name = "PAY_TYPE_NAME", length = 128)
 	private String payTypeName;
+
+    //费用类型1收入 2支出
+    @Column(name = "INCOME_TYPE", length = 10)
+    private String incomeType;
 	
 	// 支付金额
 	@Column(name = "PAY_AMOUNT", precision = 10, scale = 2)

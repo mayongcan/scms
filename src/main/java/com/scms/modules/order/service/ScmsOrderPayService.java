@@ -6,9 +6,11 @@ package com.scms.modules.order.service;
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
+
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.entity.UserInfo;
-
+import com.scms.modules.order.entity.ScmsOrderInfo;
 import com.scms.modules.order.entity.ScmsOrderPay;
 
 /**
@@ -24,32 +26,7 @@ public interface ScmsOrderPayService {
 	 * @param scmsOrderPay
 	 * @return
 	 */
-	public JSONObject getList(Pageable page, ScmsOrderPay scmsOrderPay, Map<String, Object> params);
-	
-	/**
-	 * 新增
-	 * @param params
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject add(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 编辑
-	 * @param params
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject edit(Map<String, Object> params, UserInfo userInfo);
-	
-	/**
-	 * 删除
-	 * @param idsList
-	 * @param userInfo
-	 * @return
-	 */
-	public JSONObject del(String idsList, UserInfo userInfo);
-
+	public JSONObject getList(Pageable page, ScmsOrderPay scmsOrderPay, Map<String, Object> params);	
 
     /**
      * 编辑订单支付信息
@@ -58,5 +35,11 @@ public interface ScmsOrderPayService {
      * @return
      */
     public JSONObject editOrderPay(Map<String, Object> params, UserInfo userInfo);
+    
+    public Double getPayAmount(ScmsOrderInfo scmsOrderInfo);
+    
+    public void delOrderPay(ScmsOrderInfo scmsOrderInfo, String validReason);
+    
+    public void saveOrderPayList(JSONArray jsonArray, ScmsOrderInfo scmsOrderInfo, UserInfo userInfo);
 
 }

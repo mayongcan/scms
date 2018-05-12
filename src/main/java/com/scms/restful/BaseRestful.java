@@ -119,9 +119,6 @@ public class BaseRestful {
     @RequestMapping(value="/printIndex", method=RequestMethod.GET)
     public JSONObject printIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
-    @RequestMapping(value="/dailyExpensensIndex", method=RequestMethod.GET)
-    public JSONObject dailyExpensensIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
-
     @RequestMapping(value="/feedbackInfoIndex", method=RequestMethod.GET)
     public JSONObject feedbackInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 

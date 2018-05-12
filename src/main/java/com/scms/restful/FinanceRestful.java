@@ -37,6 +37,17 @@ public class FinanceRestful {
     @Autowired
     private ScmsFinanceFlowService scmsFinanceFlowService;
 
+    @RequestMapping(value="/dailyExpensensIndex", method=RequestMethod.GET)
+    public JSONObject dailyExpensensIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/flowIndex", method=RequestMethod.GET)
+    public JSONObject flowIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/customerCheckIndex", method=RequestMethod.GET)
+    public JSONObject customerCheckIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/supplierCheckIndex", method=RequestMethod.GET)
+    public JSONObject supplierCheckIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
     
     /**
      * 获取列表
@@ -150,5 +161,26 @@ public class FinanceRestful {
         }
         return json;
     }
-    
+
+    /**
+     * 获取统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getStatisticsList",method=RequestMethod.GET)
+    public JSONObject getStatisticsList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsFinanceFlowService.getStatisticsList(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 }

@@ -46,6 +46,12 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
 	}
 
     @Override
+    public JSONObject getStatisticsGoodsInventory(Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsGoodsInventoryRepository.getStatisticsGoodsInventory(params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, list.size());
+    }
+
+    @Override
     public List<ScmsGoodsInventory> findInventory(Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId) {
         return scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, goodsId, colorId, inventorySizeId, textureId);
     }
