@@ -101,4 +101,11 @@ public interface ScmsOrderInfoService {
      */
     public JSONObject addOrderSyd(Map<String, Object> params, UserInfo userInfo);
     
+    /**
+     * 获取客户收款历史统计
+     * @param params
+     * @return
+     */
+    public JSONObject getReceiptHistoryStatistics(Map<String, Object> params);
+    
 }

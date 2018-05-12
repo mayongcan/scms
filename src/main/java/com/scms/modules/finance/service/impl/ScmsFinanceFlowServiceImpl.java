@@ -28,8 +28,8 @@ public class ScmsFinanceFlowServiceImpl implements ScmsFinanceFlowService {
 	}
 
     @Override
-    public JSONObject getStatisticsList(Map<String, Object> params) {
-        List<Map<String, Object>> list = scmsFinanceFlowRepository.getStatisticsList(params);
+    public JSONObject getFinanceFlowStatistics(Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsFinanceFlowRepository.getFinanceFlowStatistics(params);
         return RestfulRetUtils.getRetSuccessWithPage(list, list.size());  
     }
 

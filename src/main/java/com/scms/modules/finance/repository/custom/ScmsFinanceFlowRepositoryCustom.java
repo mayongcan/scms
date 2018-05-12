@@ -40,5 +40,5 @@ public interface ScmsFinanceFlowRepositoryCustom {
 	 * @param params
 	 * @return
 	 */
-    public List<Map<String, Object>> getStatisticsList(Map<String, Object> params);
+    public List<Map<String, Object>> getFinanceFlowStatistics(Map<String, Object> params);
 }

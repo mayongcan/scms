@@ -93,7 +93,7 @@ public class ScmsFinanceFlowRepositoryImpl extends BaseRepository implements Scm
 	}
 
     @Override
-    public List<Map<String, Object>> getStatisticsList(Map<String, Object> params) {
+    public List<Map<String, Object>> getFinanceFlowStatistics(Map<String, Object> params) {
         ScmsFinanceFlow scmsFinanceFlow = (ScmsFinanceFlow) BeanUtils.mapToBean(params, ScmsFinanceFlow.class);
         SqlParams sqlIncome = genStatisticsListWhere("SELECT sum(tb.PAY_AMOUNT) as \"count\" FROM scms_finance_flow tb WHERE tb.IS_VALID = 'Y' AND tb.INCOME_TYPE = '1' ", scmsFinanceFlow, params);
         SqlParams sqlExpend = genStatisticsListWhere("SELECT sum(tb.PAY_AMOUNT) as \"count\" FROM scms_finance_flow tb WHERE tb.IS_VALID = 'Y' AND tb.INCOME_TYPE = '2' ", scmsFinanceFlow, params);

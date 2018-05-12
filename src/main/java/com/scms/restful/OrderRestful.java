@@ -796,4 +796,26 @@ public class OrderRestful {
         }
         return json;
     }
+
+    /**
+     * 获取客户收款历史统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getReceiptHistoryStatistics",method=RequestMethod.GET)
+    public JSONObject getReceiptHistoryStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsOrderInfoService.getReceiptHistoryStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 }

@@ -591,4 +591,10 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         scmsOrderModifyLog.setModifyMemo(MapUtils.getString(params, "modifyMemo"));
         scmsOrderModifyLogRepository.save(scmsOrderModifyLog);
     }
+
+    @Override
+    public JSONObject getReceiptHistoryStatistics(Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsOrderInfoRepository.getReceiptHistoryStatistics(params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, list.size());  
+    }
 }

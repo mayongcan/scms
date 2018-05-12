@@ -29,7 +29,7 @@ public interface ScmsFinanceFlowService {
 	 * @param params
 	 * @return
 	 */
-    public JSONObject getStatisticsList(Map<String, Object> params);
+    public JSONObject getFinanceFlowStatistics(Map<String, Object> params);
 
 	/**
 	 * 更新流水账单额状态

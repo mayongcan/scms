@@ -68,6 +68,11 @@ public class ScmsInventoryTransferRepositoryImpl extends BaseRepository implemen
             sqlParams.paramsList.add("destShopId");
             sqlParams.valueList.add(scmsInventoryTransfer.getDestShopId());
         }
+        if (scmsInventoryTransfer != null && !StringUtils.isBlank(scmsInventoryTransfer.getOrderNum())) {
+            sqlParams.querySql.append(getLikeSql("tb.ORDER_NUM", ":orderNum"));
+            sqlParams.paramsList.add("orderNum");
+            sqlParams.valueList.add(scmsInventoryTransfer.getOrderNum());
+        }
         return sqlParams;
 	}
 }

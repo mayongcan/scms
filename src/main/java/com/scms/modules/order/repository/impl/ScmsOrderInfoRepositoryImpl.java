@@ -3,6 +3,8 @@
  */
 package com.scms.modules.order.repository.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,8 +12,8 @@ import org.apache.commons.collections4.MapUtils;
 
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
+import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.StringUtils;
-
 import com.scms.modules.order.entity.ScmsOrderInfo;
 import com.scms.modules.order.repository.custom.ScmsOrderInfoRepositoryCustom;
 
@@ -110,6 +112,20 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
             sqlParams.paramsList.add("orderReceiveStatus");
             sqlParams.valueList.add(scmsOrderInfo.getOrderReceiveStatus());
         }
+        if (scmsOrderInfo != null && !StringUtils.isBlank(scmsOrderInfo.getOrderNum())) {
+            sqlParams.querySql.append(getLikeSql("tb.ORDER_NUM", ":orderNum"));
+            sqlParams.paramsList.add("orderNum");
+            sqlParams.valueList.add(scmsOrderInfo.getOrderNum());
+        }
+        String orderCustomerType = MapUtils.getString(params, "orderCustomerType");
+        Long customerId = MapUtils.getLong(params, "customerId", null);
+        if(!StringUtils.isBlank(orderCustomerType) && customerId != null) {
+            sqlParams.querySql.append(" AND tb.ORDER_CUSTOMER_TYPE = :orderCustomerType AND tb.CUSTOMER_ID = :customerId ");
+            sqlParams.paramsList.add("orderCustomerType");
+            sqlParams.valueList.add(orderCustomerType);
+            sqlParams.paramsList.add("customerId");
+            sqlParams.valueList.add(customerId);
+        }
         return sqlParams;
     }
 
@@ -182,5 +198,28 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
             sqlParams.valueList.add(supplierPhone);
         }
         return sqlParams;
+    }
+
+    @Override
+    public List<Map<String, Object>> getReceiptHistoryStatistics(Map<String, Object> params) {
+        ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
+        SqlParams finishCntSql = genBaseListWhere("SELECT count(1) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '4' ", scmsOrderInfo, params);
+        SqlParams cancelCntSql = genBaseListWhere("SELECT count(1) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '3' ", scmsOrderInfo, params);
+        SqlParams finishMoneySql = genBaseListWhere("SELECT sum(tb.TOTAL_AMOUNT) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '4' ", scmsOrderInfo, params);
+        SqlParams cancelMoneySql = genBaseListWhere("SELECT sum(tb.TOTAL_AMOUNT) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '3' ", scmsOrderInfo, params);
+        int finishCnt = getResultListTotalCount(finishCntSql);
+        int cancelCnt = getResultListTotalCount(cancelCntSql);
+        int finishMoney = getResultListTotalCount(finishMoneySql);
+        int cancelMoney = getResultListTotalCount(cancelMoneySql);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("totalCnt", finishCnt + cancelCnt);
+        map.put("finishCnt", finishCnt);
+        map.put("cancelCnt", cancelCnt);
+        map.put("totalMoney", finishMoney + cancelMoney);
+        map.put("finishMoney", finishMoney);
+        map.put("cancelMoney", cancelMoney);
+        list.add(map);
+        return list;
     }
 }

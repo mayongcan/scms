@@ -163,19 +163,19 @@ public class FinanceRestful {
     }
 
     /**
-     * 获取统计
+     * 获取财务流水统计
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getStatisticsList",method=RequestMethod.GET)
-    public JSONObject getStatisticsList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getFinanceFlowStatistics",method=RequestMethod.GET)
+    public JSONObject getFinanceFlowStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {          
-                json = scmsFinanceFlowService.getStatisticsList(params);
+                json = scmsFinanceFlowService.getFinanceFlowStatistics(params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");

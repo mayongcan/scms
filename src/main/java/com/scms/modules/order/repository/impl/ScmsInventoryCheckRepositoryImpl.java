@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
+import com.gimplatform.core.utils.StringUtils;
 import com.scms.modules.order.entity.ScmsInventoryCheck;
 import com.scms.modules.order.repository.custom.ScmsInventoryCheckRepositoryCustom;
 
@@ -55,6 +56,11 @@ public class ScmsInventoryCheckRepositoryImpl extends BaseRepository implements 
             sqlParams.querySql.append(" AND tb.SHOP_ID = :shopId ");
             sqlParams.paramsList.add("shopId");
             sqlParams.valueList.add(scmsInventoryCheck.getShopId());
+        }
+        if (scmsInventoryCheck != null && !StringUtils.isBlank(scmsInventoryCheck.getOrderNum())) {
+            sqlParams.querySql.append(getLikeSql("tb.ORDER_NUM", ":orderNum"));
+            sqlParams.paramsList.add("orderNum");
+            sqlParams.valueList.add(scmsInventoryCheck.getOrderNum());
         }
         return sqlParams;
 	}
