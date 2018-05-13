@@ -85,6 +85,10 @@ public class ScmsOrderInfo implements Serializable {
 	// 订单总金额
 	@Column(name = "TOTAL_AMOUNT", precision = 10, scale = 2)
 	private Double totalAmount;
+    
+    // 订单抹零
+    @Column(name = "SMALL_CHANGE", precision = 10, scale = 2)
+    private Double smallChange;
 
     @Column(name = "TOTAL_UN_PAY", precision = 10, scale = 2)
     private Double totalUnPay;

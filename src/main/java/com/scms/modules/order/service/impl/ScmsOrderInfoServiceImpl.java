@@ -89,6 +89,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
 	    scmsOrderInfo.setMerchantsName(scmsMerchantsInfo.getMerchantsName());
 	    //设置订单编号，格式：订单类型+年月日时分秒毫秒
 	    scmsOrderInfo.setOrderNum(scmsOrderInfo.getOrderType() + DateUtils.getDate("yyyyMMddHHmmssSSS"));
+	    if(scmsOrderInfo.getSmallChange() == null) scmsOrderInfo.setSmallChange(0d);
 	    scmsOrderInfo.setOrderCustomerType("1");
 	    scmsOrderInfo.setOrderStatus("1");         //订单状态：未修改
 	    scmsOrderInfo.setOrderSendStatus("1");     //发货状态：未发货
@@ -590,6 +591,12 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         scmsOrderModifyLog.setModifyDate(new Date());
         scmsOrderModifyLog.setModifyMemo(MapUtils.getString(params, "modifyMemo"));
         scmsOrderModifyLogRepository.save(scmsOrderModifyLog);
+    }
+
+    @Override
+    public JSONObject getDealHistoryStatistics(Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsOrderInfoRepository.getDealHistoryStatistics(params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, list.size());  
     }
 
     @Override

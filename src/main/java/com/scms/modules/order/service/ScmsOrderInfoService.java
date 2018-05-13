@@ -100,6 +100,13 @@ public interface ScmsOrderInfoService {
      * @return
      */
     public JSONObject addOrderSyd(Map<String, Object> params, UserInfo userInfo);
+
+    /**
+     * 获取交易历史统计
+     * @param params
+     * @return
+     */
+    public JSONObject getDealHistoryStatistics(Map<String, Object> params);
     
     /**
      * 获取客户收款历史统计

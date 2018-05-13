@@ -94,6 +94,12 @@ public class ScmsCustomerInfoRepositoryImpl extends BaseRepository implements Sc
             sqlParams.paramsList.add("customerLevel");
             sqlParams.valueList.add(customerLevel);
         }
+        String nameAndPhone = MapUtils.getString(params, "nameAndPhone");
+        if(!StringUtils.isBlank(nameAndPhone)) {
+            sqlParams.querySql.append(" AND (tb.CUSTOMER_NAME like concat('%', :nameAndPhone , '%') OR tb.CUSTOMER_PHONE like concat('%', :nameAndPhone , '%')) ");
+            sqlParams.paramsList.add("nameAndPhone");
+            sqlParams.valueList.add(nameAndPhone);
+        }
         return sqlParams;
 	}
 }

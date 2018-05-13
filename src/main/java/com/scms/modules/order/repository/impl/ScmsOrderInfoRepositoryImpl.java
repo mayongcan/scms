@@ -19,9 +19,10 @@ import com.scms.modules.order.repository.custom.ScmsOrderInfoRepositoryCustom;
 
 public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsOrderInfoRepositoryCustom{
 
+    //订单列表
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.MERCHANTS_NAME as \"merchantsName\", tb.SHOP_ID as \"shopId\", tb.SHOP_NAME as \"shopName\", "
 	        + "tb.ORDER_TYPE as \"orderType\", tb.ORDER_STATUS as \"orderStatus\", tb.ORDER_PAY_STATUS as \"orderPayStatus\", tb.ORDER_SEND_STATUS as \"orderSendStatus\", tb.ORDER_RECEIVE_STATUS as \"orderReceiveStatus\", "
-	        + "tb.ORDER_NUM as \"orderNum\", tb.TOTAL_AMOUNT as \"totalAmount\", tb.TOTAL_UN_PAY as \"totalUnPay\", tb.TOTAL_PROFIT as \"totalProfit\", tb.TOTAL_NUM as \"totalNum\", "
+	        + "tb.ORDER_NUM as \"orderNum\", tb.SMALL_CHANGE as \"smallChange\", tb.TOTAL_AMOUNT as \"totalAmount\", tb.TOTAL_UN_PAY as \"totalUnPay\", tb.TOTAL_PROFIT as \"totalProfit\", tb.TOTAL_NUM as \"totalNum\", "
 	        + "tb.ORDER_CUSTOMER_TYPE as \"orderCustomerType\", tb.CUSTOMER_TYPE_ID as \"customerTypeId\",tb.CUSTOMER_TYPE_NAME as \"customerTypeName\", tb.CUSTOMER_LEVEL_ID as \"customerLevelId\","
 	        + "tb.CUSTOMER_LEVEL_NAME as \"customerLevelName\", tb.CUSTOMER_ID as \"customerId\", tb.CUSTOMER_NAME as \"customerName\", tb.TRANSPORT_ID as \"transportId\", "
 	        + "tb.TRANSPORT_NAME as \"transportName\", tb.SELLER_BY as \"sellerBy\", tb.SELLER_BY_NAME as \"sellerByName\", tb.PERFORMANCE_BY as \"performanceBy\", tb.PERFORMANCE_BY_NAME as \"performanceByName\", "
@@ -37,7 +38,7 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
 	//进货单列表
     private static final String SQL_GET_JHD_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.MERCHANTS_NAME as \"merchantsName\", tb.SHOP_ID as \"shopId\", tb.SHOP_NAME as \"shopName\", "
             + "tb.ORDER_TYPE as \"orderType\", tb.ORDER_STATUS as \"orderStatus\", tb.ORDER_PAY_STATUS as \"orderPayStatus\", tb.ORDER_SEND_STATUS as \"orderSendStatus\", tb.ORDER_RECEIVE_STATUS as \"orderReceiveStatus\", "
-            + "tb.ORDER_NUM as \"orderNum\", tb.TOTAL_AMOUNT as \"totalAmount\", tb.TOTAL_UN_PAY as \"totalUnPay\", tb.TOTAL_PROFIT as \"totalProfit\", tb.TOTAL_NUM as \"totalNum\", "
+            + "tb.ORDER_NUM as \"orderNum\", tb.SMALL_CHANGE as \"smallChange\", tb.TOTAL_AMOUNT as \"totalAmount\", tb.TOTAL_UN_PAY as \"totalUnPay\", tb.TOTAL_PROFIT as \"totalProfit\", tb.TOTAL_NUM as \"totalNum\", "
             + "tb.ORDER_CUSTOMER_TYPE as \"orderCustomerType\", tb.CUSTOMER_TYPE_ID as \"customerTypeId\",tb.CUSTOMER_TYPE_NAME as \"customerTypeName\", tb.CUSTOMER_LEVEL_ID as \"customerLevelId\","
             + "tb.CUSTOMER_LEVEL_NAME as \"customerLevelName\", tb.CUSTOMER_ID as \"customerId\", tb.CUSTOMER_NAME as \"customerName\", tb.TRANSPORT_ID as \"transportId\", "
             + "tb.TRANSPORT_NAME as \"transportName\", tb.SELLER_BY as \"sellerBy\", tb.SELLER_BY_NAME as \"sellerByName\", tb.PERFORMANCE_BY as \"performanceBy\", tb.PERFORMANCE_BY_NAME as \"performanceByName\", "
@@ -87,10 +88,12 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
             sqlParams.paramsList.add("shopId");
             sqlParams.valueList.add(scmsOrderInfo.getShopId());
         }
-        if (scmsOrderInfo != null && !StringUtils.isBlank(scmsOrderInfo.getOrderType())) {
-            sqlParams.querySql.append(" AND tb.ORDER_TYPE = :orderType ");
-            sqlParams.paramsList.add("orderType");
-            sqlParams.valueList.add(scmsOrderInfo.getOrderType());
+        String orderTypeList = MapUtils.getString(params, "orderTypeList");
+        if (!StringUtils.isBlank(orderTypeList)) {
+            List<String> orderList = StringUtils.splitToList(orderTypeList, ",");
+            sqlParams.querySql.append(" AND tb.ORDER_TYPE IN (:orderList) ");
+            sqlParams.paramsList.add("orderList");
+            sqlParams.valueList.add(orderList);
         }
         if (scmsOrderInfo != null && !StringUtils.isBlank(scmsOrderInfo.getOrderStatus())) {
             sqlParams.querySql.append(" AND tb.ORDER_STATUS = :orderStatus ");
@@ -125,6 +128,13 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
             sqlParams.valueList.add(orderCustomerType);
             sqlParams.paramsList.add("customerId");
             sqlParams.valueList.add(customerId);
+        }
+        if (!StringUtils.isBlank(MapUtils.getString(params, "createDateBegin")) && !StringUtils.isBlank(MapUtils.getString(params, "createDateEnd"))) {
+            sqlParams.querySql.append(" AND tb.CREATE_DATE between :createDateBegin AND :createDateEnd ");
+            sqlParams.paramsList.add("createDateBegin");
+            sqlParams.paramsList.add("createDateEnd");
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateBegin"));
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateEnd"));
         }
         return sqlParams;
     }
@@ -198,6 +208,30 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
             sqlParams.valueList.add(supplierPhone);
         }
         return sqlParams;
+    }
+
+    @Override
+    public List<Map<String, Object>> getDealHistoryStatistics(Map<String, Object> params) {
+        ScmsOrderInfo scmsOrderInfo = (ScmsOrderInfo) BeanUtils.mapToBean(params, ScmsOrderInfo.class);
+        SqlParams totalGoodsSql = genBaseListWhere("SELECT sum(tb.TOTAL_NUM) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' ", scmsOrderInfo, params);
+        SqlParams finishCntSql = genBaseListWhere("SELECT count(1) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '4' ", scmsOrderInfo, params);
+        SqlParams cancelCntSql = genBaseListWhere("SELECT count(1) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' AND tb.ORDER_STATUS = '3' ", scmsOrderInfo, params);
+        SqlParams totalMoneySql = genBaseListWhere("SELECT sum(tb.TOTAL_AMOUNT) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' ", scmsOrderInfo, params);
+        SqlParams unPayMoneySql = genBaseListWhere("SELECT sum(tb.TOTAL_UN_PAY) as \"count\" FROM scms_order_info tb WHERE tb.IS_VALID = 'Y' ", scmsOrderInfo, params);
+        int totalGoods = getResultListTotalCount(totalGoodsSql);
+        int finishCnt = getResultListTotalCount(finishCntSql);
+        int cancelCnt = getResultListTotalCount(cancelCntSql);
+        int totalMoney = getResultListTotalCount(totalMoneySql);
+        int unPayMoney = getResultListTotalCount(unPayMoneySql);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("totalGoods", totalGoods);
+        map.put("finishCnt", finishCnt);
+        map.put("cancelCnt", cancelCnt);
+        map.put("totalMoney", totalMoney);
+        map.put("unPayMoney", unPayMoney);
+        list.add(map);
+        return list;
     }
 
     @Override

@@ -53,5 +53,7 @@ public interface ScmsOrderInfoRepositoryCustom {
      */
     public int getOrderJhdListCount(ScmsOrderInfo scmsOrderInfo, Map<String, Object> params);
 
+    public List<Map<String, Object>> getDealHistoryStatistics(Map<String, Object> params);
+
     public List<Map<String, Object>> getReceiptHistoryStatistics(Map<String, Object> params);
 }

@@ -84,6 +84,12 @@ public class ScmsSupplierInfoRepositoryImpl extends BaseRepository implements Sc
             sqlParams.paramsList.add("supplierPhone");
             sqlParams.valueList.add(scmsSupplierInfo.getSupplierPhone());
         }
+        String nameAndPhone = MapUtils.getString(params, "nameAndPhone");
+        if(!StringUtils.isBlank(nameAndPhone)) {
+            sqlParams.querySql.append(" AND (tb.SUPPLIER_NAME like concat('%', :nameAndPhone , '%') OR tb.SUPPLIER_PHONE like concat('%', :nameAndPhone , '%')) ");
+            sqlParams.paramsList.add("nameAndPhone");
+            sqlParams.valueList.add(nameAndPhone);
+        }
         return sqlParams;
 	}
 }

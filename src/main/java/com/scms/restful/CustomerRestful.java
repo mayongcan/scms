@@ -28,6 +28,7 @@ import com.scms.modules.customer.service.ScmsCustomerInfoService;
 import com.scms.modules.customer.service.ScmsCustomerLevelService;
 import com.scms.modules.customer.service.ScmsCustomerTypeService;
 import com.scms.modules.customer.service.ScmsSupplierInfoService;
+import com.scms.modules.order.service.ScmsOrderInfoService;
 
 @RestController
 @RequestMapping(value = "/api/scms/customer")
@@ -46,6 +47,9 @@ public class CustomerRestful {
     
     @Autowired
     private ScmsSupplierInfoService scmsSupplierInfoService;
+    
+    @Autowired
+    private ScmsOrderInfoService scmsOrderInfoService;
     
     @RequestMapping(value="/customerTypeIndex", method=RequestMethod.GET)
     public JSONObject customerTypeIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -414,6 +418,50 @@ public class CustomerRestful {
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取交易历史统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getDealHistoryStatistics",method=RequestMethod.GET)
+    public JSONObject getDealHistoryStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsOrderInfoService.getDealHistoryStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取客户收款历史统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getReceiptHistoryStatistics",method=RequestMethod.GET)
+    public JSONObject getReceiptHistoryStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsOrderInfoService.getReceiptHistoryStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
             logger.error(e.getMessage(), e);
         }
         return json;
