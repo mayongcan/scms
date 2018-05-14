@@ -17,9 +17,27 @@ public class ReportRestful {
 
     protected static final Logger logger = LogManager.getLogger(ReportRestful.class);
 
-    @RequestMapping(value="/goodsProfitIndex", method=RequestMethod.GET)
-    public JSONObject goodsProfitIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/summaryIndex", method=RequestMethod.GET)
+    public JSONObject summaryIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
-    @RequestMapping(value="/orderProfitIndex", method=RequestMethod.GET)
-    public JSONObject orderProfitIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/revenueReportIndex", method=RequestMethod.GET)
+    public JSONObject revenueReportIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/saleReportIndex", method=RequestMethod.GET)
+    public JSONObject saleReportIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/purchaseReportIndex", method=RequestMethod.GET)
+    public JSONObject purchaseReportIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/salePurchaseCompareIndex", method=RequestMethod.GET)
+    public JSONObject salePurchaseCompareIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/checkRerpotIndex", method=RequestMethod.GET)
+    public JSONObject checkRerpotIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/allotReportIndex", method=RequestMethod.GET)
+    public JSONObject allotReportIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/statisticsIndex", method=RequestMethod.GET)
+    public JSONObject statisticsIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 }
