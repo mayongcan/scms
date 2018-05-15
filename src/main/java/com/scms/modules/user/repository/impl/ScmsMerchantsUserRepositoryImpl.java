@@ -15,12 +15,12 @@ import com.scms.modules.user.repository.custom.ScmsMerchantsUserRepositoryCustom
 
 public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements ScmsMerchantsUserRepositoryCustom{
 
-	private static final String SQL_GET_MERCHANTS_USER_LIST = "SELECT tb.user_id as \"userId\", tb.user_name as \"userName\", tb.email as \"email\", tb.user_code as \"userCode\", tb.sex as \"sex\", "
+	private static final String SQL_GET_MERCHANTS_USER_LIST = "SELECT tb.user_id as \"userId\", tb.user_name as \"userName\", tb.email as \"email\", tb.user_code as \"userCode\", tb.sex as \"sex\", tb.photo as \"photo\", "
 	                + "DATE_FORMAT(tb.birthday,'%Y-%m-%d') as \"birthday\", tb.mobile as \"mobile\", tb.phone as \"phone\", tb.CREDENTIALS_TYPE as \"credentialsType\", tb.CREDENTIALS_NUM as \"credentialsNum\", "
                     + "DATE_FORMAT(tb.create_date,'%Y-%m-%d') as \"createDate\", tb.ADDRESS as \"address\", DATE_FORMAT(ul.valid_begin_date,'%Y-%m-%d') as \"beginDate\", DATE_FORMAT(ul.valid_end_date,'%Y-%m-%d') as \"endDate\", "
                     + "ul.lock_begin_date as \"lockBeginDate\", ul.lock_end_date as \"lockEndDate\", ul.lock_reason as \"lockReason\", DATE_FORMAT(ul.last_logon_date,'%Y-%m-%d') as \"lastLogonDate\", "
                     + "ul.last_logon_ip as \"lastLogonIP\", ul.access_ipaddress as \"ipAddress\", ul.online_status as \"onLineStatus\", "
-                    + "si.SHOP_NAME as \"shopName\", mu.IS_ADMIN as \"isAdmin\", mu.IS_BLOCK as \"isBlock\", mu.ID as \"merchantsUserId\", mu.PRIVILEGE_CONTENT as \"privilegeContent\" "
+                    + "si.ID as \"shopId\", si.SHOP_NAME as \"shopName\", mu.IS_ADMIN as \"isAdmin\", mu.IS_BLOCK as \"isBlock\", mu.ID as \"merchantsUserId\", mu.PRIVILEGE_CONTENT as \"privilegeContent\" "
             + "FROM sys_user_info tb left join scms_merchants_user mu on mu.USER_ID = tb.USER_ID "
                     + "left join scms_shop_info si on si.ID = mu.SHOP_ID "
                     + "left join sys_user_logon ul on tb.user_id = ul.user_id "

@@ -149,7 +149,9 @@ public class ScmsMerchantsUserServiceImpl implements ScmsMerchantsUserService {
         if("000000".equals(retJson.getString("RetCode"))) {
             //绑定关联
             ScmsMerchantsUser scmsMerchantsUser = (ScmsMerchantsUser) BeanUtils.mapToBean(params, ScmsMerchantsUser.class);
-            scmsMerchantsUserRepository.save(scmsMerchantsUser);
+            ScmsMerchantsUser scmsMerchantsUserInDb = scmsMerchantsUserRepository.findOne(scmsMerchantsUser.getId());
+            BeanUtils.mergeBean(scmsMerchantsUser, scmsMerchantsUserInDb);
+            scmsMerchantsUserRepository.save(scmsMerchantsUserInDb);
             return RestfulRetUtils.getRetSuccess();
         }else return retJson;
     }
