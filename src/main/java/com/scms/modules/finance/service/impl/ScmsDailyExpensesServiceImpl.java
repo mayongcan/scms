@@ -61,12 +61,14 @@ public class ScmsDailyExpensesServiceImpl implements ScmsDailyExpensesService {
 			return RestfulRetUtils.getErrorMsg("51006","当前编辑的对象不存在");
 		}
 		boolean isEditNum = false;
-		if(!scmsDailyExpenses.getExpensesNum().equals(scmsDailyExpensesInDb.getExpensesNum())) isEditNum = true;
+		if(scmsDailyExpenses.getExpensesNum().equals(scmsDailyExpensesInDb.getExpensesNum()) && scmsDailyExpenses.getIncomeType().equals(scmsDailyExpensesInDb.getIncomeType())) 
+		    isEditNum = false;
+		else  isEditNum = true;
 		//合并两个javabean
 		BeanUtils.mergeBean(scmsDailyExpenses, scmsDailyExpensesInDb);
 		scmsDailyExpensesRepository.save(scmsDailyExpensesInDb);
 		
-		//现将就记录设为不可用，再保存新纪录(判断金额有没有变更)
+		//将旧记录设为不可用，再保存新纪录(判断金额有没有变更)
 		if(isEditNum) {
 	        scmsFinanceFlowRepository.updateIsValidByExpensesId(Constants.IS_VALID_INVALID, "修改日常支出", scmsDailyExpenses.getId());
 	        saveFinanceFlow(scmsDailyExpenses, userInfo);
