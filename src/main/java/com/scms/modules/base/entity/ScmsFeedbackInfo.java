@@ -80,7 +80,9 @@ public class ScmsFeedbackInfo implements Serializable {
 	private Date readDate;
 	
 	// 处理日期
-	@Column(name = "HANDLE_DATE", precision = 10, scale = 0)
-	private Long handleDate;
+    @JsonDeserialize(using = CustomerDateAndTimeDeserialize.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "HANDLE_DATE")
+	private Date handleDate;
 	
 }
