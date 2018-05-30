@@ -519,7 +519,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
             ScmsOrderGoods scmsOrderGoods = JSONObject.toJavaObject(json, ScmsOrderGoods.class);
             if(scmsOrderGoods != null) {
                 scmsOrderGoods.setOrderId(scmsOrderInfo.getId());
-                scmsOrderGoods = scmsOrderGoodsRepository.save(scmsOrderGoods);
+                scmsOrderGoods = scmsOrderGoodsRepository.saveAndFlush(scmsOrderGoods);
                 //保存详细信息表ScmsOrderGoodsDetail
                 JSONArray orderGoodsDetailListJsonArray = json.getJSONArray("goodsDataList");
                 if(orderGoodsDetailListJsonArray != null && orderGoodsDetailListJsonArray.size() > 0) {
