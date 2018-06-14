@@ -121,6 +121,13 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
             sqlParams.paramsList.add("useStatus");
             sqlParams.valueList.add(useStatus);
         }
+        //混合查询
+        String mixtureValue = MapUtils.getString(params, "mixtureValue");
+        if(!StringUtils.isBlank(mixtureValue)) {
+            sqlParams.querySql.append(" AND (tb.GOODS_NAME like concat('%', :mixtureValue , '%') OR tb.GOODS_SERIAL_NUM like concat('%', :mixtureValue , '%')) ");
+            sqlParams.paramsList.add("mixtureValue");
+            sqlParams.valueList.add(mixtureValue);
+        }
         return sqlParams;
 	}
 }

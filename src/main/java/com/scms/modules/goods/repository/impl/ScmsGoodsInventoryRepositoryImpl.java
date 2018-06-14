@@ -55,10 +55,16 @@ public class ScmsGoodsInventoryRepositoryImpl extends BaseRepository implements 
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
         Long goodsId = MapUtils.getLong(params, "goodsId", null);
+        Long shopId = MapUtils.getLong(params, "shopId", null);
         if (goodsId != null) {
             sqlParams.querySql.append(" AND tb.GOODS_ID = :goodsId ");
             sqlParams.paramsList.add("goodsId");
             sqlParams.valueList.add(goodsId);
+        }
+        if (shopId != null) {
+            sqlParams.querySql.append(" AND tb.SHOP_ID = :shopId ");
+            sqlParams.paramsList.add("shopId");
+            sqlParams.valueList.add(shopId);
         }
         return sqlParams;
 	}
