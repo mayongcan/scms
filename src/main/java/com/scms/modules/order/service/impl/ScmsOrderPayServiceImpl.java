@@ -74,20 +74,20 @@ public class ScmsOrderPayServiceImpl implements ScmsOrderPayService {
         JSONArray jsonArray = JSONObject.parseArray(orderPayList);
         if(jsonArray != null && jsonArray.size() > 0) {
             //删除旧数据
-            delOrderPay(scmsOrderInfo, "修改订单");
-            saveOrderPayList(jsonArray, scmsOrderInfo, userInfo);
+            delOrderPay(scmsOrderInfoInDb, "修改订单");
+            saveOrderPayList(jsonArray, scmsOrderInfoInDb, userInfo);
         }
         
         //判断是否需要更新客户余额
         if("lsd".equals(scmsOrderInfoInDb.getOrderType()) || "pfd".equals(scmsOrderInfoInDb.getOrderType()) || "ysd".equals(scmsOrderInfoInDb.getOrderType()) ) {
             Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
-            if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
-                scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfo.getCustomerId());
+            if(scmsOrderInfoInDb.getCustomerId() != null && !scmsOrderInfoInDb.getCustomerId().equals(-1L) && customerBalance != null) {
+                scmsCustomerInfoRepository.updateCustomerBalance(customerBalance, scmsOrderInfoInDb.getCustomerId());
             }
         }else if("jhd".equals(scmsOrderInfoInDb.getOrderType()) || "fcd".equals(scmsOrderInfoInDb.getOrderType())){
             Double customerBalance = MapUtils.getDouble(params, "customerBalance", null);
-            if(scmsOrderInfo.getCustomerId() != null && !scmsOrderInfo.getCustomerId().equals(-1L) && customerBalance != null) {
-                scmsSupplierInfoRepository.updateSupplierBalance(customerBalance, scmsOrderInfo.getCustomerId());
+            if(scmsOrderInfoInDb.getCustomerId() != null && !scmsOrderInfoInDb.getCustomerId().equals(-1L) && customerBalance != null) {
+                scmsSupplierInfoRepository.updateSupplierBalance(customerBalance, scmsOrderInfoInDb.getCustomerId());
             }
         }
         return RestfulRetUtils.getRetSuccess();
