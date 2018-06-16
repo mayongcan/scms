@@ -122,12 +122,18 @@ public class ScmsOrderInfoRepositoryImpl extends BaseRepository implements ScmsO
         }
         String orderCustomerType = MapUtils.getString(params, "orderCustomerType");
         Long customerId = MapUtils.getLong(params, "customerId", null);
-        if(!StringUtils.isBlank(orderCustomerType) && customerId != null) {
-            sqlParams.querySql.append(" AND tb.ORDER_CUSTOMER_TYPE = :orderCustomerType AND tb.CUSTOMER_ID = :customerId ");
-            sqlParams.paramsList.add("orderCustomerType");
-            sqlParams.valueList.add(orderCustomerType);
-            sqlParams.paramsList.add("customerId");
-            sqlParams.valueList.add(customerId);
+        if(!StringUtils.isBlank(orderCustomerType)) {
+            if(customerId != null) {
+                sqlParams.querySql.append(" AND tb.ORDER_CUSTOMER_TYPE = :orderCustomerType AND tb.CUSTOMER_ID = :customerId ");
+                sqlParams.paramsList.add("orderCustomerType");
+                sqlParams.valueList.add(orderCustomerType);
+                sqlParams.paramsList.add("customerId");
+                sqlParams.valueList.add(customerId);
+            }else {
+                sqlParams.querySql.append(" AND tb.ORDER_CUSTOMER_TYPE = :orderCustomerType ");
+                sqlParams.paramsList.add("orderCustomerType");
+                sqlParams.valueList.add(orderCustomerType);
+            }
         }
         if (!StringUtils.isBlank(MapUtils.getString(params, "createDateBegin")) && !StringUtils.isBlank(MapUtils.getString(params, "createDateEnd"))) {
             sqlParams.querySql.append(" AND tb.CREATE_DATE between :createDateBegin AND :createDateEnd ");
