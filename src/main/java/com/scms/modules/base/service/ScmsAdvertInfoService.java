@@ -9,22 +9,22 @@ import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.entity.UserInfo;
 
-import com.scms.modules.base.entity.ScmsCarouselImage;
+import com.scms.modules.base.entity.ScmsAdvertInfo;
 
 /**
  * 服务类接口
  * @version 1.0
  * @author 
  */
-public interface ScmsCarouselImageService {
+public interface ScmsAdvertInfoService {
 	
 	/**
 	 * 获取列表
 	 * @param page
-	 * @param scmsCarouselImage
+	 * @param scmsAdvertInfo
 	 * @return
 	 */
-	public JSONObject getList(Pageable page, ScmsCarouselImage scmsCarouselImage, Map<String, Object> params);
+	public JSONObject getList(Pageable page, ScmsAdvertInfo scmsAdvertInfo, Map<String, Object> params);
 	
 	/**
 	 * 新增
@@ -55,7 +55,7 @@ public interface ScmsCarouselImageService {
      * @param params
      * @return
      */
-    public JSONObject saveOrderCarouselImage(String params);
+    public JSONObject saveOrderAdvertInfo(String params);
 	
 
 }

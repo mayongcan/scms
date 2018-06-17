@@ -21,7 +21,7 @@ import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
-import com.scms.modules.base.entity.ScmsCarouselImage;
+import com.scms.modules.base.entity.ScmsAdvertInfo;
 import com.scms.modules.base.entity.ScmsColorInfo;
 import com.scms.modules.base.entity.ScmsFeedbackInfo;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
@@ -32,7 +32,7 @@ import com.scms.modules.base.entity.ScmsTagInfo;
 import com.scms.modules.base.entity.ScmsTextureInfo;
 import com.scms.modules.base.entity.ScmsTransportInfo;
 import com.scms.modules.base.entity.ScmsVenderInfo;
-import com.scms.modules.base.service.ScmsCarouselImageService;
+import com.scms.modules.base.service.ScmsAdvertInfoService;
 import com.scms.modules.base.service.ScmsColorInfoService;
 import com.scms.modules.base.service.ScmsFeedbackInfoService;
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
@@ -78,7 +78,7 @@ public class BaseRestful {
     private ScmsVenderInfoService scmsVenderInfoService;
     
     @Autowired
-    private ScmsCarouselImageService scmsCarouselImageService;
+    private ScmsAdvertInfoService scmsAdvertInfoService;
     
     @Autowired
     private ScmsFeedbackInfoService scmsFeedbackInfoService;
@@ -122,8 +122,8 @@ public class BaseRestful {
     @RequestMapping(value="/feedbackInfoIndex", method=RequestMethod.GET)
     public JSONObject feedbackInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
-    @RequestMapping(value="/carouselImageIndex", method=RequestMethod.GET)
-    public JSONObject carouselImageIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+    @RequestMapping(value="/advertInfoIndex", method=RequestMethod.GET)
+    public JSONObject advertInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     /**
      * 获取列表
@@ -1046,16 +1046,16 @@ public class BaseRestful {
      * @param request
      * @return
      */
-    @RequestMapping(value="/getCarouselImageList",method=RequestMethod.GET)
-    public JSONObject getCarouselImageList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getAdvertInfoList",method=RequestMethod.GET)
+    public JSONObject getAdvertInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
-                ScmsCarouselImage scmsCarouselImage = (ScmsCarouselImage)BeanUtils.mapToBean(params, ScmsCarouselImage.class);              
-                json = scmsCarouselImageService.getList(pageable, scmsCarouselImage, params);
+                ScmsAdvertInfo scmsAdvertInfo = (ScmsAdvertInfo)BeanUtils.mapToBean(params, ScmsAdvertInfo.class);              
+                json = scmsAdvertInfoService.getList(pageable, scmsAdvertInfo, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -1071,14 +1071,14 @@ public class BaseRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/addCarouselImage",method=RequestMethod.POST)
-    public JSONObject addCarouselImage(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/addAdvertInfo",method=RequestMethod.POST)
+    public JSONObject addAdvertInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCarouselImageService.add(params, userInfo);
+                json = scmsAdvertInfoService.add(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
@@ -1093,14 +1093,14 @@ public class BaseRestful {
      * @param params
      * @return
      */
-    @RequestMapping(value="/editCarouselImage",method=RequestMethod.POST)
-    public JSONObject editCarouselImage(HttpServletRequest request, @RequestBody Map<String, Object> params){
+    @RequestMapping(value="/editAdvertInfo",method=RequestMethod.POST)
+    public JSONObject editAdvertInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCarouselImageService.edit(params, userInfo);
+                json = scmsAdvertInfoService.edit(params, userInfo);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
@@ -1115,14 +1115,14 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
-    @RequestMapping(value="/delCarouselImage",method=RequestMethod.POST)
-    public JSONObject delCarouselImage(HttpServletRequest request,@RequestBody String idsList){
+    @RequestMapping(value="/delAdvertInfo",method=RequestMethod.POST)
+    public JSONObject delAdvertInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
         try {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCarouselImageService.del(idsList, userInfo);
+                json = scmsAdvertInfoService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
@@ -1137,14 +1137,14 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
-    @RequestMapping(value="/saveOrderCarouselImage",method=RequestMethod.POST)
-    public JSONObject saveOrderCarouselImage(HttpServletRequest request, @RequestBody String params){
+    @RequestMapping(value="/saveOrderAdvertInfo",method=RequestMethod.POST)
+    public JSONObject saveOrderAdvertInfo(HttpServletRequest request, @RequestBody String params){
         JSONObject json = new JSONObject();
         try {
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
-                json = scmsCarouselImageService.saveOrderCarouselImage(params);
+                json = scmsAdvertInfoService.saveOrderAdvertInfo(params);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","保存排序结果失败");

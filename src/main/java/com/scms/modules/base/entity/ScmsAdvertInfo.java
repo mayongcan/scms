@@ -23,7 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ScmsCarouselImage数据库映射实体类
+ * ScmsAdvertInfo数据库映射实体类
  * @version 1.0
  * @author
  */
@@ -31,29 +31,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "scms_carousel_image")
-public class ScmsCarouselImage implements Serializable {
+@Table(name = "scms_advert_info")
+public class ScmsAdvertInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	// 标识
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "ScmsCarouselImageIdGenerator")
-	@TableGenerator(name = "ScmsCarouselImageIdGenerator", table = "sys_tb_generator", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VALUE", pkColumnValue = "SCMS_CAROUSEL_IMAGE_PK", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "ScmsAdvertInfoIdGenerator")
+	@TableGenerator(name = "ScmsAdvertInfoIdGenerator", table = "sys_tb_generator", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VALUE", pkColumnValue = "SCMS_ADVERT_INFO_PK", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 10, scale = 0)
 	private Long id;
 	
 	// 商户ID
 	@Column(name = "MERCHANTS_ID", precision = 10, scale = 0)
 	private Long merchantsId;
+
+    @Column(name = "POSITION", length = 2)
+    private String position;
 	
 	// 图片名称
-	@Column(name = "IMAGE_NAME", length = 128)
-	private String imageName;
+	@Column(name = "ADVERT_NAME", length = 128)
+	private String advertName;
 	
 	// 图片路径
-	@Column(name = "IMAGE_PATH", length = 1024)
-	private String imagePath;
+	@Column(name = "ADVERT_IMAGE", length = 1024)
+	private String advertImage;
+
+    @Column(name = "ADVERT_DESC", length = 512)
+    private String advertDesc;
 
     @Column(name = "ACTION_URL", length = 512)
     private String actionUrl;

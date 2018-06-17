@@ -11,8 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.scms.modules.base.entity.ScmsCarouselImage;
-import com.scms.modules.base.repository.custom.ScmsCarouselImageRepositoryCustom;
+import com.scms.modules.base.entity.ScmsAdvertInfo;
+import com.scms.modules.base.repository.custom.ScmsAdvertInfoRepositoryCustom;
 
 /**
  * 实体资源类
@@ -21,7 +21,7 @@ import com.scms.modules.base.repository.custom.ScmsCarouselImageRepositoryCustom
  *
  */
 @Repository
-public interface ScmsCarouselImageRepository extends JpaRepository<ScmsCarouselImage, Long>, JpaSpecificationExecutor<ScmsCarouselImage>, ScmsCarouselImageRepositoryCustom {
+public interface ScmsAdvertInfoRepository extends JpaRepository<ScmsAdvertInfo, Long>, JpaSpecificationExecutor<ScmsAdvertInfo>, ScmsAdvertInfoRepositoryCustom {
 	
     /**
      * 更新排序ID
@@ -30,7 +30,7 @@ public interface ScmsCarouselImageRepository extends JpaRepository<ScmsCarouselI
      */
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE scms_carousel_image "
+    @Query(value = "UPDATE scms_advert_info "
             + "SET DISP_ORDER = :dispOrder "
             + "WHERE ID = :id ", nativeQuery = true)
     public void updateDispOrderById(@Param("id")Long id, @Param("dispOrder")Long dispOrder);
