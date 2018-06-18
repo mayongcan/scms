@@ -15,7 +15,7 @@ public class ScmsInventoryCheckRepositoryImpl extends BaseRepository implements 
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.MERCHANTS_NAME as \"merchantsName\", tb.SHOP_ID as \"shopId\", "
 	        + "tb.SHOP_NAME as \"shopName\", tb.ORDER_NUM as \"orderNum\", tb.TOTAL_NUM as \"totalNum\", tb.MEMO as \"memo\", tb.CREATE_BY as \"createBy\", "
-	        + "tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", "
+	        + "tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", 'pdd' as \"orderType\", "
 	        + "(select count(1) from scms_inventory_check_goods tmpsog where tmpsog.ORDER_ID = tb.ID) as \"totalGoodsRows\" "
 			+ "FROM scms_inventory_check tb "
 			+ "WHERE tb.IS_VALID = 'Y'";

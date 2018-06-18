@@ -17,31 +17,31 @@ import com.alibaba.fastjson.JSONObject;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.RestfulRetUtils;
 import com.gimplatform.core.utils.SessionUtils;
-import com.scms.modules.report.ReportPurchaseService;
+import com.scms.modules.report.ReportCheckService;
 
 @RestController
 @RequestMapping(value = "/api/scms/report")
-public class ReportPurchaseRestful {
+public class ReportCheckRestful {
 
-    protected static final Logger logger = LogManager.getLogger(ReportPurchaseRestful.class);
+    protected static final Logger logger = LogManager.getLogger(ReportCheckRestful.class);
     
     @Autowired
-    private ReportPurchaseService reportPurchaseService;
+    private ReportCheckService reportCheckService;
     
     /**
-     * 获取进货报表-销售明细(统计)
+     * 获取盘点报表-销售明细(统计)
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getPurchaseReportDetailStatistics",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportDetailStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCheckReportDetailStatistics",method=RequestMethod.GET)
+    public JSONObject getCheckReportDetailStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {          
-                json = reportPurchaseService.getPurchaseReportDetailStatistics(params);
+                json = reportCheckService.getCheckReportDetailStatistics(params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -51,20 +51,20 @@ public class ReportPurchaseRestful {
     }
     
     /**
-     * 获取进货报表-销售明细
+     * 获取盘点报表-销售明细
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getPurchaseReportDetailList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportDetailList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCheckReportDetailList",method=RequestMethod.GET)
+    public JSONObject getCheckReportDetailList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportDetailList(pageable, params);
+                json = reportCheckService.getCheckReportDetailList(pageable, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -74,20 +74,20 @@ public class ReportPurchaseRestful {
     }
     
     /**
-     * 获取进货报表-商品汇总
+     * 获取盘点报表-商品汇总
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getPurchaseReportGoodsList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportGoodsList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCheckReportGoodsList",method=RequestMethod.GET)
+    public JSONObject getCheckReportGoodsList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportGoodsList(pageable, params);
+                json = reportCheckService.getCheckReportGoodsList(pageable, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -97,20 +97,20 @@ public class ReportPurchaseRestful {
     }
     
     /**
-     * 获取进货报表-订单汇总
+     * 获取盘点报表-订单汇总
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getPurchaseReportOrderList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportOrderList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCheckReportOrderList",method=RequestMethod.GET)
+    public JSONObject getCheckReportOrderList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportOrderList(pageable, params);
+                json = reportCheckService.getCheckReportOrderList(pageable, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
@@ -120,66 +120,20 @@ public class ReportPurchaseRestful {
     }
     
     /**
-     * 获取进货报表-供货商汇总
+     * 获取盘点报表-店铺汇总
      * @param request
      * @param params
      * @return
      */
-    @RequestMapping(value="/getPurchaseReportSupplierList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportSupplierList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+    @RequestMapping(value="/getCheckReportShopList",method=RequestMethod.GET)
+    public JSONObject getCheckReportShopList(HttpServletRequest request, @RequestParam Map<String, Object> params){
         JSONObject json = new JSONObject();
         try{
             UserInfo userInfo = SessionUtils.getUserInfo();
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportSupplierList(pageable, params);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 获取进货报表-订单创建人
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/getPurchaseReportCreateByList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportCreateByList(HttpServletRequest request, @RequestParam Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportCreateByList(pageable, params);
-            }
-        }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
-            logger.error(e.getMessage(), e);
-        }
-        return json;
-    }
-    
-    /**
-     * 获取进货报表-店铺汇总
-     * @param request
-     * @param params
-     * @return
-     */
-    @RequestMapping(value="/getPurchaseReportShopList",method=RequestMethod.GET)
-    public JSONObject getPurchaseReportShopList(HttpServletRequest request, @RequestParam Map<String, Object> params){
-        JSONObject json = new JSONObject();
-        try{
-            UserInfo userInfo = SessionUtils.getUserInfo();
-            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
-            else {
-                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));               
-                json = reportPurchaseService.getPurchaseReportShopList(pageable, params);
+                json = reportCheckService.getCheckReportShopList(pageable, params);
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
