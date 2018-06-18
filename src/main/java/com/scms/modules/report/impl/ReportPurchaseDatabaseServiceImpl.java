@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import com.gimplatform.core.common.SqlParams;
 import com.gimplatform.core.repository.BaseRepository;
 import com.gimplatform.core.utils.StringUtils;
-import com.scms.modules.report.ReportSaleDatabaseService;
+import com.scms.modules.report.ReportPurchaseDatabaseService;
 
 @Service
-public class ReportSaleDatabaseServiceImpl extends BaseRepository implements ReportSaleDatabaseService{
+public class ReportPurchaseDatabaseServiceImpl extends BaseRepository implements ReportPurchaseDatabaseService{
 
     //销售明细
-    private static final String SQL_GET_SALE_REPORT_DETAIL_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
+    private static final String SQL_GET_PURCHASE_REPORT_DETAIL_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
             + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
             + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
             + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\", "
@@ -36,7 +36,7 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             + "left join scms_vender_info svi on svi.ID = sgi.VENDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_DETAIL_LIST_COUNT = "SELECT count(1) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_DETAIL_LIST_COUNT = "SELECT count(1) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "left join scms_order_goods sog on sog.ID = tb.DETAIL_ID "
             + "left join scms_goods_info sgi on sgi.ID = sog.GOODS_ID "
@@ -44,9 +44,9 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             + "WHERE 1 = 1 ";
 
     //统计
-    private static final String SQL_GET_SALE_REPORT_DETAIL_STATISTICS = "SELECT sum(tb.GOODS_ORDER_NUM) as \"singleNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"totalPurchase\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"totalProfit\" "
+    private static final String SQL_GET_PURCHASE_REPORT_DETAIL_STATISTICS = "SELECT sum(tb.GOODS_ORDER_NUM) as \"singleNum\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "left join scms_order_goods sog on sog.ID = tb.DETAIL_ID "
             + "left join scms_goods_info sgi on sgi.ID = sog.GOODS_ID "
@@ -55,10 +55,10 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             + "WHERE 1 = 1 ";
     
     //商品汇总
-    private static final String SQL_GET_SALE_REPORT_GOODS_LIST = "SELECT distinct(sog.GOODS_ID), "
+    private static final String SQL_GET_PURCHASE_REPORT_GOODS_LIST = "SELECT distinct(sog.GOODS_ID), "
             + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", "         
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\", "       
             + "sgc.CATEGORY_NAME as \"categoryName\", "
             + "sgi.ID as \"goodsId\", sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", "
             + "svi.VENDER_NAME as \"venderName\" "
@@ -69,7 +69,7 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             + "left join scms_vender_info svi on svi.ID = sgi.VENDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_GOODS_LIST_COUNT = "SELECT count(distinct(sog.GOODS_ID)) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_GOODS_LIST_COUNT = "SELECT count(distinct(sog.GOODS_ID)) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "left join scms_order_goods sog on sog.ID = tb.DETAIL_ID "
             + "left join scms_goods_info sgi on sgi.ID = sog.GOODS_ID "
@@ -77,135 +77,108 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             + "WHERE 1 = 1 ";
     
     //订单汇总
-    private static final String SQL_GET_SALE_REPORT_ORDER_LIST = "SELECT distinct(tb.ORDER_ID), "
+    private static final String SQL_GET_PURCHASE_REPORT_ORDER_LIST = "SELECT distinct(tb.ORDER_ID), "
             + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\", " 
             + "soi.ID as \"orderId\", soi.ORDER_NUM as \"orderNum\", soi.SHOP_NAME as \"shopName\", soi.CUSTOMER_NAME as \"customerName\", soi.ORDER_TYPE as \"orderType\", soi.CREATE_DATE as \"createDate\", soi.CREATE_BY_NAME as \"createByName\", soi.SELLER_BY_NAME as \"sellerByName\", soi.PERFORMANCE_BY_NAME as \"performanceByName\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_ORDER_LIST_COUNT = "SELECT count(distinct(tb.ORDER_ID)) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_ORDER_LIST_COUNT = "SELECT count(distinct(tb.ORDER_ID)) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
     
-    //客户汇总
-    private static final String SQL_GET_SALE_REPORT_CUSTOMER_LIST = "SELECT distinct(soi.CUSTOMER_ID), "
+    //供货商汇总
+    private static final String SQL_GET_PURCHASE_REPORT_SUPPLIER_LIST = "SELECT distinct(soi.CUSTOMER_ID), "
             + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
-            + "soi.CUSTOMER_ID as \"customerId\", soi.CUSTOMER_NAME as \"customerName\" "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\", " 
+            + "soi.CUSTOMER_ID as \"supplierId\", soi.CUSTOMER_NAME as \"customerName\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_CUSTOMER_LIST_COUNT = "SELECT count(distinct(soi.CUSTOMER_ID)) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_SUPPLIER_LIST_COUNT = "SELECT count(distinct(soi.CUSTOMER_ID)) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
     
     //创建人汇总
-    private static final String SQL_GET_SALE_REPORT_CREATEBY_LIST = "SELECT distinct(soi.CREATE_BY), "
+    private static final String SQL_GET_PURCHASE_REPORT_CREATEBY_LIST = "SELECT distinct(soi.CREATE_BY), "
             + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\", " 
             + "soi.CREATE_BY as \"createBy\", soi.CREATE_BY_NAME as \"createByName\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_CREATEBY_LIST_COUNT = "SELECT count(distinct(soi.CREATE_BY)) as \"count\" "
-            + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
-            + "WHERE 1 = 1 ";
-    
-    //销售人汇总
-    private static final String SQL_GET_SALE_REPORT_SELLERBY_LIST = "SELECT distinct(soi.SELLER_BY), "
-            + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
-            + "soi.SELLER_BY as \"sellerBy\", soi.SELLER_BY_NAME as \"sellerByName\" "
-            + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
-            + "WHERE 1 = 1 ";
-
-    private static final String SQL_GET_SALE_REPORT_SELLERBY_LIST_COUNT = "SELECT count(distinct(soi.SELLER_BY)) as \"count\" "
-            + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
-            + "WHERE 1 = 1 ";
-    
-    //业绩归属人汇总
-    private static final String SQL_GET_SALE_REPORT_PERFORMANCEBY_LIST = "SELECT distinct(soi.PERFORMANCE_BY), "
-            + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
-            + "soi.PERFORMANCE_BY as \"performanceBy\", soi.PERFORMANCE_BY_NAME as \"performanceByName\" "
-            + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
-            + "WHERE 1 = 1 ";
-
-    private static final String SQL_GET_SALE_REPORT_PERFORMANCEBY_LIST_COUNT = "SELECT count(distinct(soi.PERFORMANCE_BY)) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_CREATEBY_LIST_COUNT = "SELECT count(distinct(soi.CREATE_BY)) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
     
     //店铺汇总
-    private static final String SQL_GET_SALE_REPORT_SHOP_LIST = "SELECT distinct(soi.SHOP_ID), "
+    private static final String SQL_GET_PURCHASE_REPORT_SHOP_LIST = "SELECT distinct(soi.SHOP_ID), "
             + "sum(tb.GOODS_ORDER_NUM) as \"goodsOrderNum\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_PURCHASE_PRICE) as \"goodsPurchasePrice\", "
-            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PROFIT) as \"goodsOrderProfit\", " 
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE ) as \"totalOrderPrice\", "
+            + "sum(tb.GOODS_ORDER_NUM * tb.GOODS_ORDER_PRICE * tb.GOODS_DISCOUNT / 100 ) as \"totalPrice\", " 
             + "soi.SHOP_ID as \"shopId\", soi.SHOP_NAME as \"shopName\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
 
-    private static final String SQL_GET_SALE_REPORT_SHOP_LIST_COUNT = "SELECT count(distinct(soi.SHOP_ID)) as \"count\" "
+    private static final String SQL_GET_PURCHASE_REPORT_SHOP_LIST_COUNT = "SELECT count(distinct(soi.SHOP_ID)) as \"count\" "
             + "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
             + "WHERE 1 = 1 ";
 
     @Override
-    public List<Map<String, Object>> getSaleReportDetailStatistics(Map<String, Object> params) {
+    public List<Map<String, Object>> getPurchaseReportDetailStatistics(Map<String, Object> params) {
         //生成查询条件
-        params.put("orderTypeList", "lsd,pfd,ysd");
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_DETAIL_STATISTICS, params);
+        params.put("orderTypeList", "jhd");
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_DETAIL_STATISTICS, params);
         List<Map<String, Object>> listIn = getResultList(sqlParams);
-        int singleNum = 0; float totalPurchase = 0f; float totalProfit = 0f;        
+        int singleNum = 0; float totalOrderPrice = 0f; float totalPrice = 0f;        
         if(listIn.size() > 0) {
             singleNum = MapUtils.getIntValue(listIn.get(0), "singleNum");
-            totalPurchase = MapUtils.getFloatValue(listIn.get(0), "totalPurchase");
-            totalProfit = MapUtils.getFloatValue(listIn.get(0), "totalProfit");
+            totalOrderPrice = MapUtils.getFloatValue(listIn.get(0), "totalOrderPrice");
+            totalPrice = MapUtils.getFloatValue(listIn.get(0), "totalPrice");
         }
         //单独统计退货单，退货单需要进行相减
-        params.put("orderTypeList", "thd");
-        sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_DETAIL_STATISTICS, params);
+        params.put("orderTypeList", "fcd");
+        sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_DETAIL_STATISTICS, params);
         List<Map<String, Object>> listOut = getResultList(sqlParams);
-        int tmpSingleNum = 0; float tmpTotalPurchase = 0f; float tmpTotalProfit = 0f;    
+        int tmpSingleNum = 0; float tmpTotalOrderPrice = 0f; float tmpTotalPrice = 0f;    
         if(listOut.size() > 0) {
             tmpSingleNum = MapUtils.getIntValue(listOut.get(0), "singleNum");
-            tmpTotalPurchase = MapUtils.getFloatValue(listOut.get(0), "totalPurchase");
-            tmpTotalProfit = MapUtils.getFloatValue(listOut.get(0), "totalProfit");
+            tmpTotalOrderPrice = MapUtils.getFloatValue(listOut.get(0), "totalOrderPrice");
+            tmpTotalPrice = MapUtils.getFloatValue(listOut.get(0), "totalPrice");
         }
         Map<String, Object> retMap = new HashMap<String, Object>();
         retMap.put("singleNum", singleNum - tmpSingleNum);
-        retMap.put("totalSale", (totalPurchase - tmpTotalPurchase) + (totalProfit - tmpTotalProfit));
-        retMap.put("totalPurchase", totalPurchase - tmpTotalPurchase);
-        retMap.put("totalProfit", totalProfit - tmpTotalProfit);
+        retMap.put("totalOrderPrice", totalOrderPrice - tmpTotalOrderPrice);
+        retMap.put("totalPrice", totalPrice - tmpTotalPrice);
         List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
         retList.add(retMap);
         return retList;
     }
     
     @Override
-    public List<Map<String, Object>> getSaleReportDetailList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportDetailList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_DETAIL_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_DETAIL_LIST, params);
         //添加分页和排序
         sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
         return getResultList(sqlParams);
     }
 
     @Override
-    public int getSaleReportDetailListCount(Map<String, Object> params) {
+    public int getPurchaseReportDetailListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_DETAIL_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_DETAIL_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
     @Override
-    public List<Map<String, Object>> getSaleReportGoodsList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportGoodsList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_GOODS_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_GOODS_LIST, params);
         //添加分页和排序
         sqlParams.querySql.insert(0, "SELECT * FROM ( ");
         sqlParams.querySql.append(" GROUP BY sog.GOODS_ID ) AS t ");
@@ -214,16 +187,16 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
     }
 
     @Override
-    public int getSaleReportGoodsListCount(Map<String, Object> params) {
+    public int getPurchaseReportGoodsListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_GOODS_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_GOODS_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
     @Override
-    public List<Map<String, Object>> getSaleReportOrderList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportOrderList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_ORDER_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_ORDER_LIST, params);
         //添加分页和排序
         sqlParams.querySql.insert(0, "SELECT * FROM ( ");
         sqlParams.querySql.append(" GROUP BY tb.ORDER_ID ) AS t ");
@@ -232,16 +205,16 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
     }
 
     @Override
-    public int getSaleReportOrderListCount(Map<String, Object> params) {
+    public int getPurchaseReportOrderListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_ORDER_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_ORDER_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
     @Override
-    public List<Map<String, Object>> getSaleReportCustomerList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportSupplierList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_CUSTOMER_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_SUPPLIER_LIST, params);
         //添加分页和排序
         sqlParams.querySql.insert(0, "SELECT * FROM ( ");
         sqlParams.querySql.append(" GROUP BY soi.CUSTOMER_ID ) AS t ");
@@ -250,16 +223,16 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
     }
 
     @Override
-    public int getSaleReportCustomerListCount(Map<String, Object> params) {
+    public int getPurchaseReportSupplierListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_CUSTOMER_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_SUPPLIER_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
     @Override
-    public List<Map<String, Object>> getSaleReportCreateByList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportCreateByList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_CREATEBY_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_CREATEBY_LIST, params);
         //添加分页和排序
         sqlParams.querySql.insert(0, "SELECT * FROM ( ");
         sqlParams.querySql.append(" GROUP BY soi.CREATE_BY ) AS t ");
@@ -268,52 +241,16 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
     }
 
     @Override
-    public int getSaleReportCreateByListCount(Map<String, Object> params) {
+    public int getPurchaseReportCreateByListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_CREATEBY_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_CREATEBY_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
     @Override
-    public List<Map<String, Object>> getSaleReportSellerByList(Map<String, Object> params, int pageIndex, int pageSize) {
+    public List<Map<String, Object>> getPurchaseReportShopList(Map<String, Object> params, int pageIndex, int pageSize) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_SELLERBY_LIST, params);
-        //添加分页和排序
-        sqlParams.querySql.insert(0, "SELECT * FROM ( ");
-        sqlParams.querySql.append(" GROUP BY soi.SELLER_BY ) AS t ");
-        sqlParams = getPageableSql(sqlParams, pageIndex, pageSize);
-        return getResultList(sqlParams);
-    }
-
-    @Override
-    public int getSaleReportSellerByListCount(Map<String, Object> params) {
-        //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_SELLERBY_LIST_COUNT, params);
-        return getResultListTotalCount(sqlParams);
-    }
-
-    @Override
-    public List<Map<String, Object>> getSaleReportPerformanceByList(Map<String, Object> params, int pageIndex, int pageSize) {
-        //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_PERFORMANCEBY_LIST, params);
-        //添加分页和排序
-        sqlParams.querySql.insert(0, "SELECT * FROM ( ");
-        sqlParams.querySql.append(" GROUP BY soi.PERFORMANCE_BY ) AS t ");
-        sqlParams = getPageableSql(sqlParams, pageIndex, pageSize);
-        return getResultList(sqlParams);
-    }
-
-    @Override
-    public int getSaleReportPerformanceByListCount(Map<String, Object> params) {
-        //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_PERFORMANCEBY_LIST_COUNT, params);
-        return getResultListTotalCount(sqlParams);
-    }
-
-    @Override
-    public List<Map<String, Object>> getSaleReportShopList(Map<String, Object> params, int pageIndex, int pageSize) {
-        //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_SHOP_LIST, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_SHOP_LIST, params);
         //添加分页和排序
         sqlParams.querySql.insert(0, "SELECT * FROM ( ");
         sqlParams.querySql.append(" GROUP BY soi.SHOP_ID ) AS t ");
@@ -322,9 +259,9 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
     }
 
     @Override
-    public int getSaleReportShopListCount(Map<String, Object> params) {
+    public int getPurchaseReportShopListCount(Map<String, Object> params) {
         //生成查询条件
-        SqlParams sqlParams = genSaleReportDetailListWhere(SQL_GET_SALE_REPORT_SHOP_LIST_COUNT, params);
+        SqlParams sqlParams = genPurchaseReportDetailListWhere(SQL_GET_PURCHASE_REPORT_SHOP_LIST_COUNT, params);
         return getResultListTotalCount(sqlParams);
     }
 
@@ -334,7 +271,7 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
      * @param params
      * @return
      */
-    private SqlParams genSaleReportDetailListWhere(String sql, Map<String, Object> params){
+    private SqlParams genPurchaseReportDetailListWhere(String sql, Map<String, Object> params){
         SqlParams sqlParams = new SqlParams();
         sqlParams.querySql.append(sql);
         Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
