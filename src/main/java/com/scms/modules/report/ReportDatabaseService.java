@@ -8,6 +8,10 @@ import java.util.Map;
 
 public interface ReportDatabaseService{
     
+    public List<Map<String, Object>> getSummary(Map<String, Object> params);
+    
+    public List<Map<String, Object>> getSummaryChart1(Map<String, Object> params);
+    
     public List<Map<String, Object>> getSalePurchaseCompareStatistics(Map<String, Object> params);
     
     public List<Map<String, Object>> getSalePurchaseCompareList(Map<String, Object> params, int pageIndex, int pageSize);

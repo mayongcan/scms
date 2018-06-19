@@ -15,10 +15,31 @@ import com.scms.modules.report.ReportDatabaseService;
 @Service
 public class ReportDatabaseServiceImpl extends BaseRepository implements ReportDatabaseService{
 
+    //经营概况
+    private static final String SQL_GET_SUMMARY_STATISTICS = "SELECT "
+            + "count(*) as \"totalOrder\", "
+            + "sum(tb.TOTAL_NUM) as \"totalGoodsNum\", "
+            + "sum(tb.TOTAL_AMOUNT) as \"totalAmont\", "
+            + "sum(tb.TOTAL_PROFIT) as \"totalProfit\" "
+            + "FROM scms_order_info tb "
+            + "WHERE 1 = 1 ";
+    
+    //营业额走势
+    private static final String SQL_GET_SUMMARY_CHART_1_1 = "SELECT YEAR(tb.CREATE_DATE) AS \"year\" , MONTH(tb.CREATE_DATE) AS \"month\" , DAY(tb.CREATE_DATE) AS \"day\", "
+            + "SUM(tb.TOTAL_AMOUNT) AS \"totalAmount\", SUM(tb.TOTAL_PROFIT) AS \"totalProfit\" "
+            + "FROM scms_order_info tb "
+            + "WHERE 1 = 1 ";
+    
+    private static final String SQL_GET_SUMMARY_CHART_1_2 = "SELECT YEAR(tb.CREATE_DATE) AS \"year\" , MONTH(tb.CREATE_DATE) AS \"month\" , "
+            + "SUM(tb.TOTAL_AMOUNT) AS \"totalAmount\", SUM(tb.TOTAL_PROFIT) AS \"totalProfit\" "
+            + "FROM scms_order_info tb "
+            + "WHERE 1 = 1 ";
+    
+    
     //销售明细
     private static final String SQL_GET_SALE_PURCHASE_COMPARE_LIST_SELECT = "SELECT distinct(sog.GOODS_ID), "     
             + "sgc.CATEGORY_NAME as \"categoryName\", "
-            + "sgi.ID as \"goodsId\", sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", "
+            + "sgi.ID as \"goodsId\", sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", sgi.PURCHASE_PRICE as \"purchasePrice\", sgi.SALE_PRICE as \"salePrice\", "
             + "svi.VENDER_NAME as \"venderName\", "
             + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = sog.GOODS_ID ) as \"goodsInventoryNum\", ";
     private static final String SQL_GET_SALE_PURCHASE_COMPARE_LIST_FROM = "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
@@ -53,7 +74,59 @@ public class ReportDatabaseServiceImpl extends BaseRepository implements ReportD
             + "left join scms_goods_category sgc on sgc.ID = sgi.CATEGORY_ID "
             + "left join scms_vender_info svi on svi.ID = sgi.VENDER_ID "
             + "WHERE 1 = 1 ";
-    
+
+
+    @Override
+    public List<Map<String, Object>> getSummary(Map<String, Object> params) {
+        SqlParams sqlParams = genSummaryListWhere(SQL_GET_SUMMARY_STATISTICS, params);
+        return getResultList(sqlParams);
+    }
+
+    @Override
+    public List<Map<String, Object>> getSummaryChart1(Map<String, Object> params) {
+        String searchType = MapUtils.getString(params, "searchType");
+        SqlParams sqlParams = new SqlParams();
+        if("2".equals(searchType)) {
+            sqlParams = genSummaryListWhere(SQL_GET_SUMMARY_CHART_1_2, params);
+            sqlParams.querySql.append(" GROUP BY YEAR (tb.CREATE_DATE) DESC, MONTH(tb.CREATE_DATE) ");
+        }else {
+            sqlParams = genSummaryListWhere(SQL_GET_SUMMARY_CHART_1_1, params);
+            sqlParams.querySql.append(" GROUP BY YEAR (tb.CREATE_DATE) DESC, MONTH(tb.CREATE_DATE), DAY(tb.CREATE_DATE) ");
+        }
+        return getResultList(sqlParams);
+    }
+
+    private SqlParams genSummaryListWhere(String sql, Map<String, Object> params){
+        SqlParams sqlParams = new SqlParams();
+        sqlParams.querySql.append(sql);
+        Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
+        String orderTypeList = MapUtils.getString(params, "orderTypeList");
+        String orderType = MapUtils.getString(params, "orderType");
+        if (!StringUtils.isBlank(orderTypeList)) {
+            List<String> orderList = StringUtils.splitToList(orderTypeList, ",");
+            sqlParams.querySql.append(" AND tb.ORDER_TYPE IN (:orderList) ");
+            sqlParams.paramsList.add("orderList");
+            sqlParams.valueList.add(orderList);
+        }
+        if (merchantsId != null) {
+            sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(merchantsId);
+        }
+        if (!StringUtils.isBlank(MapUtils.getString(params, "createDateBegin")) && !StringUtils.isBlank(MapUtils.getString(params, "createDateEnd"))) {
+            sqlParams.querySql.append(" AND tb.CREATE_DATE between :createDateBegin AND :createDateEnd ");
+            sqlParams.paramsList.add("createDateBegin");
+            sqlParams.paramsList.add("createDateEnd");
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateBegin") + " 00:00:00");
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateEnd") + " 23:59:59");
+        }
+        if (!StringUtils.isBlank(orderType)) {
+            sqlParams.querySql.append(" AND tb.ORDER_TYPE = :orderType ");
+            sqlParams.paramsList.add("orderType");
+            sqlParams.valueList.add(orderType);
+        }
+        return sqlParams;
+    }
 
     @Override
     public List<Map<String, Object>> getSalePurchaseCompareStatistics(Map<String, Object> params) {

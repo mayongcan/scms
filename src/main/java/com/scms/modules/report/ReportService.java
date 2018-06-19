@@ -4,9 +4,7 @@
 package com.scms.modules.report;
 
 import java.util.Map;
-
 import org.springframework.data.domain.Pageable;
-
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -15,6 +13,20 @@ import com.alibaba.fastjson.JSONObject;
  * @author 
  */
 public interface ReportService {
+    
+    /**
+     * 获取经营概况（统计）
+     * @param params
+     * @return
+     */
+    public JSONObject getSummary(Map<String, Object> params);
+    
+    /**
+     * 统计表1
+     * @param params
+     * @return
+     */
+    public JSONObject getSummaryChart1(Map<String, Object> params);
 
     /**
      * 获取进销对比(统计)

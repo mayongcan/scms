@@ -53,6 +53,50 @@ public class ReportRestful {
     public JSONObject statisticsIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     /**
+     * 获取经营概况（统计）
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getSummary",method=RequestMethod.GET)
+    public JSONObject getSummary(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = reportService.getSummary(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 获取经营概况-统计图表
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getSummaryChart1",method=RequestMethod.GET)
+    public JSONObject getSummaryChart1(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = reportService.getSummaryChart1(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
      * 获取进销对比(统计)
      * @param request
      * @param params
