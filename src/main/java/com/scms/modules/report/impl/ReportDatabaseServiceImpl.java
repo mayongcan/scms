@@ -39,7 +39,7 @@ public class ReportDatabaseServiceImpl extends BaseRepository implements ReportD
     //销售明细
     private static final String SQL_GET_SALE_PURCHASE_COMPARE_LIST_SELECT = "SELECT distinct(sog.GOODS_ID), "     
             + "sgc.CATEGORY_NAME as \"categoryName\", "
-            + "sgi.ID as \"goodsId\", sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", sgi.PURCHASE_PRICE as \"purchasePrice\", sgi.SALE_PRICE as \"salePrice\", "
+            + "sgi.ID as \"goodsId\", sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_PHOTO as \"goodsPhoto\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", sgi.PURCHASE_PRICE as \"purchasePrice\", sgi.SALE_PRICE as \"salePrice\", "
             + "svi.VENDER_NAME as \"venderName\", "
             + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = sog.GOODS_ID ) as \"goodsInventoryNum\", ";
     private static final String SQL_GET_SALE_PURCHASE_COMPARE_LIST_FROM = "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
