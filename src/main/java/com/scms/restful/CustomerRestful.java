@@ -466,4 +466,92 @@ public class CustomerRestful {
         }
         return json;
     }
+
+    /**
+     * 获取客户统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getCustomerStatistics",method=RequestMethod.GET)
+    public JSONObject getCustomerStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsCustomerInfoService.getCustomerStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取供货商统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getSupplierStatistics",method=RequestMethod.GET)
+    public JSONObject getSupplierStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsSupplierInfoService.getSupplierStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取客户对账统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getCustomerCheckBillStatistics",method=RequestMethod.GET)
+    public JSONObject getCustomerCheckBillStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsCustomerInfoService.getCustomerCheckBillStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取供货商对账统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getSupplierCheckBillStatistics",method=RequestMethod.GET)
+    public JSONObject getSupplierCheckBillStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {          
+                json = scmsSupplierInfoService.getSupplierCheckBillStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 }

@@ -34,4 +34,18 @@ public interface ScmsCustomerInfoRepositoryCustom {
 	 * @return
 	 */
 	public int getListCount(ScmsCustomerInfo scmsCustomerInfo, Map<String, Object> params);
+	
+	/**
+	 * 获取供货商统计
+	 * @param params
+	 * @return
+	 */
+    public List<Map<String, Object>> getCustomerStatistics(Map<String, Object> params);
+
+	/**
+	 * 客户对账统计
+	 * @param params
+	 * @return
+	 */
+    public List<Map<String, Object>> getCustomerCheckBillStatistics(Map<String, Object> params);
 }

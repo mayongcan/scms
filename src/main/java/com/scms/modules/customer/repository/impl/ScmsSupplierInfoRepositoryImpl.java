@@ -28,6 +28,18 @@ public class ScmsSupplierInfoRepositoryImpl extends BaseRepository implements Sc
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
 			+ "FROM scms_supplier_info tb left join sys_user_info user on user.USER_ID = tb.CREATE_BY "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
+
+    private static final String SQL_GET_SUPPLIER_STATISTICS = "SELECT " + 
+            "sum(tb.TOTAL_NUM) as \"totalNum\", sum(tb.TOTAL_UN_PAY) as \"totalUnPay\", " + 
+            "sum(tb.SMALL_CHANGE) as \"totalSmallChange\", sum(tb.TOTAL_AMOUNT) as \"totalAmount\" " + 
+            "FROM scms_order_info tb " + 
+            "WHERE tb.ORDER_CUSTOMER_TYPE = '2' ";
+
+    private static final String SQL_GET_SUPPLIER_CHECK_BILL_STATISTICS = "SELECT " + 
+            "(SELECT count(1) FROM scms_supplier_info tmpsci WHERE tmpsci.SUPPLIER_BALANCE < 0 AND tmpsci.MERCHANTS_ID = :merchantsId) as \"totalDebtNum\", " + 
+            "(SELECT sum(tmpsci.SUPPLIER_BALANCE) FROM scms_supplier_info tmpsci WHERE tmpsci.SUPPLIER_BALANCE < 0 AND tmpsci.MERCHANTS_ID = :merchantsId) as \"totalDebtPrice\", " + 
+            "(SELECT count(1) FROM scms_supplier_info tmpsci WHERE tmpsci.SUPPLIER_BALANCE > 0 AND tmpsci.MERCHANTS_ID = :merchantsId) as \"totalPayNum\", " + 
+            "(SELECT sum(tmpsci.SUPPLIER_BALANCE) FROM scms_supplier_info tmpsci WHERE tmpsci.SUPPLIER_BALANCE > 0 AND tmpsci.MERCHANTS_ID = :merchantsId) as \"totalPayPrice\" ";
 	
 	public List<Map<String, Object>> getList(ScmsSupplierInfo scmsSupplierInfo, Map<String, Object> params, int pageIndex, int pageSize) {
 		//生成查询条件
@@ -92,4 +104,49 @@ public class ScmsSupplierInfoRepositoryImpl extends BaseRepository implements Sc
         }
         return sqlParams;
 	}
+
+    @Override
+    public List<Map<String, Object>> getSupplierStatistics(Map<String, Object> params) {
+        SqlParams sqlParams = new SqlParams();
+        sqlParams.querySql.append(SQL_GET_SUPPLIER_STATISTICS);
+        Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
+        if (merchantsId != null) {
+            sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(merchantsId);
+        }
+        String orderTypeList = MapUtils.getString(params, "orderTypeList");
+        if (!StringUtils.isBlank(orderTypeList)) {
+            List<String> orderList = StringUtils.splitToList(orderTypeList, ",");
+            sqlParams.querySql.append(" AND tb.ORDER_TYPE IN (:orderList) ");
+            sqlParams.paramsList.add("orderList");
+            sqlParams.valueList.add(orderList);
+        }
+        Long supplierId = MapUtils.getLong(params, "supplierId", null);
+        if(supplierId != null) {
+            sqlParams.querySql.append(" AND tb.CUSTOMER_ID = :supplierId ");
+            sqlParams.paramsList.add("supplierId");
+            sqlParams.valueList.add(supplierId);
+        }
+        if (!StringUtils.isBlank(MapUtils.getString(params, "createDateBegin")) && !StringUtils.isBlank(MapUtils.getString(params, "createDateEnd"))) {
+            sqlParams.querySql.append(" AND tb.CREATE_DATE between :createDateBegin AND :createDateEnd ");
+            sqlParams.paramsList.add("createDateBegin");
+            sqlParams.paramsList.add("createDateEnd");
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateBegin"));
+            sqlParams.valueList.add(MapUtils.getString(params, "createDateEnd"));
+        }
+        return getResultList(sqlParams);
+    }
+
+    @Override
+    public List<Map<String, Object>> getSupplierCheckBillStatistics(Map<String, Object> params) {
+        SqlParams sqlParams = new SqlParams();
+        sqlParams.querySql.append(SQL_GET_SUPPLIER_CHECK_BILL_STATISTICS);
+        Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
+        if (merchantsId != null) {
+            sqlParams.paramsList.add("merchantsId");
+            sqlParams.valueList.add(merchantsId);
+        }
+        return getResultList(sqlParams);
+    }
 }

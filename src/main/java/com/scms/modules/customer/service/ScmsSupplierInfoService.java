@@ -50,5 +50,17 @@ public interface ScmsSupplierInfoService {
 	 */
 	public JSONObject del(String idsList, UserInfo userInfo);
 	
-
+	/**
+	 * 获取供货商统计
+	 * @param params
+	 * @return
+	 */
+    public JSONObject getSupplierStatistics(Map<String, Object> params);
+	
+	/**
+	 * 供货商对账统计
+	 * @param params
+	 * @return
+	 */
+    public JSONObject getSupplierCheckBillStatistics(Map<String, Object> params);
 }

@@ -50,5 +50,18 @@ public interface ScmsCustomerInfoService {
 	 */
 	public JSONObject del(String idsList, UserInfo userInfo);
 	
+	/**
+	 * 客户统计
+	 * @param params
+	 * @return
+	 */
+    public JSONObject getCustomerStatistics(Map<String, Object> params);
+
+    /**
+     * 客户对账统计
+     * @param params
+     * @return
+     */
+    public JSONObject getCustomerCheckBillStatistics(Map<String, Object> params);
 
 }
