@@ -233,4 +233,10 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		return RestfulRetUtils.getRetSuccess();
 	}
 
+    @Override
+    public JSONObject getAllGoodsInventoryStatistics(Map<String, Object> params) {
+        List<Map<String, Object>> list = scmsGoodsInfoRepository.getAllGoodsInventoryStatistics(params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, list.size());
+    }
+
 }

@@ -420,4 +420,26 @@ public class GoodsRestful {
         }
         return json;
     }
+
+    /**
+     * 获取所有商品的库存统计
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getAllGoodsInventoryStatistics",method=RequestMethod.GET)
+    public JSONObject getAllGoodsInventoryStatistics(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {           
+                json = scmsGoodsInfoService.getAllGoodsInventoryStatistics(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
 }

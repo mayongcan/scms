@@ -21,7 +21,8 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
 	        + "tb.DEF_DISCOUNT as \"defDiscount\", tb.PACKING_NUM as \"packingNum\", tb.GOODS_DESC as \"goodsDesc\", tb.GOODS_PHOTO as \"goodsPhoto\", tb.GOODS_YEAR as \"goodsYear\", "
 	        + "tb.COLOR_ID_LIST as \"colorIdList\", tb.COLOR_NAME_LIST as \"colorNameList\", tb.SIZE_ID_LIST as \"sizeIdList\", tb.SIZE_NAME_LIST as \"sizeNameList\", tb.TEXTURE_ID_LIST as \"textureIdList\",  tb.TEXTURE_NAME_LIST as \"textureNameList\", "
 	        + "tb.GOODS_SEASON as \"goodsSeason\", tb.BUY_STATUS as \"buyStatus\", tb.SHELF_STATUS as \"shelfStatus\", tb.USE_STATUS as \"useStatus\", tb.CREATE_BY as \"createBy\", "
-	        + "tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", sgc.CATEGORY_NAME as \"categoryName\", svi.VENDER_NAME as \"venderName\" "
+	        + "tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", sgc.CATEGORY_NAME as \"categoryName\", svi.VENDER_NAME as \"venderName\", "
+	        + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = tb.ID ) as \"goodsInventoryNum\" "
 			+ "FROM scms_goods_info tb left join scms_goods_category sgc on sgc.ID = tb.CATEGORY_ID "
 			+ "left join scms_vender_info svi on svi.ID = tb.VENDER_ID "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
@@ -31,9 +32,22 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
             + "left join scms_vender_info svi on svi.ID = tb.VENDER_ID "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
 	
+
+    private static final String SQL_GET_ALL_GOODS_INVENTORY_STATISTICS = "SELECT " + 
+            " sum(t.totalGoods) as \"totalGoods\", " + 
+            " sum(t.totalGoodsInventory) as \"totalGoodsInventory\", " + 
+            " sum(t.totalPurchase) as \"totalPurchase\" " + 
+            " FROM " + 
+                " (SELECT count(DISTINCT(tb.ID)) as \"totalGoods\" , " + 
+                " sum(sgi.INVENTORY_NUM) as \"totalGoodsInventory\", " + 
+                " (select sum(tmpsgi.INVENTORY_NUM) * tb.PURCHASE_PRICE from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = tb.ID) as \"totalPurchase\" " + 
+                " FROM scms_goods_info tb left join scms_goods_inventory sgi on tb.ID = sgi.GOODS_ID " + 
+                " WHERE 1 = 1 ";
+                
+	
 	public List<Map<String, Object>> getList(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize) {
 		//生成查询条件
-		SqlParams sqlParams = genListWhere(SQL_GET_LIST, scmsGoodsInfo, params);
+		SqlParams sqlParams = genListWhere(SQL_GET_LIST, params);
 		//添加分页和排序
 		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
 		return getResultList(sqlParams);
@@ -41,7 +55,7 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
 
 	public int getListCount(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params) {
 		//生成查询条件
-		SqlParams sqlParams = genListWhere(SQL_GET_LIST_COUNT, scmsGoodsInfo, params);
+		SqlParams sqlParams = genListWhere(SQL_GET_LIST_COUNT, params);
 		return getResultListTotalCount(sqlParams);
 	}
 
@@ -51,7 +65,7 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
 	 * @param params
 	 * @return
 	 */
-	private SqlParams genListWhere(String sql, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params){
+	private SqlParams genListWhere(String sql, Map<String, Object> params){
 		SqlParams sqlParams = new SqlParams();
 		sqlParams.querySql.append(sql);
         Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
@@ -130,4 +144,12 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
         }
         return sqlParams;
 	}
+
+    @Override
+    public List<Map<String, Object>> getAllGoodsInventoryStatistics(Map<String, Object> params) {
+      //生成查询条件
+        SqlParams sqlParams = genListWhere(SQL_GET_ALL_GOODS_INVENTORY_STATISTICS, params);
+        sqlParams.querySql.append(" GROUP BY tb.ID  ) t");
+        return getResultList(sqlParams);
+    }
 }

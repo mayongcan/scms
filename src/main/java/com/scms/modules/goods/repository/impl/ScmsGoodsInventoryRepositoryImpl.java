@@ -26,7 +26,8 @@ public class ScmsGoodsInventoryRepositoryImpl extends BaseRepository implements 
 			+ "WHERE 1 = 1 ";
 	
 
-    private static final String SQL_GET_STATISTICS_GOODS_INVENTORY = "SELECT DISTINCT(tb.SHOP_ID) as shopId, sum(tb.INVENTORY_NUM) as totalInventoryNum, si.SHOP_NAME as shopName, gi.PURCHASE_PRICE as purchasePrice "
+    private static final String SQL_GET_STATISTICS_GOODS_INVENTORY = "SELECT DISTINCT(tb.SHOP_ID) as shopId, "
+            + "sum(tb.INVENTORY_NUM) as totalInventoryNum, si.SHOP_NAME as shopName, gi.PURCHASE_PRICE as purchasePrice "
             + "FROM scms_goods_inventory tb left join scms_shop_info si on si.ID = tb.SHOP_ID "
             + "left join scms_goods_info gi on gi.ID = tb.GOODS_ID "
             + "WHERE 1 = 1 ";

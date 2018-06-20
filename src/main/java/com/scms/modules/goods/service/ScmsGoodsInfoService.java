@@ -50,5 +50,11 @@ public interface ScmsGoodsInfoService {
 	 */
 	public JSONObject del(String idsList, UserInfo userInfo);
 	
+	/**
+	 * 获取所有商品的库存统计
+	 * @param params
+	 * @return
+	 */
+	public JSONObject getAllGoodsInventoryStatistics(Map<String, Object> params);
 
 }

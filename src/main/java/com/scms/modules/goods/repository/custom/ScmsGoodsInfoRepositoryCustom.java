@@ -34,4 +34,11 @@ public interface ScmsGoodsInfoRepositoryCustom {
 	 * @return
 	 */
 	public int getListCount(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params);
+    
+    /**
+     * 统计所有商品的库存
+     * @param params
+     * @return
+     */
+    public List<Map<String, Object>> getAllGoodsInventoryStatistics(Map<String, Object> params);
 }

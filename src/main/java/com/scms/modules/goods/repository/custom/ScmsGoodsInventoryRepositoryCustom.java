@@ -37,10 +37,7 @@ public interface ScmsGoodsInventoryRepositoryCustom {
 	
 	/**
 	 * 统计单个商品的库存
-	 * @param scmsGoodsInventory
 	 * @param params
-	 * @param pageIndex
-	 * @param pageSize
 	 * @return
 	 */
 	public List<Map<String, Object>> getStatisticsGoodsInventory(Map<String, Object> params);
