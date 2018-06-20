@@ -19,7 +19,7 @@ public class ReportDatabaseServiceImpl extends BaseRepository implements ReportD
     private static final String SQL_GET_SUMMARY_STATISTICS = "SELECT "
             + "count(*) as \"totalOrder\", "
             + "sum(tb.TOTAL_NUM) as \"totalGoodsNum\", "
-            + "sum(tb.TOTAL_AMOUNT) as \"totalAmont\", "
+            + "sum(tb.TOTAL_AMOUNT) as \"totalAmount\", "
             + "sum(tb.TOTAL_PROFIT) as \"totalProfit\" "
             + "FROM scms_order_info tb "
             + "WHERE 1 = 1 ";
