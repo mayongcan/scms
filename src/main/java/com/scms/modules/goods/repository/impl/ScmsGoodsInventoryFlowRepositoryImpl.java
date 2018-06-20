@@ -19,7 +19,9 @@ public class ScmsGoodsInventoryFlowRepositoryImpl extends BaseRepository impleme
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.SHOP_ID as \"shopId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
 	        + "tb.COLOR_ID as \"colorId\", tb.COLOR_NAME as \"colorName\", tb.TEXTURE_ID as \"textureId\", tb.TEXTURE_NAME as \"textureName\", tb.SIZE_ID as \"sizeId\", "
 	        + "tb.SIZE_NAME as \"sizeName\", tb.OLD_NUM as \"oldNum\", tb.NEW_NUM as \"newNum\", tb.OPERATE_NAME as \"operateName\", tb.ORDER_NUM as \"orderNum\", "
-	        + "tb.ORDER_TYPE as \"orderType\", tb.CREATE_DATE as \"createDate\", si.SHOP_NAME as \"shopName\", gi.GOODS_NAME as \"goodsName\", gi.GOODS_SERIAL_NUM as \"goodsSerialNum\" "
+	        + "tb.ORDER_TYPE as \"orderType\", tb.CREATE_DATE as \"createDate\", "
+	        + "si.SHOP_NAME as \"shopName\", "
+	        + "gi.GOODS_NAME as \"goodsName\", gi.GOODS_SERIAL_NUM as \"goodsSerialNum\", gi.GOODS_PHOTO as \"goodsPhoto\" "
 			+ "FROM scms_goods_inventory_flow tb left join scms_shop_info si on si.ID = tb.SHOP_ID "
 			+ "left join scms_goods_info gi on gi.ID = tb.GOODS_ID "
 			+ "WHERE 1 = 1 ";
