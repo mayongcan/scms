@@ -26,6 +26,7 @@ import com.scms.modules.base.entity.ScmsColorInfo;
 import com.scms.modules.base.entity.ScmsFeedbackInfo;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.entity.ScmsPayInfo;
+import com.scms.modules.base.entity.ScmsPrintInfo;
 import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.entity.ScmsSizeInfo;
 import com.scms.modules.base.entity.ScmsTagInfo;
@@ -37,6 +38,7 @@ import com.scms.modules.base.service.ScmsColorInfoService;
 import com.scms.modules.base.service.ScmsFeedbackInfoService;
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
 import com.scms.modules.base.service.ScmsPayInfoService;
+import com.scms.modules.base.service.ScmsPrintInfoService;
 import com.scms.modules.base.service.ScmsShopInfoService;
 import com.scms.modules.base.service.ScmsSizeInfoService;
 import com.scms.modules.base.service.ScmsTagInfoService;
@@ -82,6 +84,9 @@ public class BaseRestful {
     
     @Autowired
     private ScmsFeedbackInfoService scmsFeedbackInfoService;
+    
+    @Autowired
+    private ScmsPrintInfoService scmsPrintInfoService;
     
     @RequestMapping(value="/homePageIndex", method=RequestMethod.GET)
     public JSONObject homePageIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -1148,6 +1153,73 @@ public class BaseRestful {
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","保存排序结果失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getPrintInfoList",method=RequestMethod.GET)
+    public JSONObject getPrintInfoList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsPrintInfo scmsPrintInfo = (ScmsPrintInfo)BeanUtils.mapToBean(params, ScmsPrintInfo.class);              
+                json = scmsPrintInfoService.getList(pageable, scmsPrintInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addPrintInfo",method=RequestMethod.POST)
+    public JSONObject addPrintInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPrintInfoService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editPrintInfo",method=RequestMethod.POST)
+    public JSONObject editPrintInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPrintInfoService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;

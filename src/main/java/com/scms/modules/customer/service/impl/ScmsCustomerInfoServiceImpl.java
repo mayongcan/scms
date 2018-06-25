@@ -90,7 +90,7 @@ public class ScmsCustomerInfoServiceImpl implements ScmsCustomerInfoService {
 
     @Override
     public JSONObject getCustomerStatistics(Map<String, Object> params) {
-        params.put("orderTypeList", "lsd,pfd");
+        params.put("orderTypeList", "lsd,pfd,ysd");
         List<Map<String, Object>> list1 = scmsCustomerInfoRepository.getCustomerStatistics(params);
         params.put("orderTypeList", "thd");
         List<Map<String, Object>> list2 = scmsCustomerInfoRepository.getCustomerStatistics(params);
