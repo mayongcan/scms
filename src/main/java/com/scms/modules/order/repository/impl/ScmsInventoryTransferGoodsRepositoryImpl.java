@@ -17,8 +17,8 @@ import com.scms.modules.order.repository.custom.ScmsInventoryTransferGoodsReposi
 public class ScmsInventoryTransferGoodsRepositoryImpl extends BaseRepository implements ScmsInventoryTransferGoodsRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.GOODS_ID as \"goodsId\", tb.GOODS_NAME as \"goodsName\", "
-	        + "tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.GOODS_PHOTO as \"goodsPhoto\" "
-			+ "FROM scms_inventory_transfer_goods tb "
+	        + "tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.GOODS_PHOTO as \"goodsPhoto\", sgi.SALE_PRICE as \"salePrice\", sgi.PURCHASE_PRICE as \"purchasePrice\" "
+			+ "FROM scms_inventory_transfer_goods tb left join scms_goods_info sgi on sgi.ID = tb.GOODS_ID "
 			+ "WHERE 1 = 1 ";
 
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
