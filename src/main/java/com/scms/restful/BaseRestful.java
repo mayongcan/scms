@@ -27,6 +27,7 @@ import com.scms.modules.base.entity.ScmsFeedbackInfo;
 import com.scms.modules.base.entity.ScmsMerchantsInfo;
 import com.scms.modules.base.entity.ScmsPayInfo;
 import com.scms.modules.base.entity.ScmsPrintInfo;
+import com.scms.modules.base.entity.ScmsPrintRemote;
 import com.scms.modules.base.entity.ScmsShopInfo;
 import com.scms.modules.base.entity.ScmsSizeInfo;
 import com.scms.modules.base.entity.ScmsTagInfo;
@@ -39,6 +40,7 @@ import com.scms.modules.base.service.ScmsFeedbackInfoService;
 import com.scms.modules.base.service.ScmsMerchantsInfoService;
 import com.scms.modules.base.service.ScmsPayInfoService;
 import com.scms.modules.base.service.ScmsPrintInfoService;
+import com.scms.modules.base.service.ScmsPrintRemoteService;
 import com.scms.modules.base.service.ScmsShopInfoService;
 import com.scms.modules.base.service.ScmsSizeInfoService;
 import com.scms.modules.base.service.ScmsTagInfoService;
@@ -87,6 +89,9 @@ public class BaseRestful {
     
     @Autowired
     private ScmsPrintInfoService scmsPrintInfoService;
+    
+    @Autowired
+    private ScmsPrintRemoteService scmsPrintRemoteService;
     
     @RequestMapping(value="/homePageIndex", method=RequestMethod.GET)
     public JSONObject homePageIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -1220,6 +1225,73 @@ public class BaseRestful {
             }
         }catch(Exception e){
             json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getPrintRemoteList",method=RequestMethod.GET)
+    public JSONObject getPrintRemoteList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsPrintRemote scmsPrintRemote = (ScmsPrintRemote)BeanUtils.mapToBean(params, ScmsPrintRemote.class);              
+                json = scmsPrintRemoteService.getList(pageable, scmsPrintRemote, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addPrintRemote",method=RequestMethod.POST)
+    public JSONObject addPrintRemote(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPrintRemoteService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 更新状态
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/updatePrintRemoteStatus",method=RequestMethod.POST)
+    public JSONObject updatePrintRemoteStatus(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsPrintRemoteService.updatePrintRemoteStatus(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;
