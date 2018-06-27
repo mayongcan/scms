@@ -338,6 +338,7 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
         SqlParams sqlParams = new SqlParams();
         sqlParams.querySql.append(sql);
         Long merchantsId = MapUtils.getLong(params, "merchantsId", null);
+        Long goodsId = MapUtils.getLong(params, "goodsId", null);
         Long categoryId = MapUtils.getLong(params, "categoryId", null);
         String goodsName = MapUtils.getString(params, "goodsName");
         String goodsSerialNum = MapUtils.getString(params, "goodsSerialNum");
@@ -361,6 +362,11 @@ public class ReportSaleDatabaseServiceImpl extends BaseRepository implements Rep
             sqlParams.querySql.append(" AND soi.MERCHANTS_ID = :merchantsId ");
             sqlParams.paramsList.add("merchantsId");
             sqlParams.valueList.add(merchantsId);
+        }
+        if (goodsId != null) {
+            sqlParams.querySql.append(" AND sgi.ID = :goodsId ");
+            sqlParams.paramsList.add("goodsId");
+            sqlParams.valueList.add(goodsId);
         }
         if (!StringUtils.isBlank(MapUtils.getString(params, "createDateBegin")) && !StringUtils.isBlank(MapUtils.getString(params, "createDateEnd"))) {
             sqlParams.querySql.append(" AND soi.CREATE_DATE between :createDateBegin AND :createDateEnd ");
