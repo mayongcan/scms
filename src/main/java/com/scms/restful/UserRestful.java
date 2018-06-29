@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -137,6 +139,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="设置店铺管理员")
     @RequestMapping(value="/setShopAdmin",method=RequestMethod.POST)
     public JSONObject setShopAdmin(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -159,6 +162,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="取消店铺管理员")
     @RequestMapping(value="/cancelShopAdmin",method=RequestMethod.POST)
     public JSONObject cancelShopAdmin(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -181,6 +185,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="启用员工")
     @RequestMapping(value="/unblockUser",method=RequestMethod.POST)
     public JSONObject unblockUser(HttpServletRequest request, @RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -203,6 +208,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="停用员工")
     @RequestMapping(value="/blockUser",method=RequestMethod.POST)
     public JSONObject blockUser(HttpServletRequest request, @RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -225,6 +231,7 @@ public class UserRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增员工")
     @RequestMapping(value="/addUser",method=RequestMethod.POST)
     public JSONObject addUser(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -247,6 +254,7 @@ public class UserRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑员工")
     @RequestMapping(value="/editUser",method=RequestMethod.POST)
     public JSONObject editUser(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -269,6 +277,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除员工")
     @RequestMapping(value="/delUser",method=RequestMethod.POST)
     public JSONObject delUser(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -291,6 +300,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="修改员工权限")
     @RequestMapping(value="/savePrivilege",method=RequestMethod.POST)
     public JSONObject savePrivilege(HttpServletRequest request,@RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -337,6 +347,7 @@ public class UserRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增员工提成规则")
     @RequestMapping(value="/addCommissionRule",method=RequestMethod.POST)
     public JSONObject addCommissionRule(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -359,6 +370,7 @@ public class UserRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑员工提成规则")
     @RequestMapping(value="/editCommissionRule",method=RequestMethod.POST)
     public JSONObject editCommissionRule(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -381,6 +393,7 @@ public class UserRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除员工提成规则")
     @RequestMapping(value="/delCommissionRule",method=RequestMethod.POST)
     public JSONObject delCommissionRule(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -482,6 +495,28 @@ public class UserRestful {
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+
+    /**
+     * 获取操作日志
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getLogInfo",method=RequestMethod.GET)
+    public JSONObject getLogInfo(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                json = scmsMerchantsUserService.getLogInfo(pageable, params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取操作日志失败");
             logger.error(e.getMessage(), e);
         }
         return json;

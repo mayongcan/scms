@@ -222,7 +222,7 @@ public class AppRestful {
                 json.put("RetCode", "000000");
             }
         }catch(Exception e){
-            json = RestfulRetUtils.getErrorMsg("51001","获取APP初始化信息");
+            json = RestfulRetUtils.getErrorMsg("51001","获取APP初始化信息失败");
             logger.error(e.getMessage(), e);
         }
         return json;

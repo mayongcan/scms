@@ -177,4 +177,11 @@ public class ScmsMerchantsUserServiceImpl implements ScmsMerchantsUserService {
         return RestfulRetUtils.getRetSuccess();
     }
 
+    @Override
+    public JSONObject getLogInfo(Pageable page, Map<String, Object> params, UserInfo userInfo) {
+        List<Map<String, Object>> list = scmsMerchantsUserRepository.getLogInfo(userInfo, params, page.getPageNumber(), page.getPageSize());
+        int count = scmsMerchantsUserRepository.getLogInfoCount(userInfo, params);
+        return RestfulRetUtils.getRetSuccessWithPage(list, count);  
+    }
+
 }

@@ -6,6 +6,8 @@ package com.scms.modules.user.repository.custom;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.repository.NoRepositoryBean;
+
+import com.gimplatform.core.entity.UserInfo;
 import com.scms.modules.user.entity.ScmsMerchantsUser;
 
 /**
@@ -34,4 +36,9 @@ public interface ScmsMerchantsUserRepositoryCustom {
 	 * @return
 	 */
 	public int getMerchantsUserListCount(ScmsMerchantsUser scmsMerchantsUser, Map<String, Object> params);
+	
+
+    public List<Map<String, Object>> getLogInfo(UserInfo userInfo, Map<String, Object> params, int pageIndex, int pageSize);
+    
+    public int getLogInfoCount(UserInfo userInfo, Map<String, Object> params);
 }

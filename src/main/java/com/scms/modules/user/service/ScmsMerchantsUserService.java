@@ -38,4 +38,11 @@ public interface ScmsMerchantsUserService {
     
     public JSONObject savePrivilege(Map<String, Object> params, UserInfo userInfo);
 
+    /**
+     * 获取操作日志
+     * @param params
+     * @param userInfo
+     * @return
+     */
+    public JSONObject getLogInfo(Pageable page, Map<String, Object> params, UserInfo userInfo);
 }

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -134,6 +136,7 @@ public class GoodsRestful {
 	 * @param params
 	 * @return
 	 */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商品分类")
 	@RequestMapping(value="/addGoodsCategory",method=RequestMethod.POST)
 	public JSONObject addGoodsCategory(HttpServletRequest request, @RequestBody Map<String, Object> params){
 		JSONObject json = new JSONObject();
@@ -156,6 +159,7 @@ public class GoodsRestful {
 	 * @param params
 	 * @return
 	 */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商品分类")
 	@RequestMapping(value="/editGoodsCategory",method=RequestMethod.POST)
 	public JSONObject editGoodsCategory(HttpServletRequest request, @RequestBody Map<String, Object> params){
 		JSONObject json = new JSONObject();
@@ -178,6 +182,7 @@ public class GoodsRestful {
 	 * @param idsList
 	 * @return
 	 */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除商品分类")
 	@RequestMapping(value="/delGoodsCategory",method=RequestMethod.POST)
 	public JSONObject delGoodsCategory(HttpServletRequest request,@RequestBody String idsList){
 		JSONObject json = new JSONObject();
@@ -224,6 +229,7 @@ public class GoodsRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商品")
     @RequestMapping(value="/addGoodsInfo",method=RequestMethod.POST)
     public JSONObject addGoodsInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -246,6 +252,7 @@ public class GoodsRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商品")
     @RequestMapping(value="/editGoodsInfo",method=RequestMethod.POST)
     public JSONObject editGoodsInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -268,6 +275,7 @@ public class GoodsRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除商品")
     @RequestMapping(value="/delGoodsInfo",method=RequestMethod.POST)
     public JSONObject delGoodsInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();

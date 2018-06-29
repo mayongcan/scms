@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -79,6 +81,7 @@ public class FinanceRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增日常支出")
     @RequestMapping(value="/addDailyExpenses",method=RequestMethod.POST)
     public JSONObject addDailyExpenses(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -101,6 +104,7 @@ public class FinanceRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑日常支出")
     @RequestMapping(value="/editDailyExpenses",method=RequestMethod.POST)
     public JSONObject editDailyExpenses(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -123,6 +127,7 @@ public class FinanceRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除日常支出")
     @RequestMapping(value="/delDailyExpenses",method=RequestMethod.POST)
     public JSONObject delDailyExpenses(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();

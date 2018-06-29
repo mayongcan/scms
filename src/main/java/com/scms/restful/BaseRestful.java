@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -165,6 +167,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商户")
     @RequestMapping(value="/addMerchantsInfo",method=RequestMethod.POST)
     public JSONObject addMerchantsInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -187,6 +190,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商户")
     @RequestMapping(value="/editMerchantsInfo",method=RequestMethod.POST)
     public JSONObject editMerchantsInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -209,6 +213,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除商户")
     @RequestMapping(value="/delMerchantsInfo",method=RequestMethod.POST)
     public JSONObject delMerchantsInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -254,6 +259,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增店铺")
     @RequestMapping(value="/addShopInfo",method=RequestMethod.POST)
     public JSONObject addShopInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -276,6 +282,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑店铺")
     @RequestMapping(value="/editShopInfo",method=RequestMethod.POST)
     public JSONObject editShopInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -298,6 +305,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除店铺")
     @RequestMapping(value="/delShopInfo",method=RequestMethod.POST)
     public JSONObject delShopInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -364,6 +372,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商品颜色")
     @RequestMapping(value="/addColorInfo",method=RequestMethod.POST)
     public JSONObject addColorInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -386,6 +395,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商品颜色")
     @RequestMapping(value="/editColorInfo",method=RequestMethod.POST)
     public JSONObject editColorInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -408,6 +418,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除商品颜色")
     @RequestMapping(value="/delColorInfo",method=RequestMethod.POST)
     public JSONObject delColorInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -454,6 +465,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商品尺码")
     @RequestMapping(value="/addSizeInfo",method=RequestMethod.POST)
     public JSONObject addSizeInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -476,6 +488,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商品尺码")
     @RequestMapping(value="/editSizeInfo",method=RequestMethod.POST)
     public JSONObject editSizeInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -498,6 +511,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除商品尺码")
     @RequestMapping(value="/delSizeInfo",method=RequestMethod.POST)
     public JSONObject delSizeInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -544,6 +558,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增商品材质")
     @RequestMapping(value="/addTextureInfo",method=RequestMethod.POST)
     public JSONObject addTextureInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -566,6 +581,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑商品材质")
     @RequestMapping(value="/editTextureInfo",method=RequestMethod.POST)
     public JSONObject editTextureInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -588,6 +604,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="删除商品材质")
     @RequestMapping(value="/delTextureInfo",method=RequestMethod.POST)
     public JSONObject delTextureInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -633,6 +650,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增运输方式")
     @RequestMapping(value="/addTransportInfo",method=RequestMethod.POST)
     public JSONObject addTransportInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -655,6 +673,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑运输方式")
     @RequestMapping(value="/editTransportInfo",method=RequestMethod.POST)
     public JSONObject editTransportInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -677,6 +696,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除运输方式")
     @RequestMapping(value="/delTransportInfo",method=RequestMethod.POST)
     public JSONObject delTransportInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -722,6 +742,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增付款方式")
     @RequestMapping(value="/addPayInfo",method=RequestMethod.POST)
     public JSONObject addPayInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -744,6 +765,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑付款方式")
     @RequestMapping(value="/editPayInfo",method=RequestMethod.POST)
     public JSONObject editPayInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -766,6 +788,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除付款方式")
     @RequestMapping(value="/delPayInfo",method=RequestMethod.POST)
     public JSONObject delPayInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -812,6 +835,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增标签")
     @RequestMapping(value="/addTagInfo",method=RequestMethod.POST)
     public JSONObject addTagInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -834,6 +858,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑标签")
     @RequestMapping(value="/editTagInfo",method=RequestMethod.POST)
     public JSONObject editTagInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -856,6 +881,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除标签")
     @RequestMapping(value="/delTagInfo",method=RequestMethod.POST)
     public JSONObject delTagInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -901,6 +927,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增厂家信息")
     @RequestMapping(value="/addVenderInfo",method=RequestMethod.POST)
     public JSONObject addVenderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -923,6 +950,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑厂家信息")
     @RequestMapping(value="/editVenderInfo",method=RequestMethod.POST)
     public JSONObject editVenderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -945,6 +973,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除厂家信息")
     @RequestMapping(value="/delVenderInfo",method=RequestMethod.POST)
     public JSONObject delVenderInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -991,6 +1020,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增反馈信息")
     @RequestMapping(value="/addFeedbackInfo",method=RequestMethod.POST)
     public JSONObject addFeedbackInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -1013,6 +1043,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑反馈信息")
     @RequestMapping(value="/editFeedbackInfo",method=RequestMethod.POST)
     public JSONObject editFeedbackInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -1035,6 +1066,7 @@ public class BaseRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除反馈信息")
     @RequestMapping(value="/delFeedbackInfo",method=RequestMethod.POST)
     public JSONObject delFeedbackInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -1214,6 +1246,7 @@ public class BaseRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑打印模板")
     @RequestMapping(value="/editPrintInfo",method=RequestMethod.POST)
     public JSONObject editPrintInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();

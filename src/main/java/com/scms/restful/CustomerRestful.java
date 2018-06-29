@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -94,6 +96,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增客户类型")
     @RequestMapping(value="/addCustomerType",method=RequestMethod.POST)
     public JSONObject addCustomerType(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -116,6 +119,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑客户类型")
     @RequestMapping(value="/editCustomerType",method=RequestMethod.POST)
     public JSONObject editCustomerType(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -138,6 +142,7 @@ public class CustomerRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除客户类型")
     @RequestMapping(value="/delCustomerType",method=RequestMethod.POST)
     public JSONObject delCustomerType(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -184,6 +189,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增客户等级")
     @RequestMapping(value="/addCustomerLevel",method=RequestMethod.POST)
     public JSONObject addCustomerLevel(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -206,6 +212,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑客户等级")
     @RequestMapping(value="/editCustomerLevel",method=RequestMethod.POST)
     public JSONObject editCustomerLevel(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -228,6 +235,7 @@ public class CustomerRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除客户等级")
     @RequestMapping(value="/delCustomerLevel",method=RequestMethod.POST)
     public JSONObject delCustomerLevel(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -274,6 +282,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增客户")
     @RequestMapping(value="/addCustomerInfo",method=RequestMethod.POST)
     public JSONObject addCustomerInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -296,6 +305,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑客户")
     @RequestMapping(value="/editCustomerInfo",method=RequestMethod.POST)
     public JSONObject editCustomerInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -318,6 +328,7 @@ public class CustomerRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除客户")
     @RequestMapping(value="/delCustomerInfo",method=RequestMethod.POST)
     public JSONObject delCustomerInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -363,6 +374,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增供货商")
     @RequestMapping(value="/addSupplierInfo",method=RequestMethod.POST)
     public JSONObject addSupplierInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -385,6 +397,7 @@ public class CustomerRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑供货商")
     @RequestMapping(value="/editSupplierInfo",method=RequestMethod.POST)
     public JSONObject editSupplierInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -407,6 +420,7 @@ public class CustomerRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除供货商")
     @RequestMapping(value="/delSupplierInfo",method=RequestMethod.POST)
     public JSONObject delSupplierInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();

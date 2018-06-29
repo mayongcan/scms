@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gimplatform.core.annotation.LogConf;
+import com.gimplatform.core.annotation.LogConfOperateType;
 import com.gimplatform.core.entity.UserInfo;
 import com.gimplatform.core.utils.BeanUtils;
 import com.gimplatform.core.utils.RestfulRetUtils;
@@ -150,6 +152,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增订单")
     @RequestMapping(value="/addOrderInfo",method=RequestMethod.POST)
     public JSONObject addOrderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -172,6 +175,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑订单")
     @RequestMapping(value="/editOrderInfo",method=RequestMethod.POST)
     public JSONObject editOrderInfo(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -194,6 +198,7 @@ public class OrderRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="锁定订单")
     @RequestMapping(value="/lockOrderInfo",method=RequestMethod.POST)
     public JSONObject lockOrderInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -216,6 +221,7 @@ public class OrderRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="取消订单")
     @RequestMapping(value="/cancelOrderInfo",method=RequestMethod.POST)
     public JSONObject cancelOrderInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -238,6 +244,7 @@ public class OrderRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="完成订单")
     @RequestMapping(value="/finishOrderInfo",method=RequestMethod.POST)
     public JSONObject finishOrderInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -260,6 +267,7 @@ public class OrderRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.DELETE, logDesc="删除订单")
     @RequestMapping(value="/delOrderInfo",method=RequestMethod.POST)
     public JSONObject delOrderInfo(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -306,6 +314,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增订单")
     @RequestMapping(value="/addOrderJhd",method=RequestMethod.POST)
     public JSONObject addOrderJhd(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -328,6 +337,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="编辑订单")
     @RequestMapping(value="/editOrderJhd",method=RequestMethod.POST)
     public JSONObject editOrderJhd(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -464,6 +474,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增订单发货记录")
     @RequestMapping(value="/addOrderSendLog",method=RequestMethod.POST)
     public JSONObject addOrderSendLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -509,6 +520,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增订单收货记录")
     @RequestMapping(value="/addOrderReceiveLog",method=RequestMethod.POST)
     public JSONObject addOrderReceiveLog(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -577,6 +589,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增调货单")
     @RequestMapping(value="/addInventoryTransfer",method=RequestMethod.POST)
     public JSONObject addInventoryTransfer(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -599,6 +612,7 @@ public class OrderRestful {
      * @param idsList
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.EDIT, logDesc="撤销调货单")
     @RequestMapping(value="/repealInventoryTransfer",method=RequestMethod.POST)
     public JSONObject repealInventoryTransfer(HttpServletRequest request,@RequestBody String idsList){
         JSONObject json = new JSONObject();
@@ -690,6 +704,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增盘点单")
     @RequestMapping(value="/addInventoryCheck",method=RequestMethod.POST)
     public JSONObject addInventoryCheck(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
@@ -781,6 +796,7 @@ public class OrderRestful {
      * @param params
      * @return
      */
+    @LogConf(operateType=LogConfOperateType.ADD, logDesc="新增订单")
     @RequestMapping(value="/addOrderSyd",method=RequestMethod.POST)
     public JSONObject addOrderSyd(HttpServletRequest request, @RequestBody Map<String, Object> params){
         JSONObject json = new JSONObject();
