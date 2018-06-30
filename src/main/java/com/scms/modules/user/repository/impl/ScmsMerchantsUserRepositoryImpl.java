@@ -35,15 +35,17 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
 	
 	private static final String SQL_GET_LOG_LIST = "SELECT tb.LOG_ID as \"logId\", tb.OPERATE_TYPE as \"operateType\", tb.LOG_DESC as \"logDesc\", tb.CREATE_DATE as \"createDate\", "
             + "user.USER_NAME as \"userName\", smu.IS_ADMIN as \"isAdmin\", ssi.SHOP_NAME as \"shopName\" "
-    + "FROM sys_log_info tb left join sys_user_info user on tb.CREATE_BY = user.USER_ID "
+            + "FROM sys_log_info tb left join sys_user_info user on tb.CREATE_BY = user.USER_ID "
             + "left join scms_merchants_user smu on smu.USER_ID = tb.CREATE_BY "
             + "left join scms_shop_info ssi on ssi.ID = smu.SHOP_ID "
-    + "WHERE 1 = 1 ";
+            + "left join scms_merchants_info smi on smi.USER_ID = tb.CREATE_BY "
+            + "WHERE 1 = 1 ";
 
     private static final String SQL_GET_LOG_LIST_COUNT = "SELECT count(1) as \"count\" "
         + "FROM sys_log_info tb left join sys_user_info user on tb.CREATE_BY = user.USER_ID "
         + "left join scms_merchants_user smu on smu.USER_ID = tb.CREATE_BY "
         + "left join scms_shop_info ssi on ssi.ID = smu.SHOP_ID "
+        + "left join scms_merchants_info smi on smi.USER_ID = tb.CREATE_BY "
         + "WHERE 1 = 1 ";
 	
 	public List<Map<String, Object>> getMerchantsUserList(ScmsMerchantsUser scmsMerchantsUser, Map<String, Object> params, int pageIndex, int pageSize) {
@@ -165,7 +167,7 @@ public class ScmsMerchantsUserRepositoryImpl extends BaseRepository implements S
         
         //添加查询参数
         if(merchantsId != null) {
-            sqlParams.querySql.append(" AND smu.MERCHANTS_ID =:merchantsId ");
+            sqlParams.querySql.append(" AND (smu.MERCHANTS_ID = :merchantsId OR smi.ID = :merchantsId) ");
             sqlParams.paramsList.add("merchantsId");
             sqlParams.valueList.add(merchantsId);
         }
