@@ -118,7 +118,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         //更新余额
         updateCustomerBalance(params, scmsOrderInfo);
         
-		return RestfulRetUtils.getRetSuccess();
+		return RestfulRetUtils.getRetSuccess(scmsOrderInfo);
 	}
 
 	@Override
@@ -398,7 +398,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
         //更新供货商余额
         updateSupplierBalance(params, scmsOrderInfo);
         
-        return RestfulRetUtils.getRetSuccess();
+        return RestfulRetUtils.getRetSuccess(scmsOrderInfo);
     }
 
     @Override
@@ -502,7 +502,7 @@ public class ScmsOrderInfoServiceImpl implements ScmsOrderInfoService {
             updateSupplierBalance(params, scmsOrderInfo);
         }
         
-        return RestfulRetUtils.getRetSuccess();
+        return RestfulRetUtils.getRetSuccess(scmsOrderInfo);
     }
     
     /**

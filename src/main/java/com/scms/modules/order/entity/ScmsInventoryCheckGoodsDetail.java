@@ -56,14 +56,6 @@ public class ScmsInventoryCheckGoodsDetail implements Serializable {
 	@Column(name = "GOODS_COLOR_NAME", length = 32)
 	private String goodsColorName;
 	
-	// 商品材质ID（冗余）
-	@Column(name = "GOODS_TEXTURE_ID", precision = 10, scale = 0)
-	private Long goodsTextureId;
-	
-	// 商品材质名称（冗余）
-	@Column(name = "GOODS_TEXTURE_NAME", length = 128)
-	private String goodsTextureName;
-	
 	// 商品商品尺码ID（冗余）
 	@Column(name = "GOODS_SIZE_ID", precision = 10, scale = 0)
 	private Long goodsSizeId;

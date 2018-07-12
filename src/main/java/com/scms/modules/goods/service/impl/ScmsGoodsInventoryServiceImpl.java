@@ -52,8 +52,8 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
     }
 
     @Override
-    public List<ScmsGoodsInventory> findInventory(Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId) {
-        return scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, goodsId, colorId, inventorySizeId, textureId);
+    public List<ScmsGoodsInventory> findInventory(Long shopId, Long goodsId, Long colorId, Long inventorySizeId) {
+        return scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeId(shopId, goodsId, colorId, inventorySizeId);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
     public void saveInventory(ScmsGoodsInventory scmsGoodsInventory, String orderNum, String orderType, String operatePrefix) {
         scmsGoodsInventoryRepository.save(scmsGoodsInventory);
         //如果是新增库存(不是订单的前提下)，同时库存的变化值为0，则不用记录库存流水
-        if(StringUtils.isBlank(orderType) && scmsGoodsInventory.getInventoryNum().equals(0L)) {
+        if(StringUtils.isBlank(orderType) && scmsGoodsInventory.getInventoryNum() != null && scmsGoodsInventory.getInventoryNum().equals(0L)) {
             logger.debug("初始化库存值为0，不用更新库存流水");
             return;
         }
@@ -74,12 +74,12 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
     }
 
     @Override
-    public void updateGoodsInventoryNum(String orderNum, String orderType, String operatePrefix, Long inventoryNum, Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId) {
-        List<ScmsGoodsInventory> list = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, goodsId, colorId, inventorySizeId, textureId);
+    public void updateGoodsInventoryNum(String orderNum, String orderType, String operatePrefix, Long inventoryNum, Long shopId, Long goodsId, Long colorId, Long inventorySizeId) {
+        List<ScmsGoodsInventory> list = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeId(shopId, goodsId, colorId, inventorySizeId);
         if(list != null && list.size() > 0) {
             ScmsGoodsInventory scmsGoodsInventory = list.get(0);
             //更新库存
-            scmsGoodsInventoryRepository.updateGoodsInventoryNum(inventoryNum, shopId, goodsId, colorId, inventorySizeId, textureId);
+            scmsGoodsInventoryRepository.updateGoodsInventoryNum(inventoryNum, shopId, goodsId, colorId, inventorySizeId);
             //添加库存流水
             addGoodsInventoryFlow(scmsGoodsInventory, orderNum, orderType, operatePrefix, scmsGoodsInventory.getInventoryNum(), inventoryNum);
         }
@@ -88,8 +88,8 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
     @Override
     public void updateOrderInventory(String orderNum, String orderType, String operatePrefix, Long merchantsId, Long shopId, Long goodsId, ScmsOrderGoodsDetail scmsOrderGoodsDetail, String updateType) {
         //更新库存
-        List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(shopId, 
-                goodsId, scmsOrderGoodsDetail.getGoodsColorId(), scmsOrderGoodsDetail.getGoodsSizeId(), scmsOrderGoodsDetail.getGoodsTextureId());
+        List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryRepository.findByShopIdAndGoodsIdAndColorIdAndInventorySizeId(shopId, 
+                goodsId, scmsOrderGoodsDetail.getGoodsColorId(), scmsOrderGoodsDetail.getGoodsSizeId());
         if(tmpList != null && tmpList.size() > 0) {
             ScmsGoodsInventory scmsGoodsInventory = tmpList.get(0);
             if("del".equals(updateType)) {
@@ -99,8 +99,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
                         shopId, 
                         goodsId, 
                         scmsOrderGoodsDetail.getGoodsColorId(), 
-                        scmsOrderGoodsDetail.getGoodsSizeId(), 
-                        scmsOrderGoodsDetail.getGoodsTextureId());
+                        scmsOrderGoodsDetail.getGoodsSizeId());
                 //添加库存流水
                 addGoodsInventoryFlow(scmsGoodsInventory, orderNum, orderType, operatePrefix, scmsGoodsInventory.getInventoryNum(), inventoryNum);
             }
@@ -111,8 +110,7 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
                         shopId, 
                         goodsId, 
                         scmsOrderGoodsDetail.getGoodsColorId(), 
-                        scmsOrderGoodsDetail.getGoodsSizeId(), 
-                        scmsOrderGoodsDetail.getGoodsTextureId());
+                        scmsOrderGoodsDetail.getGoodsSizeId());
                 //添加库存流水
                 addGoodsInventoryFlow(scmsGoodsInventory, orderNum, orderType, operatePrefix, scmsGoodsInventory.getInventoryNum(), inventoryNum);
             }
@@ -125,8 +123,6 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
             scmsGoodsInventory.setGoodsBarcode(scmsOrderGoodsDetail.getGoodsBarcode());
             scmsGoodsInventory.setColorId(scmsOrderGoodsDetail.getGoodsColorId());
             scmsGoodsInventory.setColorName(scmsOrderGoodsDetail.getGoodsColorName());
-            scmsGoodsInventory.setTextureId(scmsOrderGoodsDetail.getGoodsTextureId());
-            scmsGoodsInventory.setTextureName(scmsOrderGoodsDetail.getGoodsTextureName());
             scmsGoodsInventory.setInventorySizeId(scmsOrderGoodsDetail.getGoodsSizeId());
             scmsGoodsInventory.setInventorySize(scmsOrderGoodsDetail.getGoodsSizeName());
             if("del".equals(updateType)) scmsGoodsInventory.setInventoryNum(-scmsOrderGoodsDetail.getGoodsOrderNum());
@@ -171,8 +167,6 @@ public class ScmsGoodsInventoryServiceImpl implements ScmsGoodsInventoryService 
         scmsGoodsInventoryFlow.setGoodsBarcode(scmsGoodsInventory.getGoodsBarcode());
         scmsGoodsInventoryFlow.setColorId(scmsGoodsInventory.getColorId());
         scmsGoodsInventoryFlow.setColorName(scmsGoodsInventory.getColorName());
-        scmsGoodsInventoryFlow.setTextureId(scmsGoodsInventory.getTextureId());
-        scmsGoodsInventoryFlow.setTextureName(scmsGoodsInventory.getTextureName());
         scmsGoodsInventoryFlow.setSizeId(scmsGoodsInventory.getInventorySizeId());
         scmsGoodsInventoryFlow.setSizeName(scmsGoodsInventory.getInventorySize());
         scmsGoodsInventoryFlow.setOldNum(oldNum);

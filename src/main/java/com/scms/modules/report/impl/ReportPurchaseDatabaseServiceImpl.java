@@ -21,10 +21,8 @@ public class ReportPurchaseDatabaseServiceImpl extends BaseRepository implements
 
     //销售明细
     private static final String SQL_GET_PURCHASE_REPORT_DETAIL_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
-            + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
-            + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
-            + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\", "
-            + "tb.SEND_STATUS as \"sendStatus\", tb.RECEIVE_STATUS as \"receiveStatus\","
+            + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
+            + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\", tb.SEND_STATUS as \"sendStatus\", tb.RECEIVE_STATUS as \"receiveStatus\","
             + "soi.ORDER_NUM as \"orderNum\", soi.SHOP_NAME as \"shopName\", soi.CUSTOMER_NAME as \"customerName\", soi.ORDER_TYPE as \"orderType\", soi.CREATE_DATE as \"createDate\", soi.CREATE_BY_NAME as \"createByName\", soi.SELLER_BY_NAME as \"sellerByName\", soi.PERFORMANCE_BY_NAME as \"performanceByName\", "
             + "sgc.CATEGORY_NAME as \"categoryName\", "
             + "sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_PHOTO as \"goodsPhoto\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", "
@@ -286,7 +284,6 @@ public class ReportPurchaseDatabaseServiceImpl extends BaseRepository implements
         Long shopId = MapUtils.getLong(params, "shopId", null);
         String orderNum = MapUtils.getString(params, "orderNum");
         String goodsColor = MapUtils.getString(params, "goodsColor");
-        String goodsTexture = MapUtils.getString(params, "goodsTexture");
         String goodsSize = MapUtils.getString(params, "goodsSize");
         String orderTypeList = MapUtils.getString(params, "orderTypeList");
         if (!StringUtils.isBlank(orderTypeList)) {
@@ -361,11 +358,6 @@ public class ReportPurchaseDatabaseServiceImpl extends BaseRepository implements
             sqlParams.querySql.append(" AND tb.GOODS_COLOR_ID = :goodsColor ");
             sqlParams.paramsList.add("goodsColor");
             sqlParams.valueList.add(goodsColor);
-        }
-        if(!StringUtils.isBlank(goodsTexture)) {
-            sqlParams.querySql.append(" AND tb.GOODS_TEXTURE_ID = :goodsTexture ");
-            sqlParams.paramsList.add("goodsTexture");
-            sqlParams.valueList.add(goodsTexture);
         }
         if(!StringUtils.isBlank(goodsSize)) {
             sqlParams.querySql.append(" AND tb.GOODS_SIZE_ID = :goodsSize ");

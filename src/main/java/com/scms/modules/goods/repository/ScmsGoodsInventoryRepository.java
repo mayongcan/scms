@@ -25,15 +25,15 @@ import com.scms.modules.goods.repository.custom.ScmsGoodsInventoryRepositoryCust
 @Repository
 public interface ScmsGoodsInventoryRepository extends JpaRepository<ScmsGoodsInventory, Long>, JpaSpecificationExecutor<ScmsGoodsInventory>, ScmsGoodsInventoryRepositoryCustom {
 	
-    List<ScmsGoodsInventory> findByShopIdAndGoodsIdAndColorIdAndInventorySizeIdAndTextureId(Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId);
+    List<ScmsGoodsInventory> findByShopIdAndGoodsIdAndColorIdAndInventorySizeId(Long shopId, Long goodsId, Long colorId, Long inventorySizeId);
 
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE scms_goods_inventory "
             + "SET INVENTORY_NUM = :inventoryNum "
-            + "WHERE SHOP_ID = :shopId AND GOODS_ID = :goodsId AND COLOR_ID = :colorId AND INVENTORY_SIZE_ID = :inventorySizeId AND TEXTURE_ID = :textureId ", nativeQuery = true)
+            + "WHERE SHOP_ID = :shopId AND GOODS_ID = :goodsId AND COLOR_ID = :colorId AND INVENTORY_SIZE_ID = :inventorySizeId ", nativeQuery = true)
     public void updateGoodsInventoryNum(@Param("inventoryNum")Long inventoryNum, @Param("shopId")Long shopId, @Param("goodsId")Long goodsId
-            , @Param("colorId")Long colorId, @Param("inventorySizeId")Long inventorySizeId, @Param("textureId")Long textureId);
+            , @Param("colorId")Long colorId, @Param("inventorySizeId")Long inventorySizeId);
     
 	
 }

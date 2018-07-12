@@ -31,6 +31,7 @@ import com.scms.modules.base.entity.ScmsPayInfo;
 import com.scms.modules.base.entity.ScmsPrintInfo;
 import com.scms.modules.base.entity.ScmsPrintRemote;
 import com.scms.modules.base.entity.ScmsShopInfo;
+import com.scms.modules.base.entity.ScmsSizeGroup;
 import com.scms.modules.base.entity.ScmsSizeInfo;
 import com.scms.modules.base.entity.ScmsTagInfo;
 import com.scms.modules.base.entity.ScmsTextureInfo;
@@ -44,6 +45,7 @@ import com.scms.modules.base.service.ScmsPayInfoService;
 import com.scms.modules.base.service.ScmsPrintInfoService;
 import com.scms.modules.base.service.ScmsPrintRemoteService;
 import com.scms.modules.base.service.ScmsShopInfoService;
+import com.scms.modules.base.service.ScmsSizeGroupService;
 import com.scms.modules.base.service.ScmsSizeInfoService;
 import com.scms.modules.base.service.ScmsTagInfoService;
 import com.scms.modules.base.service.ScmsTextureInfoService;
@@ -67,6 +69,9 @@ public class BaseRestful {
     
     @Autowired
     private ScmsSizeInfoService scmsSizeInfoService;
+    
+    @Autowired
+    private ScmsSizeGroupService scmsSizeGroupService;
     
     @Autowired
     private ScmsTextureInfoService scmsTextureInfoService;
@@ -112,6 +117,9 @@ public class BaseRestful {
 
     @RequestMapping(value="/sizeInfoIndex", method=RequestMethod.GET)
     public JSONObject sizeInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
+
+    @RequestMapping(value="/sizeGroupIndex", method=RequestMethod.GET)
+    public JSONObject sizeGroupIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
 
     @RequestMapping(value="/textureInfoIndex", method=RequestMethod.GET)
     public JSONObject textureInfoIndex(HttpServletRequest request){ return RestfulRetUtils.getRetSuccess();}
@@ -520,6 +528,95 @@ public class BaseRestful {
             if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
             else {
                 json = scmsSizeInfoService.del(idsList, userInfo);
+            }
+        } catch (Exception e) {
+            json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    /**
+     * 获取列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getSizeGroupList",method=RequestMethod.GET)
+    public JSONObject getSizeGroupList(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsSizeGroup scmsSizeGroup = (ScmsSizeGroup)BeanUtils.mapToBean(params, ScmsSizeGroup.class);              
+                json = scmsSizeGroupService.getList(pageable, scmsSizeGroup, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    
+    /**
+     * 新增信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/addSizeGroup",method=RequestMethod.POST)
+    public JSONObject addSizeGroup(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsSizeGroupService.add(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51002","新增信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 编辑信息
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/editSizeGroup",method=RequestMethod.POST)
+    public JSONObject editSizeGroup(HttpServletRequest request, @RequestBody Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsSizeGroupService.edit(params, userInfo);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51003","编辑信息失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
+     * 删除信息
+     * @param request
+     * @param idsList
+     * @return
+     */
+    @RequestMapping(value="/delSizeGroup",method=RequestMethod.POST)
+    public JSONObject delSizeGroup(HttpServletRequest request,@RequestBody String idsList){
+        JSONObject json = new JSONObject();
+        try {
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                json = scmsSizeGroupService.del(idsList, userInfo);
             }
         } catch (Exception e) {
             json = RestfulRetUtils.getErrorMsg("51004","删除信息失败");

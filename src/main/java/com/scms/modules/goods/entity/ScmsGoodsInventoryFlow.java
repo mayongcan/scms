@@ -67,14 +67,6 @@ public class ScmsGoodsInventoryFlow implements Serializable {
 	@Column(name = "COLOR_NAME", length = 32)
 	private String colorName;
 	
-	// 商品材质ID（冗余）
-	@Column(name = "TEXTURE_ID", precision = 10, scale = 0)
-	private Long textureId;
-	
-	// 商品材质名称（冗余）
-	@Column(name = "TEXTURE_NAME", length = 128)
-	private String textureName;
-	
 	// 商品商品尺码ID（冗余）
 	@Column(name = "SIZE_ID", precision = 10, scale = 0)
 	private Long sizeId;

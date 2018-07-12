@@ -17,8 +17,7 @@ import com.scms.modules.order.repository.custom.ScmsInventoryTransferGoodsDetail
 public class ScmsInventoryTransferGoodsDetailRepositoryImpl extends BaseRepository implements ScmsInventoryTransferGoodsDetailRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
-	        + "tb.GOODS_COLOR_ID as \"goodsColorId\", tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", "
-	        + "tb.GOODS_TEXTURE_ID as \"goodsTextureId\", tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
+	        + "tb.GOODS_COLOR_ID as \"goodsColorId\", tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\" "
 			+ "FROM scms_inventory_transfer_goods_detail tb "
 			+ "WHERE 1 = 1 ";
 

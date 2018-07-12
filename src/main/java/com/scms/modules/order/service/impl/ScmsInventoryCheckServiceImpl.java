@@ -104,8 +104,7 @@ public class ScmsInventoryCheckServiceImpl implements ScmsInventoryCheckService 
                                         scmsInventoryCheck.getShopId(), 
                                         scmsInventoryCheckGoods.getGoodsId(), 
                                         scmsInventoryCheckGoodsDetail.getGoodsColorId(), 
-                                        scmsInventoryCheckGoodsDetail.getGoodsSizeId(), 
-                                        scmsInventoryCheckGoodsDetail.getGoodsTextureId());                            
+                                        scmsInventoryCheckGoodsDetail.getGoodsSizeId());                            
                             }
                         }
                     }
@@ -113,6 +112,6 @@ public class ScmsInventoryCheckServiceImpl implements ScmsInventoryCheckService 
             }
         }
 
-		return RestfulRetUtils.getRetSuccess();
+		return RestfulRetUtils.getRetSuccess(scmsInventoryCheck);
 	}
 }

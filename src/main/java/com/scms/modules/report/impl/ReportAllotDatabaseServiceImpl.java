@@ -18,9 +18,8 @@ public class ReportAllotDatabaseServiceImpl extends BaseRepository implements Re
     //明细
     private static final String SQL_GET_ALLOT_REPORT_DETAIL_LIST = "SELECT tb.ID as \"id\", tb.ORDER_NUM as \"orderNum\", tb.CREATE_DATE as \"createDate\", "
             + "tb.CREATE_BY_NAME as \"createByName\", 'dhd' as \"orderType\", tb.SRC_SHOP_ID as \"srcShopId\", tb.SRC_SHOP_NAME as \"srcShopName\", tb.DEST_SHOP_ID as \"destShopId\", "
-            + "tb.DEST_SHOP_NAME as \"destShopName\", tb.ORDER_STATUS as \"orderStatus\",  "
-            + "sitgd.GOODS_COLOR_ID as \"goodsColorId\", sitgd.GOODS_COLOR_NAME as \"goodsColorName\", sitgd.GOODS_SIZE_ID as \"goodsSizeId\", sitgd.GOODS_SIZE_NAME as \"goodsSizeName\", "
-            + "sitgd.GOODS_TEXTURE_ID as \"goodsTextureId\", sitgd.GOODS_TEXTURE_NAME as \"goodsTextureName\", sitgd.GOODS_ORDER_NUM as \"goodsOrderNum\", "
+            + "tb.DEST_SHOP_NAME as \"destShopName\", tb.ORDER_STATUS as \"orderStatus\", "
+            + "sitgd.GOODS_COLOR_ID as \"goodsColorId\", sitgd.GOODS_COLOR_NAME as \"goodsColorName\", sitgd.GOODS_SIZE_ID as \"goodsSizeId\", sitgd.GOODS_SIZE_NAME as \"goodsSizeName\", sitgd.GOODS_ORDER_NUM as \"goodsOrderNum\", "
             + "sgc.CATEGORY_NAME as \"categoryName\", "
             + "sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_PHOTO as \"goodsPhoto\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", "
             + "svi.VENDER_NAME as \"venderName\" "
@@ -228,7 +227,6 @@ public class ReportAllotDatabaseServiceImpl extends BaseRepository implements Re
         Long destShopId = MapUtils.getLong(params, "destShopId", null);
         String orderNum = MapUtils.getString(params, "orderNum");
         String goodsColor = MapUtils.getString(params, "goodsColor");
-        String goodsTexture = MapUtils.getString(params, "goodsTexture");
         String goodsSize = MapUtils.getString(params, "goodsSize");
         String orderStatus = MapUtils.getString(params, "orderStatus");
         if (merchantsId != null) {
@@ -292,11 +290,6 @@ public class ReportAllotDatabaseServiceImpl extends BaseRepository implements Re
             sqlParams.querySql.append(" AND sitgd.GOODS_COLOR_ID = :goodsColor ");
             sqlParams.paramsList.add("goodsColor");
             sqlParams.valueList.add(goodsColor);
-        }
-        if(!StringUtils.isBlank(goodsTexture)) {
-            sqlParams.querySql.append(" AND sitgd.GOODS_TEXTURE_ID = :goodsTexture ");
-            sqlParams.paramsList.add("goodsTexture");
-            sqlParams.valueList.add(goodsTexture);
         }
         if(!StringUtils.isBlank(goodsSize)) {
             sqlParams.querySql.append(" AND sitgd.GOODS_SIZE_ID = :goodsSize ");

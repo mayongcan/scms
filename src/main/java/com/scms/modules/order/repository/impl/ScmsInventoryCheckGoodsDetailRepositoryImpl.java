@@ -15,7 +15,10 @@ import com.scms.modules.order.repository.custom.ScmsInventoryCheckGoodsDetailRep
 
 public class ScmsInventoryCheckGoodsDetailRepositoryImpl extends BaseRepository implements ScmsInventoryCheckGoodsDetailRepositoryCustom{
 
-	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", tb.GOODS_BEFORE_NUM as \"goodsBeforeNum\", tb.GOODS_AFTER_NUM as \"goodsAfterNum\", tb.PROFIT_LOSS as \"profitLoss\" "
+	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", "
+	        + "tb.GOODS_COLOR_ID as \"goodsColorId\", tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", "
+	        + "tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", tb.GOODS_BEFORE_NUM as \"goodsBeforeNum\", "
+	        + "tb.GOODS_AFTER_NUM as \"goodsAfterNum\", tb.PROFIT_LOSS as \"profitLoss\" "
 			+ "FROM scms_inventory_check_goods_detail tb "
 			+ "WHERE 1 = 1 ";
 

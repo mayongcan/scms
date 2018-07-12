@@ -17,11 +17,10 @@ import com.scms.modules.order.repository.custom.ScmsOrderGoodsDetailRepositoryCu
 public class ScmsOrderGoodsDetailRepositoryImpl extends BaseRepository implements ScmsOrderGoodsDetailRepositoryCustom{
 
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.ORDER_ID as \"orderId\", tb.DETAIL_ID as \"detailId\", tb.GOODS_BARCODE as \"goodsBarcode\", tb.GOODS_COLOR_ID as \"goodsColorId\", "
-	        + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_TEXTURE_ID as \"goodsTextureId\", "
-	        + "tb.GOODS_TEXTURE_NAME as \"goodsTextureName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
+	        + "tb.GOODS_COLOR_NAME as \"goodsColorName\", tb.GOODS_SIZE_ID as \"goodsSizeId\", tb.GOODS_SIZE_NAME as \"goodsSizeName\", tb.GOODS_SALE_PRICE as \"goodsSalePrice\", tb.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
 	        + "tb.GOODS_ORDER_PRICE as \"goodsOrderPrice\", tb.GOODS_DISCOUNT as \"goodsDiscount\", tb.GOODS_ORDER_PROFIT as \"goodsOrderProfit\", tb.GOODS_ORDER_NUM as \"goodsOrderNum\", "
 	        + "tb.SEND_STATUS as \"sendStatus\", tb.RECEIVE_STATUS as \"receiveStatus\", "
-	        + "(select sgi.INVENTORY_NUM from scms_goods_inventory sgi where sgi.SHOP_ID = soi.SHOP_ID AND sgi.GOODS_ID = sog.GOODS_ID AND sgi.COLOR_ID = tb.GOODS_COLOR_ID AND sgi.TEXTURE_ID = tb.GOODS_TEXTURE_ID AND sgi.INVENTORY_SIZE_ID = tb.GOODS_SIZE_ID) as \"inventoryNum\" "
+	        + "(select sgi.INVENTORY_NUM from scms_goods_inventory sgi where sgi.SHOP_ID = soi.SHOP_ID AND sgi.GOODS_ID = sog.GOODS_ID AND sgi.COLOR_ID = tb.GOODS_COLOR_ID AND sgi.INVENTORY_SIZE_ID = tb.GOODS_SIZE_ID) as \"inventoryNum\" "
 			+ "FROM scms_order_goods_detail tb left join scms_order_info soi on soi.ID = tb.ORDER_ID "
 			+ "left join scms_order_goods sog on sog.ID = tb.DETAIL_ID "
 			+ "WHERE 1 = 1 ";

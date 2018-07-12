@@ -106,6 +106,9 @@ public class ScmsGoodsInfo implements Serializable {
 	// 商品使用状态
 	@Column(name = "USE_STATUS", length = 2)
 	private String useStatus;
+    
+    @Column(name = "GOODS_TEXTURE", length = 128)
+    private String goodsTexture;
 	
     @Column(name = "COLOR_ID_LIST", length = 256)
     private String colorIdList;
@@ -118,12 +121,6 @@ public class ScmsGoodsInfo implements Serializable {
     
     @Column(name = "SIZE_NAME_LIST", length = 512)
     private String sizeNameList;
-    
-    @Column(name = "TEXTURE_ID_LIST", length = 256)
-    private String textureIdList;
-    
-    @Column(name = "TEXTURE_NAME_LIST", length = 1024)
-    private String textureNameList;
 	
 	// 创建人
 	@Column(name = "CREATE_BY", precision = 10, scale = 0)

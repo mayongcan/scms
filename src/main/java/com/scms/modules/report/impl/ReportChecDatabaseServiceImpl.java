@@ -19,9 +19,8 @@ public class ReportChecDatabaseServiceImpl extends BaseRepository implements Rep
 
     //明细
     private static final String SQL_GET_CHECK_REPORT_DETAIL_LIST = "SELECT tb.ID as \"id\", tb.ORDER_NUM as \"orderNum\", tb.SHOP_NAME as \"shopName\", tb.CREATE_DATE as \"createDate\", tb.CREATE_BY_NAME as \"createByName\", 'pdd' as \"orderType\", "
-            + "sicgd.GOODS_COLOR_ID as \"goodsColorId\", sicgd.GOODS_COLOR_NAME as \"goodsColorName\", sicgd.GOODS_SIZE_ID as \"goodsSizeId\", sicgd.GOODS_SIZE_NAME as \"goodsSizeName\", "
-            + "sicgd.GOODS_TEXTURE_ID as \"goodsTextureId\", sicgd.GOODS_TEXTURE_NAME as \"goodsTextureName\", sicgd.GOODS_BEFORE_NUM as \"goodsBeforeNum\", sicgd.GOODS_AFTER_NUM as \"goodsAfterNum\", "
-            + "sicgd.PROFIT_LOSS as \"profitLoss\", sicgd.GOODS_SALE_PRICE as \"goodsSalePrice\", sicgd.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
+            + "sicgd.GOODS_COLOR_ID as \"goodsColorId\", sicgd.GOODS_COLOR_NAME as \"goodsColorName\", sicgd.GOODS_SIZE_ID as \"goodsSizeId\", sicgd.GOODS_SIZE_NAME as \"goodsSizeName\", sicgd.GOODS_BEFORE_NUM as \"goodsBeforeNum\", "
+            + "sicgd.GOODS_AFTER_NUM as \"goodsAfterNum\", sicgd.PROFIT_LOSS as \"profitLoss\", sicgd.GOODS_SALE_PRICE as \"goodsSalePrice\", sicgd.GOODS_PURCHASE_PRICE as \"goodsPurchasePrice\", "
             + "sgc.CATEGORY_NAME as \"categoryName\", "
             + "sgi.GOODS_NAME as \"goodsName\", sgi.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgi.GOODS_PHOTO as \"goodsPhoto\", sgi.GOODS_YEAR as \"goodsYear\", sgi.GOODS_SEASON as \"goodsSeason\", "
             + "svi.VENDER_NAME as \"venderName\" "
@@ -197,7 +196,6 @@ public class ReportChecDatabaseServiceImpl extends BaseRepository implements Rep
         Long shopId = MapUtils.getLong(params, "shopId", null);
         String orderNum = MapUtils.getString(params, "orderNum");
         String goodsColor = MapUtils.getString(params, "goodsColor");
-        String goodsTexture = MapUtils.getString(params, "goodsTexture");
         String goodsSize = MapUtils.getString(params, "goodsSize");
         if (merchantsId != null) {
             sqlParams.querySql.append(" AND tb.MERCHANTS_ID = :merchantsId ");
@@ -255,11 +253,6 @@ public class ReportChecDatabaseServiceImpl extends BaseRepository implements Rep
             sqlParams.querySql.append(" AND sicgd.GOODS_COLOR_ID = :goodsColor ");
             sqlParams.paramsList.add("goodsColor");
             sqlParams.valueList.add(goodsColor);
-        }
-        if(!StringUtils.isBlank(goodsTexture)) {
-            sqlParams.querySql.append(" AND sicgd.GOODS_TEXTURE_ID = :goodsTexture ");
-            sqlParams.paramsList.add("goodsTexture");
-            sqlParams.valueList.add(goodsTexture);
         }
         if(!StringUtils.isBlank(goodsSize)) {
             sqlParams.querySql.append(" AND sicgd.GOODS_SIZE_ID = :goodsSize ");

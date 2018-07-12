@@ -38,10 +38,9 @@ public interface ScmsGoodsInventoryService {
 	 * @param goodsId
 	 * @param colorId
 	 * @param inventorySizeId
-	 * @param textureId
 	 * @return
 	 */
-	public List<ScmsGoodsInventory> findInventory(Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId);
+	public List<ScmsGoodsInventory> findInventory(Long shopId, Long goodsId, Long colorId, Long inventorySizeId);
     
     /**
      * 保存库存信息
@@ -68,9 +67,8 @@ public interface ScmsGoodsInventoryService {
 	 * @param goodsId
 	 * @param colorId
 	 * @param inventorySizeId
-	 * @param textureId
 	 */
-	public void updateGoodsInventoryNum(String orderNum, String orderType, String operatePrefix, Long inventoryNum, Long shopId, Long goodsId, Long colorId, Long inventorySizeId, Long textureId);	
+	public void updateGoodsInventoryNum(String orderNum, String orderType, String operatePrefix, Long inventoryNum, Long shopId, Long goodsId, Long colorId, Long inventorySizeId);	
 	
 	/**
 	 * 更新订单库存

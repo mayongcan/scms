@@ -76,6 +76,8 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		scmsGoodsInfo.setCreateBy(userInfo.getUserId());
 		scmsGoodsInfo.setCreateByName(userInfo.getUserName());
 		scmsGoodsInfo.setCreateDate(new Date());
+		if(scmsGoodsInfo.getSalePrice() == null) scmsGoodsInfo.setSalePrice(0d);
+		if(scmsGoodsInfo.getPurchasePrice() == null) scmsGoodsInfo.setPurchasePrice(0d);
 		scmsGoodsInfo = scmsGoodsInfoRepository.saveAndFlush(scmsGoodsInfo);
 		//保存商品库存信息
 		String goodsInventoryList = MapUtils.getString(params, "goodsInventoryList");
@@ -87,6 +89,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		        if(obj != null) {
 		            obj.setMerchantsId(scmsGoodsInfo.getMerchantsId());
 		            obj.setGoodsId(scmsGoodsInfo.getId());
+		            if(obj.getInventoryNum() == null) obj.setInventoryNum(0L);
 		            scmsGoodsInventoryService.saveInventory(obj);
 		        }
 		    }
@@ -173,36 +176,29 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
             //将新增的规格库存补零
             String colorIdList[] = scmsGoodsInfoInDb.getColorIdList().split(",");
             String colorNameList[] = scmsGoodsInfoInDb.getColorNameList().split(",");
-            String textureIdList[] = scmsGoodsInfoInDb.getTextureIdList().split(",");
-            String textureNameList[] = scmsGoodsInfoInDb.getTextureNameList().split(",");
             String sizeIdList[] = scmsGoodsInfoInDb.getSizeIdList().split(",");
             String sizeNameList[] = scmsGoodsInfoInDb.getSizeNameList().split(",");
             List<ScmsShopInfo> shopList = scmsShopInfoRepository.findByMerchantsIdAndIsValid(scmsGoodsInfoInDb.getMerchantsId(), "Y");
             for(ScmsShopInfo shop : shopList) {
                 for(int colorIndex = 0; colorIndex < colorIdList.length; colorIndex++) {
-                    for(int textureIndex = 0; textureIndex < textureIdList.length; textureIndex++) {
-                        for(int sizeIndex = 0; sizeIndex < sizeIdList.length; sizeIndex++) {
-                            Long colorId = StringUtils.toLong(colorIdList[colorIndex], null);
-                            Long textureId = StringUtils.toLong(textureIdList[textureIndex], null);
-                            Long sizeId = StringUtils.toLong(sizeIdList[sizeIndex], null);
-                            if(colorId == null || textureId == null || sizeId == null) continue;
-                            //判断库存是否有记录，有则不用插入
-                            List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryService.findInventory(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId, textureId);
-                            if(tmpList == null || tmpList.size() == 0) {
-                                ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
-                                scmsGoodsInventory.setMerchantsId(scmsGoodsInfo.getMerchantsId());
-                                scmsGoodsInventory.setShopId(shop.getId());
-                                scmsGoodsInventory.setGoodsId(scmsGoodsInfoInDb.getId());
-                                scmsGoodsInventory.setGoodsBarcode("");
-                                scmsGoodsInventory.setColorId(colorId);
-                                scmsGoodsInventory.setColorName(colorNameList[colorIndex]);
-                                scmsGoodsInventory.setTextureId(textureId);
-                                scmsGoodsInventory.setTextureName(textureNameList[textureIndex]);
-                                scmsGoodsInventory.setInventorySizeId(sizeId);
-                                scmsGoodsInventory.setInventorySize(sizeNameList[sizeIndex]);
-                                scmsGoodsInventory.setInventoryNum(0L);
-                                scmsGoodsInventoryService.saveInventory(scmsGoodsInventory);
-                            }
+                    for(int sizeIndex = 0; sizeIndex < sizeIdList.length; sizeIndex++) {
+                        Long colorId = StringUtils.toLong(colorIdList[colorIndex], null);
+                        Long sizeId = StringUtils.toLong(sizeIdList[sizeIndex], null);
+                        if(colorId == null || sizeId == null) continue;
+                        //判断库存是否有记录，有则不用插入
+                        List<ScmsGoodsInventory> tmpList = scmsGoodsInventoryService.findInventory(shop.getId(), scmsGoodsInfoInDb.getId(), colorId , sizeId);
+                        if(tmpList == null || tmpList.size() == 0) {
+                            ScmsGoodsInventory scmsGoodsInventory = new ScmsGoodsInventory();
+                            scmsGoodsInventory.setMerchantsId(scmsGoodsInfo.getMerchantsId());
+                            scmsGoodsInventory.setShopId(shop.getId());
+                            scmsGoodsInventory.setGoodsId(scmsGoodsInfoInDb.getId());
+                            scmsGoodsInventory.setGoodsBarcode("");
+                            scmsGoodsInventory.setColorId(colorId);
+                            scmsGoodsInventory.setColorName(colorNameList[colorIndex]);
+                            scmsGoodsInventory.setInventorySizeId(sizeId);
+                            scmsGoodsInventory.setInventorySize(sizeNameList[sizeIndex]);
+                            scmsGoodsInventory.setInventoryNum(0L);
+                            scmsGoodsInventoryService.saveInventory(scmsGoodsInventory);
                         }
                     }
                 }
