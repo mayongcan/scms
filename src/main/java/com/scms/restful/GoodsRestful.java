@@ -221,7 +221,28 @@ public class GoodsRestful {
         }
         return json;
     }
-    
+    /**
+     * 获取列表明细
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/getGoodsInfoList2",method=RequestMethod.GET)
+    public JSONObject getGoodsInfoList2(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {
+                Pageable pageable = new PageRequest(SessionUtils.getPageIndex(request), SessionUtils.getPageSize(request));  
+                ScmsGoodsInfo scmsGoodsInfo = (ScmsGoodsInfo)BeanUtils.mapToBean(params, ScmsGoodsInfo.class);              
+                json = scmsGoodsInfoService.getList2(pageable, scmsGoodsInfo, params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
     
     /**
      * 新增信息

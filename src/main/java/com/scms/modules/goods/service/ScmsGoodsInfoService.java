@@ -27,6 +27,14 @@ public interface ScmsGoodsInfoService {
 	public JSONObject getList(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params);
 	
 	/**
+	 * 获取列表明细
+	 * @param page
+	 * @param scmsGoodsInfo
+	 * @return
+	 */
+	public JSONObject getList2(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params);
+	
+	/**
 	 * 新增
 	 * @param params
 	 * @param userInfo

@@ -28,6 +28,16 @@ public interface ScmsGoodsInfoRepositoryCustom {
 	public List<Map<String, Object>> getList(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize);
 	
 	/**
+	 * 获取ScmsGoodsInfo列表明细
+	 * @param scmsGoodsInfo
+	 * @param params
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Map<String, Object>> getList2(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize);
+	
+	/**
 	 * 获取ScmsGoodsInfo列表总数
 	 * @param scmsGoodsInfo
 	 * @param params

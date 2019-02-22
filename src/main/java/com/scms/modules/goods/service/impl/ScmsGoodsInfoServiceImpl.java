@@ -4,6 +4,7 @@
 package com.scms.modules.goods.service.impl;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,161 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		List<Map<String, Object>> list = scmsGoodsInfoRepository.getList(scmsGoodsInfo, params, page.getPageNumber(), page.getPageSize());
 		int count = scmsGoodsInfoRepository.getListCount(scmsGoodsInfo, params);
 		return RestfulRetUtils.getRetSuccessWithPage(list, count);	
+	}
+/*	{"total":544,"RetCode":"000000",
+		"rows":[
+		        {"inventoryNum":0,"goodsSerialNum":"1500700801","salePrice":9.57,
+		        "shopName":"车陂厅","id":572,"purchasePrice":9.57,"shopId":13,"goodsInventoryNum":0,
+		        "goodsName":"1292-7099 E6683 USB软连线"},
+		        
+		        {"inventoryNum":0,"goodsSerialNum":"1500700801","salePrice":9.57,"shopName":"江高厅",
+		        "id":572,"purchasePrice":9.57,"shopId":12,"goodsInventoryNum":0,
+		        "goodsName":"1292-7099 E6683 USB软连线"},
+		        
+		        {"inventoryNum":0,"goodsSerialNum":"1500700801","salePrice":9.57,"shopName":"永泰厅",
+		        "id":572,"purchasePrice":9.57,"shopId":11,"goodsInventoryNum":0,
+		        "goodsName":"1292-7099 E6683 USB软连线"},
+		        
+		        {"inventoryNum":0,"goodsSerialNum":"1500700801","salePrice":9.57,"shopName":"同和厅",
+		        "id":572,"purchasePrice":9.57,"shopId":10,"goodsInventoryNum":0,
+		         "goodsName":"1292-7099 E6683 USB软连线"}
+		         
+		        ,{"inventoryNum":0,"goodsSerialNum":"1500700801","salePrice":9.57,"shopName":"中华广场",
+		          "id":572,"purchasePrice":9.57,"shopId":8,"goodsInventoryNum":0,
+		          "goodsName":"1292-7099 E6683 USB软连线"},
+		        		*/
+		        			
+	@Override
+	public JSONObject getList2(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params) {
+		//查出所有数据（查出所有数据下面处理得到的数据才能正确）
+		//params.put("size", 5000);
+		List<Map<String, Object>> list = scmsGoodsInfoRepository.getList2(scmsGoodsInfo, params, page.getPageNumber(), page.getPageSize());
+		int count = scmsGoodsInfoRepository.getListCount(scmsGoodsInfo, params);
+		
+		
+		JSONObject json=RestfulRetUtils.getRetSuccessWithPage(list, count);
+		JSONObject jsonObject = (JSONObject) JSONObject.parse(json+"");
+		JSONObject jsonData = new JSONObject();
+		JSONArray jsonObject2 =(JSONArray) jsonObject.get("rows");
+		
+		if(jsonObject2.size()>0){
+			  for(int i=0;i<jsonObject2.size();i++){
+			    JSONObject job = jsonObject2.getJSONObject(i);
+			    
+		    	//算出总库存总额
+		    	int num=Integer.parseInt(job.get("goodsInventoryNum")+"");
+		    	double salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+		    	double salaryC= num*salary;
+		    	job.put("zkcSalaryC",salaryC);
+		    	String dada=(String) job.get("shopName");
+			    if(dada.contains("车陂")){
+			    	//为了对应页面显示设置key
+			    	job.put("cbName", job.get("shopName"));
+			    	job.put("cbInventoryNum", job.get("inventoryNum"));
+			    	job.put("cbShopId", job.get("shopId"));
+			    	//算出库存总额
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	job.put("cbSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("江高")){
+			    	job.put("jgName", job.get("shopName"));
+			    	job.put("jgInventoryNum", job.get("inventoryNum"));
+			    	job.put("jgShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	job.put("jgSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("永泰")){
+			    	job.put("ytName", job.get("shopName"));
+			    	job.put("ytInventoryNum", job.get("inventoryNum"));
+			    	job.put("ytShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	job.put("ytSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("同和")){
+			    	job.put("thName", job.get("shopName"));
+			    	job.put("thInventoryNum", job.get("inventoryNum"));
+			    	job.put("thShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	job.put("thSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("中华")){
+			    	job.put("zhName", job.get("shopName"));
+			    	job.put("zhInventoryNum", job.get("inventoryNum"));
+			    	job.put("zhShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	job.put("zhSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("永平")){
+			    	job.put("ypName", job.get("shopName"));
+			    	job.put("ypInventoryNum", job.get("inventoryNum"));
+			    	job.put("ypShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			       	job.put("ypSalaryC",salaryC);
+			    	
+		    	}else  if(dada.contains("公司")){
+			    	job.put("gsName", job.get("shopName"));
+			    	job.put("gsInventoryNum", job.get("inventoryNum"));
+			    	job.put("gsShopId", job.get("shopId"));
+			    	 num=Integer.parseInt(job.get("inventoryNum")+"");
+			    	 salary= Double.parseDouble(job.get("purchasePrice")+"") ;
+			    	 salaryC= num*salary;
+			    	 job.put("gsSalaryC",salaryC);
+		    	}
+			     //把相同goodsSerialNum不同店铺的数据拼成一条数据 放进新的json
+			    String aa=(String) job.get("goodsSerialNum");
+		    	if(jsonData.get(aa)==null){
+		    		jsonData.put(aa, job);
+		    	}else{
+		    		JSONObject  datas=(JSONObject) jsonData.get(job.get("goodsSerialNum"));
+		    	       Iterator iterator = job.keySet().iterator();
+		    	       while(iterator.hasNext()){
+		    	               String key = (String) iterator.next();
+		    	               if(datas.get(key)==null){
+		    	            	   datas.put(key, job.get(key));
+		    	               }
+		    	       }
+		    	}
+			  }
+		}
+		//遍历出新拼接的数据放到原数据中返回
+		Iterator iterator = jsonData.keySet().iterator();
+		String datass="[";
+	       while(iterator.hasNext()){
+	               String key = (String) iterator.next();
+	              datass+= jsonData.getString(key)+",";
+	       }
+	      datass= datass.substring(0,datass.length() - 1)+"]";
+	      JSONArray jsonObject11 = (JSONArray) JSONObject.parse(datass);
+	      
+	      int pages=Integer.parseInt(params.get("page")+"");
+	      int size=Integer.parseInt(params.get("size")+"");
+	      int begin=pages*size;
+	     
+	      //分页
+	      if(params.get("size").equals("5000")){
+	    	  jsonObject.put("rows", jsonObject11);
+	      }else{
+	    	  String datas="[";
+		      for(int i=begin;i<begin+size;i++){
+		    	  datas+=  jsonObject11.get(i)+",";
+		      }
+		      datas= datas.substring(0,datas.length() - 1)+"]";
+		      JSONArray jsonObject22 = (JSONArray) JSONObject.parse(datas);
+	    	  jsonObject.put("rows", jsonObject22);
+	      }
+		return jsonObject;	
 	}
 
 	@Override

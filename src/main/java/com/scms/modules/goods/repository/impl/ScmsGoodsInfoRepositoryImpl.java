@@ -15,18 +15,31 @@ import com.scms.modules.goods.entity.ScmsGoodsInfo;
 import com.scms.modules.goods.repository.custom.ScmsGoodsInfoRepositoryCustom;
 
 public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsGoodsInfoRepositoryCustom{
-
+	
 	private static final String SQL_GET_LIST = "SELECT tb.ID as \"id\", tb.MERCHANTS_ID as \"merchantsId\", tb.CATEGORY_ID as \"categoryId\", tb.VENDER_ID as \"venderId\", "
-	        + "tb.GOODS_NAME as \"goodsName\", tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.SALE_PRICE as \"salePrice\", tb.PURCHASE_PRICE as \"purchasePrice\", "
+	        + "tb.GOODS_NAME as \"goodsName\", tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", tb.PURCHASE_PRICE as \"purchasePrice\", tb.SALE_PRICE as \"salePrice\", "
 	        + "tb.DEF_DISCOUNT as \"defDiscount\", tb.PACKING_NUM as \"packingNum\", tb.GOODS_DESC as \"goodsDesc\", tb.GOODS_PHOTO as \"goodsPhoto\", tb.GOODS_YEAR as \"goodsYear\", "
 	        + "tb.COLOR_ID_LIST as \"colorIdList\", tb.COLOR_NAME_LIST as \"colorNameList\", tb.SIZE_ID_LIST as \"sizeIdList\", tb.SIZE_NAME_LIST as \"sizeNameList\", "
 	        + "tb.GOODS_SEASON as \"goodsSeason\", tb.BUY_STATUS as \"buyStatus\", tb.SHELF_STATUS as \"shelfStatus\", tb.USE_STATUS as \"useStatus\", tb.GOODS_TEXTURE as \"goodsTexture\", tb.CREATE_BY as \"createBy\", "
 	        + "tb.CREATE_BY_NAME as \"createByName\", tb.CREATE_DATE as \"createDate\", sgc.CATEGORY_NAME as \"categoryName\", svi.VENDER_NAME as \"venderName\", "
+	       
 	        + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = tb.ID ) as \"goodsInventoryNum\" "
 			+ "FROM scms_goods_info tb left join scms_goods_category sgc on sgc.ID = tb.CATEGORY_ID "
 			+ "left join scms_vender_info svi on svi.ID = tb.VENDER_ID "
+			
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
 
+	private static final String SQL_GET_LISTA = "SELECT tb.ID as \"id\", tb.PURCHASE_PRICE as \"purchasePrice\" , "
+	        + "tb.GOODS_NAME as \"goodsName\", tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", "
+			+ "sgi.SHOP_ID as \"shopId\", ssi.SHOP_NAME as \"shopName\", sgi.INVENTORY_NUM as \"inventoryNum\", tb.SALE_PRICE as \"salePrice\", "
+	        
+	        + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = tb.ID ) as \"goodsInventoryNum\" "
+			+ "FROM scms_goods_info tb "
+            + "left join scms_goods_inventory sgi on tb.ID = sgi.GOODS_ID "
+            + "left join scms_shop_info ssi ON sgi.SHOP_ID = ssi.ID "
+			
+			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
+	
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
 	        + "FROM scms_goods_info tb left join scms_goods_category sgc on sgc.ID = tb.CATEGORY_ID "
             + "left join scms_vender_info svi on svi.ID = tb.VENDER_ID "
@@ -50,6 +63,15 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
 		SqlParams sqlParams = genListWhere(SQL_GET_LIST, params);
 		//添加分页和排序
 		sqlParams = getPageableSql(sqlParams, pageIndex, pageSize, " tb.ID DESC ", " \"id\" DESC ");
+		return getResultList(sqlParams);
+	}
+	
+	public List<Map<String, Object>> getList2(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize) {
+		//生成查询条件
+		SqlParams sqlParams = genListWhere(SQL_GET_LISTA, params);
+		//添加分页和排序
+		//为了数据计算正确查出所有数据
+		sqlParams = getPageableSql(sqlParams, 0, 5000, " tb.ID DESC ", " \"id\" DESC ");
 		return getResultList(sqlParams);
 	}
 
