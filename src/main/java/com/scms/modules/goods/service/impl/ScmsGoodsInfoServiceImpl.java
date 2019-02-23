@@ -90,6 +90,10 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 	public JSONObject getList2(Pageable page, ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params) {
 		//查出所有数据（查出所有数据下面处理得到的数据才能正确）
 		//params.put("size", 5000);
+		if(params.get("size").equals("5000")){
+			params.put("goodsSerialNum", "");
+			params.put("goodsName", "");
+		}
 		List<Map<String, Object>> list = scmsGoodsInfoRepository.getList2(scmsGoodsInfo, params, page.getPageNumber(), page.getPageSize());
 		int count = scmsGoodsInfoRepository.getListCount(scmsGoodsInfo, params);
 		
@@ -205,7 +209,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 	      int begin=pages*size;
 	     
 	      //分页
-	      if(params.get("size").equals("5000")){
+	      if(params.get("size").equals("5000")||params.get("goodsSerialNum")!=""||params.get("goodsName")!=""){
 	    	  jsonObject.put("rows", jsonObject11);
 	      }else{
 	    	  String datas="[";
