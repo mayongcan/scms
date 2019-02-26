@@ -51,4 +51,18 @@ public interface ScmsGoodsInfoRepositoryCustom {
      * @return
      */
     public List<Map<String, Object>> getAllGoodsInventoryStatistics(Map<String, Object> params);
+    
+    /**
+     * 获取仓库菜单栏
+     * @param params
+     * @return
+     */
+    public List<Map<String, Object>> getWarehouseMenu(Map<String, Object> params);
+    
+    /**
+     * 获取仓imei
+     * @param params
+     * @return
+     */
+    public List<Map<String, Object>> getImei(Map<String, Object> params);
 }

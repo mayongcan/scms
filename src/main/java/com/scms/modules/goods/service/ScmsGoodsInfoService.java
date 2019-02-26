@@ -64,5 +64,12 @@ public interface ScmsGoodsInfoService {
 	 * @return
 	 */
 	public JSONObject getAllGoodsInventoryStatistics(Map<String, Object> params);
+	
+	/**
+	 * 获取仓库菜单栏
+	 * @param params
+	 * @return
+	 */
+	public JSONObject getWarehouseMenu(Map<String, Object> params);
 
 }

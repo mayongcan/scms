@@ -245,6 +245,28 @@ public class GoodsRestful {
     }
     
     /**
+     * 获取仓库菜单栏
+     * @param request
+     * @param params
+     * @return
+     */
+    @RequestMapping(value="/getWarehouseMenu",method=RequestMethod.GET)
+    public JSONObject getWarehouseMenu(HttpServletRequest request, @RequestParam Map<String, Object> params){
+        JSONObject json = new JSONObject();
+        try{
+            UserInfo userInfo = SessionUtils.getUserInfo();
+            if(userInfo == null) json = RestfulRetUtils.getErrorNoUser();
+            else {           
+                json = scmsGoodsInfoService.getWarehouseMenu(params);
+            }
+        }catch(Exception e){
+            json = RestfulRetUtils.getErrorMsg("51001","获取列表失败");
+            logger.error(e.getMessage(), e);
+        }
+        return json;
+    }
+    
+    /**
      * 新增信息
      * @param request
      * @param params

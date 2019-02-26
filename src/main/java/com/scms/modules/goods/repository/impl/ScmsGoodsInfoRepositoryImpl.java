@@ -29,15 +29,16 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
 			
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
 
-	private static final String SQL_GET_LISTA = "SELECT tb.ID as \"id\", tb.PURCHASE_PRICE as \"purchasePrice\" , "
-	        + "tb.GOODS_NAME as \"goodsName\", tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", "
+	private static final String SQL_GET_LISTA = "SELECT tb.ID as \"id\", tb.PURCHASE_PRICE as \"purchasePrice\" ,svi.VENDER_NAME as \"venderName\", "
+	        + "tb.GOODS_NAME as \"goodsName\", tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", sgc.CATEGORY_NAME as \"categoryName\" , "
 			+ "sgi.SHOP_ID as \"shopId\", ssi.SHOP_NAME as \"shopName\", sgi.INVENTORY_NUM as \"inventoryNum\", tb.SALE_PRICE as \"salePrice\", "
 	        
 	        + "(select sum(tmpsgi.INVENTORY_NUM) from scms_goods_inventory tmpsgi where tmpsgi.GOODS_ID = tb.ID ) as \"goodsInventoryNum\" "
 			+ "FROM scms_goods_info tb "
             + "left join scms_goods_inventory sgi on tb.ID = sgi.GOODS_ID "
             + "left join scms_shop_info ssi ON sgi.SHOP_ID = ssi.ID "
-			
+			+ "left join scms_goods_category sgc on sgc.ID = tb.CATEGORY_ID "
+			+ "left join scms_vender_info svi on svi.ID = tb.VENDER_ID "
 			+ "WHERE 1 = 1 AND tb.IS_VALID = 'Y'";
 	
 	private static final String SQL_GET_LIST_COUNT = "SELECT count(1) as \"count\" "
@@ -57,6 +58,24 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
                 " FROM scms_goods_info tb left join scms_goods_inventory sgi on tb.ID = sgi.GOODS_ID " + 
                 " WHERE 1 = 1 ";
                 
+    
+    private static final String SQL_GET_ALL_WAREHOUSE_MENU_BAR = "SELECT " + 
+            " ssi.ID as \"shopId\", " + 
+            " ssi.SHOP_NAME as \"shopName\" " + 
+            " FROM " + 
+            " scms_shop_info ssi " + 
+            " WHERE 1 = 1 "+
+            " ORDER BY ssi.ID ";
+    
+    private static final String SQL_GET_IMEI = "SELECT " + 
+            " tb.ID as \"shopId\", " + 
+            " tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", " + 
+            " sss.GOODS_IMEI as \"imei\" " + 
+            " FROM " + 
+            " scms_goods_info tb " + 
+            "LEFT JOIN scms_goods_imei sss ON sss.goods_serialnum = tb.GOODS_SERIAL_NUM"+
+            " WHERE 1 = 1 ";
+
 	
 	public List<Map<String, Object>> getList(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize) {
 		//生成查询条件
@@ -172,6 +191,20 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
       //生成查询条件
         SqlParams sqlParams = genListWhere(SQL_GET_ALL_GOODS_INVENTORY_STATISTICS, params);
         sqlParams.querySql.append(" GROUP BY tb.ID  ) t");
+        return getResultList(sqlParams);
+    }
+    
+    @Override
+    public List<Map<String, Object>> getWarehouseMenu(Map<String, Object> params) {
+      //生成查询条件
+        SqlParams sqlParams = genListWhere(SQL_GET_ALL_WAREHOUSE_MENU_BAR, params);
+        return getResultList(sqlParams);
+    }
+    
+    @Override
+    public List<Map<String, Object>> getImei(Map<String, Object> params) {
+      //生成查询条件
+        SqlParams sqlParams = genListWhere(SQL_GET_IMEI, params);
         return getResultList(sqlParams);
     }
 }
