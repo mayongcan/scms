@@ -64,7 +64,7 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
             " ssi.SHOP_NAME as \"shopName\" " + 
             " FROM " + 
             " scms_shop_info ssi " + 
-            " WHERE 1 = 1 "+
+            " WHERE 1 = 1  AND ssi.IS_VALID='Y' "+
             " ORDER BY ssi.ID ";
     
     private static final String SQL_GET_IMEI = "SELECT " + 
@@ -74,7 +74,7 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
             " FROM " + 
             " scms_goods_info tb " + 
             "LEFT JOIN scms_goods_imei sss ON sss.goods_serialnum = tb.GOODS_SERIAL_NUM"+
-            " WHERE 1 = 1 ";
+            " WHERE 1 = 1 AND sss.order_id IS NULL AND sss.GOODS_IMEI IS NOT NULL ";
 
 	
 	public List<Map<String, Object>> getList(ScmsGoodsInfo scmsGoodsInfo, Map<String, Object> params, int pageIndex, int pageSize) {
