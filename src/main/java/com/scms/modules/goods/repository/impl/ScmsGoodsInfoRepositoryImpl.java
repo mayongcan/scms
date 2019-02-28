@@ -68,7 +68,8 @@ public class ScmsGoodsInfoRepositoryImpl extends BaseRepository implements ScmsG
             " ORDER BY ssi.ID ";
     
     private static final String SQL_GET_IMEI = "SELECT " + 
-            " tb.ID as \"shopId\", " + 
+            " tb.ID as \"Id\", " + 
+            "  sss.shop_id as \"shopId\", " +
             " tb.GOODS_SERIAL_NUM as \"goodsSerialNum\", " + 
             " sss.GOODS_IMEI as \"imei\" " + 
             " FROM " + 

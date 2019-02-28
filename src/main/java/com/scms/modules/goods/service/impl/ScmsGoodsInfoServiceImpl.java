@@ -84,10 +84,11 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 		
 		//通过单号整合imei
 		for(int s = 0; s < Imei.size(); s++){
-    		if(Imeis.get(Imei.get(s).get("goodsSerialNum"))==null){
-    			Imeis.put(Imei.get(s).get("goodsSerialNum")+"",Imei.get(s).get("imei"));
+			String shopImei=Imei.get(s).get("goodsSerialNum")+":"+Imei.get(s).get("shopId");
+    		if(Imeis.get(shopImei)==null){
+    			Imeis.put(shopImei,Imei.get(s).get("imei"));
     		}else{
-    			Imeis.put(Imei.get(s).get("goodsSerialNum")+"",Imeis.get(Imei.get(s).get("goodsSerialNum"))+","+Imei.get(s).get("imei"));
+    			Imeis.put(shopImei,Imeis.get(shopImei)+","+Imei.get(s).get("imei"));
     		}
     	}
 		
@@ -113,7 +114,7 @@ public class ScmsGoodsInfoServiceImpl implements ScmsGoodsInfoService {
 			    	 salaryC= num*salary;
 			    	job.put("SalaryC"+job.get("shopId"),salaryC);
 			    	
-			    	job.put("imei", Imeis.get(job.get("goodsSerialNum")));
+			    	job.put("imei"+job.get("shopId"), Imeis.get(job.get("goodsSerialNum")+":"+job.get("shopId")));
 			    	
 		    	}
 			     //把相同goodsSerialNum不同店铺的数据拼成一条数据 放进新的json
